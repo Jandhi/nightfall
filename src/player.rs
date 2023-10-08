@@ -1,6 +1,9 @@
+use std::time::Duration;
+
 use crate::actions::Actions;
 use crate::loading::TextureAssets;
 use crate::GameState;
+use crate::cooldown::Cooldown;
 use bevy::prelude::*;
 
 pub struct PlayerPlugin;

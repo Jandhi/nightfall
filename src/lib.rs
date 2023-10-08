@@ -5,12 +5,20 @@ mod audio;
 mod loading;
 mod menu;
 mod player;
+mod towers;
+mod enemies;
+mod cooldown;
+pub mod palette;
 
 use crate::actions::ActionsPlugin;
 use crate::audio::InternalAudioPlugin;
 use crate::loading::LoadingPlugin;
 use crate::menu::MenuPlugin;
 use crate::player::PlayerPlugin;
+use crate::cooldown::CooldownPlugin;
+use crate::enemies::EnemiesPlugin;
+use crate::towers::TowersPlugin;
+use crate::palette::PalettePlugin;
 
 use bevy::app::App;
 #[cfg(debug_assertions)]
@@ -36,11 +44,15 @@ pub struct GamePlugin;
 impl Plugin for GamePlugin {
     fn build(&self, app: &mut App) {
         app.add_state::<GameState>().add_plugins((
+            PalettePlugin,
             LoadingPlugin,
             MenuPlugin,
             ActionsPlugin,
             InternalAudioPlugin,
             PlayerPlugin,
+            CooldownPlugin,
+            EnemiesPlugin,
+            TowersPlugin,
         ));
 
         #[cfg(debug_assertions)]

@@ -1,5 +1,6 @@
 use crate::loading::FontAssets;
 use crate::GameState;
+use crate::palette::Palette;
 use bevy::prelude::*;
 
 pub struct MenuPlugin;
@@ -8,32 +9,17 @@ pub struct MenuPlugin;
 /// The menu is only drawn during the State `GameState::Menu` and is removed when that state is exited
 impl Plugin for MenuPlugin {
     fn build(&self, app: &mut App) {
-        app.init_resource::<ButtonColors>()
+        app
             .add_systems(OnEnter(GameState::Menu), setup_menu)
             .add_systems(Update, click_play_button.run_if(in_state(GameState::Menu)))
             .add_systems(OnExit(GameState::Menu), cleanup_menu);
     }
 }
 
-#[derive(Resource)]
-struct ButtonColors {
-    normal: Color,
-    hovered: Color,
-}
-
-impl Default for ButtonColors {
-    fn default() -> Self {
-        ButtonColors {
-            normal: Color::rgb(0.15, 0.15, 0.15),
-            hovered: Color::rgb(0.25, 0.25, 0.25),
-        }
-    }
-}
-
 fn setup_menu(
     mut commands: Commands,
     font_assets: Res<FontAssets>,
-    button_colors: Res<ButtonColors>,
+    palette: Res<Palette>,
 ) {
     commands.spawn(Camera2dBundle::default());
     commands
@@ -46,7 +32,7 @@ fn setup_menu(
                 align_items: AlignItems::Center,
                 ..Default::default()
             },
-            background_color: button_colors.normal.into(),
+            background_color: palette.dark.into(),
             ..Default::default()
         })
         .with_children(|parent| {
@@ -55,14 +41,14 @@ fn setup_menu(
                 TextStyle {
                     font: font_assets.fira_sans.clone(),
                     font_size: 40.0,
-                    color: Color::rgb(0.9, 0.9, 0.9),
+                    color: palette.white.into(),
                 },
             ));
         });
 }
 
 fn click_play_button(
-    button_colors: Res<ButtonColors>,
+    palette : Res<Palette>,
     mut state: ResMut<NextState<GameState>>,
     mut interaction_query: Query<
         (&Interaction, &mut BackgroundColor),
@@ -75,10 +61,10 @@ fn click_play_button(
                 state.set(GameState::Playing);
             }
             Interaction::Hovered => {
-                *color = button_colors.hovered.into();
+                *color = palette.orange.into();
             }
             Interaction::None => {
-                *color = button_colors.normal.into();
+                *color = palette.red.into();
             }
         }
     }

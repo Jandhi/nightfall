@@ -9,10 +9,13 @@ use bevy_game::GamePlugin; // ToDo: Replace bevy_game with your new crate name.
 use std::io::Cursor;
 use winit::window::Icon;
 
+mod palette;
+use palette::DARK_HEX;
+
 fn main() {
     App::new()
         .insert_resource(Msaa::Off)
-        .insert_resource(ClearColor(Color::rgb(0.4, 0.4, 0.4)))
+        .insert_resource(ClearColor(Color::hex(DARK_HEX).unwrap()))
         .add_plugins(DefaultPlugins.set(WindowPlugin {
             primary_window: Some(Window {
                 title: "Bevy game".to_string(), // ToDo
