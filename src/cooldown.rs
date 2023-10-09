@@ -1,7 +1,6 @@
-use std::{default, time::Duration};
+use std::time::Duration;
 use crate::GameState; 
 use bevy::prelude::*;
-use bevy::log::LogPlugin;
 
 
 #[derive(Component)]

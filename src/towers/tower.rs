@@ -1,9 +1,9 @@
-use bevy::{prelude::*, transform};
+use bevy::prelude::*;
 use std::time::Duration;
 use crate::enemies::enemy::Enemy;
-use crate::cooldown::{Cooldown, self};
+use crate::cooldown::Cooldown;
 
-struct TowerStats {
+pub struct TowerStats {
     pub range : f32,
     pub cooldown : Duration,
 }
@@ -15,11 +15,11 @@ impl TowerStats {
 }
 
 #[derive(Component)]
-struct Tower {
+pub struct Tower {
     pub stats : TowerStats,
 }
 
-fn tower_trigger (
+pub fn tower_trigger (
     mut towers: Query<(Entity, &mut Tower, &mut Transform, &mut Cooldown)>,
     mut enemies: Query<(Entity, &mut Enemy, &mut Transform)>,
 ) {
@@ -28,7 +28,7 @@ fn tower_trigger (
             continue;
         }
         
-        for (_, enemy, enemy_transform) in enemies.iter_mut() {
+        for (_, _, enemy_transform) in enemies.iter_mut() {
             if !tower_cooldown.is_ready() {
                 continue;
             }

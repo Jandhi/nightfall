@@ -8,10 +8,10 @@ pub struct Palette {
     pub white  : Color
 }
 
-pub const DARK_HEX   : &'static str = "#171726";
-pub const RED_HEX    : &'static str = "#804055";
-pub const ORANGE_HEX : &'static str = "#d99d62";
-pub const WHITE_HEX  : &'static str = "#fff2d9";
+pub const DARK_HEX   : &str = "#171726";
+pub const RED_HEX    : &str = "#804055";
+pub const ORANGE_HEX : &str = "#d99d62";
+pub const WHITE_HEX  : &str = "#fff2d9";
 
 impl Palette {
     fn new() -> Self {
