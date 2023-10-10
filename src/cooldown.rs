@@ -1,21 +1,19 @@
-use std::time::Duration;
-use crate::GameState; 
+use crate::GameState;
 use bevy::prelude::*;
-
+use std::time::Duration;
 
 #[derive(Component)]
 pub struct Cooldown {
-    pub time_remaining : Duration
+    pub time_remaining: Duration,
 }
 
 #[derive(Event)]
 pub struct CooldownFinishedEvent(Entity);
 
-
 fn tick_cooldown(
-    mut ev_cooldown_finished : EventWriter<CooldownFinishedEvent>,
-    mut cooldowns : Query<(Entity, &mut Cooldown)>,
-    time : Res<Time>
+    mut ev_cooldown_finished: EventWriter<CooldownFinishedEvent>,
+    mut cooldowns: Query<(Entity, &mut Cooldown)>,
+    time: Res<Time>,
 ) {
     for (entity, mut cooldown) in cooldowns.iter_mut() {
         if cooldown.time_remaining == Duration::ZERO {
@@ -25,8 +23,7 @@ fn tick_cooldown(
             // Cooldown finished
             cooldown.time_remaining = Duration::ZERO;
             ev_cooldown_finished.send(CooldownFinishedEvent(entity));
-        }
-        else {
+        } else {
             cooldown.time_remaining -= time.delta();
         }
     }
@@ -50,6 +47,8 @@ impl Cooldown {
 
 impl Default for Cooldown {
     fn default() -> Self {
-        Self { time_remaining: Duration::ZERO }
+        Self {
+            time_remaining: Duration::ZERO,
+        }
     }
 }

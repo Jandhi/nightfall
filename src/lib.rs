@@ -2,23 +2,23 @@
 
 mod actions;
 mod audio;
+mod cooldown;
+mod enemies;
 mod loading;
 mod menu;
+pub mod palette;
 mod player;
 mod towers;
-mod enemies;
-mod cooldown;
-pub mod palette;
 
 use crate::actions::ActionsPlugin;
 use crate::audio::InternalAudioPlugin;
-use crate::loading::LoadingPlugin;
-use crate::menu::MenuPlugin;
-use crate::player::PlayerPlugin;
 use crate::cooldown::CooldownPlugin;
 use crate::enemies::EnemiesPlugin;
-use crate::towers::TowersPlugin;
+use crate::loading::LoadingPlugin;
+use crate::menu::MenuPlugin;
 use crate::palette::PalettePlugin;
+use crate::player::PlayerPlugin;
+use crate::towers::TowersPlugin;
 
 use bevy::app::App;
 #[cfg(debug_assertions)]
