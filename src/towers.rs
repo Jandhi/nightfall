@@ -1,6 +1,5 @@
 use bevy::prelude::*;
 
-
 pub mod tower;
 pub mod turret;
 use crate::{towers::tower::tower_trigger, GameState};

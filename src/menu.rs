@@ -1,6 +1,6 @@
 use crate::loading::FontAssets;
-use crate::GameState;
 use crate::palette::Palette;
+use crate::GameState;
 use bevy::prelude::*;
 
 pub struct MenuPlugin;
@@ -9,18 +9,13 @@ pub struct MenuPlugin;
 /// The menu is only drawn during the State `GameState::Menu` and is removed when that state is exited
 impl Plugin for MenuPlugin {
     fn build(&self, app: &mut App) {
-        app
-            .add_systems(OnEnter(GameState::Menu), setup_menu)
+        app.add_systems(OnEnter(GameState::Menu), setup_menu)
             .add_systems(Update, click_play_button.run_if(in_state(GameState::Menu)))
             .add_systems(OnExit(GameState::Menu), cleanup_menu);
     }
 }
 
-fn setup_menu(
-    mut commands: Commands,
-    font_assets: Res<FontAssets>,
-    palette: Res<Palette>,
-) {
+fn setup_menu(mut commands: Commands, font_assets: Res<FontAssets>, palette: Res<Palette>) {
     commands.spawn(Camera2dBundle::default());
     commands
         .spawn(ButtonBundle {
@@ -48,7 +43,7 @@ fn setup_menu(
 }
 
 fn click_play_button(
-    palette : Res<Palette>,
+    palette: Res<Palette>,
     mut state: ResMut<NextState<GameState>>,
     mut interaction_query: Query<
         (&Interaction, &mut BackgroundColor),

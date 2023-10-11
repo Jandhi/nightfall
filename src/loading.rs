@@ -41,10 +41,10 @@ pub struct TextureAssets {
 
     #[asset(path = "textures/Flame.png")]
     pub texture_flame: Handle<Image>,
-    
+
     #[asset(path = "textures/tower.png")]
     pub texture_tower: Handle<Image>,
 
     #[asset(path = "textures/turret.png")]
-    pub texture_turret: Handle<Image>
+    pub texture_turret: Handle<Image>,
 }
