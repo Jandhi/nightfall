@@ -165,7 +165,6 @@ pub fn collision_tick (
                     continue; // Already logged collision
                 } else {
                     collision_event.send(CollisionEvent { entity_a: entity, entity_b: *other_entity });
-                    info!("collision!");
                 }
             }
         }
