@@ -1,5 +1,5 @@
 use crate::actions::Actions;
-use crate::collision::Collider;
+use crate::collision::collider::Collider;
 use crate::loading::TextureAssets;
 use crate::GameState;
 use bevy::prelude::*;
@@ -26,7 +26,7 @@ fn spawn_player(mut commands: Commands, textures: Res<TextureAssets>) {
         ..Default::default()
     })
     .insert(Player)
-    .insert(Collider::new(Vec2 { x: 50., y: 50. }, Vec2 { x: 0., y: 0.}));
+    .insert(Collider::new_circle(50., Vec2 { x: 0., y: 0.}));
 }
 
 fn move_player(

@@ -1,4 +1,4 @@
-use crate::collision::Collider;
+use crate::collision::collider::Collider;
 use crate::cooldown::Cooldown;
 use crate::enemies::enemy::Enemy;
 use crate::loading::TextureAssets;
@@ -70,7 +70,7 @@ pub fn spawn_tower(mut commands: Commands, textures: Res<TextureAssets>) {
             ..Default::default()
         })
         // Collider
-        .insert(Collider::new(
+        .insert(Collider::new_rect(
             Vec2{x:100., y: 100.}, 
             Vec2 { x: 0., y: 0. }
         ))
