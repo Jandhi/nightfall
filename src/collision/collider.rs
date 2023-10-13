@@ -1,6 +1,5 @@
 use bevy::{prelude::*, utils::HashSet};
-use bevy_debug_text_overlay::screen_print;
-use std::{collections::HashMap};
+use std::collections::HashMap;
 
 type SpatialCoord = (i32, i32);
 
@@ -60,7 +59,7 @@ impl Collider {
 
     pub fn is_colliding(&self, position : Vec2, other : &Collider, other_position : Vec2) -> bool {
         match (&self.shape, &other.shape) {
-            (ColliderShape::Rect(size), ColliderShape::Rect(other_size)) => {
+            (ColliderShape::Rect(_), ColliderShape::Rect(_)) => {
                 // The shapes collide if the min or max point is between the min and max point of the other collider
                 is_between(self.max_point(position), other.max_point(other_position), self.min_point(position))
                  || is_between(self.max_point(position), other.min_point(other_position), self.min_point(position))

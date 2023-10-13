@@ -36,7 +36,7 @@ fn main() {
                     ImagePlugin::default_nearest(),
                 ),
         )
-        .add_plugin(OverlayPlugin { font_size: 23.0, ..default() })
+        .add_plugins(OverlayPlugin { font_size: 23.0, ..default() })
         .add_plugins(GamePlugin)
         .add_systems(Startup, set_window_icon)
         .run();
