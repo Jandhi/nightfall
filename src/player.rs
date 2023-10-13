@@ -1,4 +1,5 @@
 use crate::actions::Actions;
+use crate::collision::Collider;
 use crate::loading::TextureAssets;
 use crate::GameState;
 use bevy::prelude::*;
@@ -18,13 +19,14 @@ impl Plugin for PlayerPlugin {
 }
 
 fn spawn_player(mut commands: Commands, textures: Res<TextureAssets>) {
-    /*commands
+    commands
     .spawn(SpriteBundle {
         texture: textures.texture_bevy.clone(),
         transform: Transform::from_translation(Vec3::new(0., 0., 1.)),
         ..Default::default()
     })
-    .insert(Player);*/
+    .insert(Player)
+    .insert(Collider::new(Vec2 { x: 50., y: 50. }, Vec2 { x: 0., y: 0.}));
 }
 
 fn move_player(
