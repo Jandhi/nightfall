@@ -1,7 +1,4 @@
-use std::f32::consts::PI;
-
-use bevy::{prelude::*, window::PrimaryWindow};
-use bevy_debug_text_overlay::screen_print;
+use bevy::prelude::*;
 
 use super::tower::Tower;
 

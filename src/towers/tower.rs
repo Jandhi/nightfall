@@ -5,9 +5,7 @@ use crate::loading::TextureAssets;
 use crate::radians::Radian;
 use crate::towers::turret::Turret;
 use bevy::prelude::*;
-use bevy_debug_text_overlay::screen_print;
 use std::f32::consts::PI;
-use std::fmt::format;
 use std::time::Duration;
 
 use super::targeting::Targeting;
@@ -34,7 +32,6 @@ pub struct Tower {
 pub fn tower_trigger(
     mut towers: Query<(Entity, &mut Tower, &mut Transform, &mut Cooldown)>,
     mut enemies: Query<(Entity, &mut Enemy, &mut Transform), Without<Tower>>,
-    mut turrets : Query<(Entity, &Turret, &mut Transform), (Without<Tower>, Without<Enemy>)>,
     time : Res<Time>,
 ) {
 
@@ -51,7 +48,7 @@ pub fn tower_trigger(
         }
  
         let target = tower.stats.targeting.find_best_target(&possible_targets);
-        if let Some((target_entity, target_enemy, target_transform)) = target {
+        if let Some((_, _, target_transform)) = target {
             let direction = target_transform.translation.truncate() - tower_transform.translation.truncate();
 
             // obtain angle to target with respect to x-axis.
