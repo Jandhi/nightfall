@@ -5,9 +5,12 @@ use crate::loading::TextureAssets;
 use crate::radians::Radian;
 use crate::towers::turret::Turret;
 use bevy::prelude::*;
+use bevy::transform::commands;
+use bevy_debug_text_overlay::screen_print;
 use std::f32::consts::PI;
 use std::time::Duration;
 
+use super::bullet::Bullet;
 use super::targeting::Targeting;
 
 pub struct TowerStats {
@@ -32,6 +35,8 @@ pub struct Tower {
 pub fn tower_trigger(
     mut towers: Query<(Entity, &mut Tower, &mut Transform, &mut Cooldown)>,
     mut enemies: Query<(Entity, &mut Enemy, &mut Transform), Without<Tower>>,
+    mut commands : Commands,
+    textures: Res<TextureAssets>,
     time : Res<Time>,
 ) {
 
@@ -68,17 +73,44 @@ pub fn tower_trigger(
                 tower.rotation = (tower.rotation + rotation).normalize()
             } else {
                 tower.rotation = angle_to_target;
-            }
 
-            
+                if !tower_cooldown.is_ready() {
+                    continue;
+                }
 
-            if !tower_cooldown.is_ready() {
-                continue;
+                
+                let direction_vec = Vec2{
+                    x: -angle_to_target.angle.sin(),
+                    y: angle_to_target.angle.cos(),
+                };
+                let bullet_translation = tower_transform.translation + Vec3{
+                    x: direction_vec.x,
+                    y: direction_vec.y,
+                    z: 0.
+                } * 30. + Vec3::Z * 5.;
+
+                // Shoot!
+                commands.spawn(SpriteBundle{
+                    texture: textures.texture_bullet.clone(),
+                    transform: Transform {
+                        translation: bullet_translation,
+                        scale: Vec3{ x: 2., y: 2., z: 1.},
+                        rotation: Quat::IDENTITY,
+                    },
+                    ..Default::default()
+                })
+                    .insert(Bullet{
+                        angle: direction_vec,
+                        velocity: 600.,
+                        dmg: 1,
+                    })
+                    .insert(Collider::new_circle(
+                        5., 
+                        bullet_translation.truncate()
+                    ));
+                tower_cooldown.time_remaining += tower.stats.cooldown;
             }
             
-            // Shoot!
-            info!("shoot!");
-            tower_cooldown.time_remaining += tower.stats.cooldown;
         }
 
         

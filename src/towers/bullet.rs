@@ -5,8 +5,9 @@ use crate::collision::collider::CollisionEvent;
 
 #[derive(Component)]
 pub struct Bullet {
-    velocity : Vec2,
-    dmg : Health,
+    pub angle : Vec2,
+    pub velocity : f32,
+    pub dmg : Health,
 }
 
 pub fn bullet_collision_check(
@@ -52,7 +53,7 @@ pub fn bullet_move(
     time : Res<Time>,
 ) {
     for (_, bullet, mut transform) in q_bullets.iter_mut() {
-        let diff = bullet.velocity * time.delta_seconds();
+        let diff = bullet.angle * time.delta_seconds() * bullet.velocity;
         transform.translation += Vec3{
             x: diff.x,
             y: diff.y,
