@@ -6,10 +6,11 @@ mod cooldown;
 mod enemies;
 mod loading;
 mod menu;
-pub mod palette;
+mod palette;
 mod player;
 mod towers;
-pub mod collision;
+mod radians;
+mod collision;
 
 use crate::actions::ActionsPlugin;
 use crate::audio::InternalAudioPlugin;

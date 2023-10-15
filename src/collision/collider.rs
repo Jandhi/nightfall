@@ -17,8 +17,8 @@ pub enum ColliderShape {
 
 #[derive(Event)]
 pub struct CollisionEvent {
-    entity_a : Entity,
-    entity_b : Entity
+    pub entity_a : Entity,
+    pub entity_b : Entity
 }
 
 // Checks if vector b is between a and c
