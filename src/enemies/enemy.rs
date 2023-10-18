@@ -1,6 +1,6 @@
 use bevy::{prelude::*, window::PrimaryWindow};
 
-use crate::{loading::TextureAssets, collision::collider::Collider, constants::SCALING_VEC3};
+use crate::{loading::TextureAssets, collision::collider::Collider, constants::SCALING_VEC3, animation::{make_animation_bundle, AnimationStateStorage}};
 
 pub type Health = u32;
 
@@ -14,6 +14,11 @@ pub struct Enemy {
 pub struct EnemyDeathEvent {
     pub entity:  Entity,
     pub enemy: Enemy
+}
+
+#[derive(PartialEq, Eq, Hash, Clone, Copy)]
+pub enum ImpAnimationState {
+    FLYING,
 }
 
 impl Enemy {
@@ -48,24 +53,24 @@ pub fn death_loop(
 }
 
 pub fn spawn_enemy(
+    imp_animations : Res<AnimationStateStorage<ImpAnimationState>>,
+    mut texture_atlases: ResMut<Assets<TextureAtlas>>, 
     mut commands: Commands, 
     textures: Res<TextureAssets>
 ) {
-    commands.spawn(SpriteBundle {
-        texture: textures.texture_imp.clone(),
-        transform: Transform {
-            translation: Vec3 {
-                x: 70.,
-                y: 70.,
-                z: 0.,
-            },
-            rotation: Quat::IDENTITY,
-            scale: SCALING_VEC3,
-        },
-        ..Default::default()
-    })
-        .insert(Enemy{ track_progress: 0., health: 100 })
-        .insert(Collider::new_circle(10., Vec2 { x: 70., y: 70. }));
+    let texture_atlas = TextureAtlas::from_grid(
+        textures.texture_imp.clone(),
+         Vec2 { x: 32., y: 32. },
+          4,
+           1,
+            None,
+             None
+    );
+    let texture_atlas_handle = texture_atlases.add(texture_atlas);
+
+    commands.spawn(Enemy{ track_progress: 0., health: 100 })
+        .insert(Collider::new_circle(10., Vec2 { x: 70., y: 70. }))
+        .insert(make_animation_bundle(ImpAnimationState::FLYING, imp_animations, texture_atlas_handle));
 }
 
 pub fn follow_mouse(

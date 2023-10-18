@@ -1,19 +1,31 @@
+use std::fmt::Display;
 use std::time::Duration;
 
 use crate::actions::Actions;
-use crate::animation::{AnimationState, animate, AnimationController, AnimationTimer};
+use crate::animation::{AnimationStateInfo, update_animation_frames, AnimationController, AnimationTimer, AnimationStateStorage, AnimationStateChangeEvent, AppAnimationSetup, make_animation_bundle};
 use crate::collision::collider::Collider;
 use crate::constants::SCALING_VEC3;
 use crate::loading::TextureAssets;
 use crate::GameState;
+use bevy::utils::HashMap;
 use bevy::{prelude::*, animation};
 
-
-#[derive(Resource)]
-pub struct PlayerAnimationStates {
-    pub idle : AnimationState,
-    pub running : AnimationState,
+#[derive(PartialEq, Eq, Hash, Clone, Copy)]
+enum PlayerAnimationState {
+    IDLE,
+    RUNNING
 }
+
+impl Display for PlayerAnimationState {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{}", match self {
+            PlayerAnimationState::IDLE => "idle",
+            PlayerAnimationState::RUNNING => "running",
+        })
+    }
+}
+
+type PlayerAnimations = AnimationStateStorage<PlayerAnimationState>;
 
 pub struct PlayerPlugin;
 
@@ -26,47 +38,69 @@ impl Plugin for PlayerPlugin {
     fn build(&self, app: &mut App) {
         app.add_systems(OnEnter(GameState::Playing), spawn_player)
             .add_systems(Update, move_player.run_if(in_state(GameState::Playing)))
-            .add_systems(Update, animate.run_if(in_state(GameState::Playing)))
-            .insert_resource(PlayerAnimationStates{
-                idle: AnimationState { start_index: 0, frames: 1},
-                running: AnimationState { start_index: 1, frames: 4},
-            });
+            .add_animation(vec![
+                AnimationStateInfo { 
+                    id: PlayerAnimationState::IDLE, 
+                    start_index: 0, 
+                    frames: 2,
+                    frame_duration: Duration::from_secs_f32(1. / 2.),
+                },
+                AnimationStateInfo { 
+                    id: PlayerAnimationState::RUNNING, 
+                    start_index: 2, 
+                    frames: 4,
+                    frame_duration: Duration::from_secs_f32(1. / 10.),
+                }
+
+            ]);
     }
 }
 
-fn spawn_player(mut commands: Commands, textures: Res<TextureAssets>, mut texture_atlases: ResMut<Assets<TextureAtlas>>, animation_states : Res<PlayerAnimationStates>) {
-    let texture_atlas = 
-        TextureAtlas::from_grid(textures.texture_hatman.clone(), Vec2 { x: 32., y: 32. }, 5, 1, None, None);
+fn spawn_player(
+    player_animations : Res<PlayerAnimations>,
+    textures: Res<TextureAssets>, 
+    mut texture_atlases: ResMut<Assets<TextureAtlas>>, 
+    mut commands: Commands, 
+) {
+    let texture_atlas = TextureAtlas::from_grid(
+        textures.texture_hatman.clone(),
+         Vec2 { x: 32., y: 32. },
+          6,
+           1,
+            None,
+             None
+    );
     let texture_atlas_handle = texture_atlases.add(texture_atlas);
 
     commands
-    .spawn(SpriteSheetBundle {
-        texture_atlas: texture_atlas_handle,
-        sprite: TextureAtlasSprite::new(animation_states.idle.start_index),
-        transform: Transform { translation: Vec3::new(0., 0., 1.), rotation: Quat::IDENTITY, scale: SCALING_VEC3 },
-        ..Default::default()
-    })
-    .insert(Player)
+    .spawn(Player)
     .insert(Collider::new_circle(50., Vec2 { x: 0., y: 0.}))
-    .insert(AnimationTimer(Timer::from_seconds(1. / 10., TimerMode::Repeating)))
-    .insert(AnimationController {
-        state: animation_states.idle,
-        is_facing_right: true,
-    });
+    .insert(make_animation_bundle(
+        PlayerAnimationState::IDLE, 
+        player_animations, 
+        texture_atlas_handle
+    ));
 }
 
 fn move_player(
     time: Res<Time>,
     actions: Res<Actions>,
-    animation_states : Res<PlayerAnimationStates>,
-    mut player_query: Query<(&mut Transform, &mut AnimationController, &mut TextureAtlasSprite)>,
+    animation_states : Res<PlayerAnimations>,
+    mut animation_change : EventWriter<AnimationStateChangeEvent<PlayerAnimationState>>,
+    mut player_query: Query<(Entity, &mut Transform, &mut AnimationController<PlayerAnimationState>, &mut TextureAtlasSprite)>,
 ) {
     
-    let (mut player_transform, mut animation_controller, mut atlas) = player_query.single_mut();
+    let (entity, mut player_transform, mut animation_controller, mut atlas) = player_query.single_mut();
     
 
     if actions.player_movement.is_none() {
-        animation_controller.state = animation_states.idle;
+        if animation_controller.get_state() != PlayerAnimationState::IDLE {
+            animation_change.send(AnimationStateChangeEvent{
+                id : entity,
+                state_id : PlayerAnimationState::IDLE
+            });
+        }
+
         return;
     }
     let speed = 150.;
@@ -78,13 +112,16 @@ fn move_player(
 
     player_transform.translation += movement;
 
-    if animation_controller.state != animation_states.running {
-        animation_controller.state = animation_states.running;
+    if animation_controller.get_state() != PlayerAnimationState::RUNNING {
+        animation_change.send(AnimationStateChangeEvent{
+            id : entity,
+            state_id : PlayerAnimationState::RUNNING
+        });
     }
 
-    if movement.x > 0. && !animation_controller.is_facing_right {
-        animation_controller.is_facing_right = true;
-    } else if movement.x < 0. && animation_controller.is_facing_right {
-        animation_controller.is_facing_right = false;
+    if movement.x > 0. && !animation_controller.is_facing_right() {
+        animation_controller.set_facing_right(true);
+    } else if movement.x < 0. && animation_controller.is_facing_right() {
+        animation_controller.set_facing_right(false);
     }
 }
