@@ -52,5 +52,11 @@ pub struct TextureAssets {
     pub texture_bullet: Handle<Image>,
 
     #[asset(path = "textures/imp.png")]
-    pub imp_texture: Handle<Image>,
+    pub texture_imp: Handle<Image>,
+
+    #[asset(path = "textures/healthbar.png")]
+    pub texture_healthbar: Handle<Image>,
+
+    #[asset(path = "textures/hatman_spritesheet.png")]
+    pub texture_hatman: Handle<Image>,
 }

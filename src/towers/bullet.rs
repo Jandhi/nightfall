@@ -1,5 +1,6 @@
 use bevy::prelude::*;
 
+use crate::constants::DISTANCE_SCALING;
 use crate::enemies::enemy::{Enemy, Health};
 use crate::collision::collider::CollisionEvent;
 
@@ -8,6 +9,7 @@ pub struct Bullet {
     pub angle : Vec2,
     pub velocity : f32,
     pub dmg : Health,
+    pub is_alive : bool ,
 }
 
 pub fn bullet_collision_check(
@@ -44,6 +46,12 @@ fn bullet_collision(
     mut enemy : Mut<Enemy>,
     mut commands : &mut Commands,
 ) {
+    // skip dead bullets
+    if !bullet.is_alive {
+        return;
+    }
+
+    bullet.is_alive = false;
     commands.entity(bullet_entity).despawn();
     enemy.take_damage(bullet.dmg);
 }
@@ -53,7 +61,12 @@ pub fn bullet_move(
     time : Res<Time>,
 ) {
     for (_, bullet, mut transform) in q_bullets.iter_mut() {
-        let diff = bullet.angle * time.delta_seconds() * bullet.velocity;
+        // skip dead bullets
+        if !bullet.is_alive {
+            continue;
+        }
+
+        let diff = bullet.angle * time.delta_seconds() * bullet.velocity * DISTANCE_SCALING;
         transform.translation += Vec3{
             x: diff.x,
             y: diff.y,

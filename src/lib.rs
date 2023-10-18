@@ -11,6 +11,8 @@ mod player;
 mod towers;
 mod radians;
 mod collision;
+mod constants;
+mod animation;
 
 use crate::actions::ActionsPlugin;
 use crate::audio::InternalAudioPlugin;

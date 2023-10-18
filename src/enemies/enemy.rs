@@ -1,6 +1,6 @@
 use bevy::{prelude::*, window::PrimaryWindow};
 
-use crate::{loading::TextureAssets, collision::collider::Collider};
+use crate::{loading::TextureAssets, collision::collider::Collider, constants::SCALING_VEC3};
 
 pub type Health = u32;
 
@@ -23,6 +23,10 @@ impl Enemy {
         } else {
             self.health -= dmg;
         }
+    }
+
+    pub fn estimate_position(&self, transform : &Transform, time : f32) -> Vec2 {
+        transform.translation.truncate()
     }
 }
 
@@ -48,7 +52,7 @@ pub fn spawn_enemy(
     textures: Res<TextureAssets>
 ) {
     commands.spawn(SpriteBundle {
-        texture: textures.imp_texture.clone(),
+        texture: textures.texture_imp.clone(),
         transform: Transform {
             translation: Vec3 {
                 x: 70.,
@@ -56,12 +60,7 @@ pub fn spawn_enemy(
                 z: 0.,
             },
             rotation: Quat::IDENTITY,
-            scale: 2.
-                * Vec3 {
-                    x: 1.,
-                    y: 1.,
-                    z: 1.,
-                },
+            scale: SCALING_VEC3,
         },
         ..Default::default()
     })

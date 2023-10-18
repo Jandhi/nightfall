@@ -1,4 +1,5 @@
 use crate::collision::collider::Collider;
+use crate::constants::{SCALING_VEC3, DISTANCE_SCALING};
 use crate::cooldown::Cooldown;
 use crate::enemies::enemy::Enemy;
 use crate::loading::TextureAssets;
@@ -47,7 +48,7 @@ pub fn tower_trigger(
                 .translation
                 .truncate()
                 .distance(enemy_transform.translation.truncate()); 
-            if distance_to_enemy <= tower.stats.range {
+            if distance_to_enemy <= tower.stats.range * DISTANCE_SCALING {
                 possible_targets.push((enemys_entity, enemy, enemy_transform));
             }
         }
@@ -94,7 +95,7 @@ pub fn tower_trigger(
                     texture: textures.texture_bullet.clone(),
                     transform: Transform {
                         translation: bullet_translation,
-                        scale: Vec3{ x: 2., y: 2., z: 1.},
+                        scale: SCALING_VEC3,
                         rotation: Quat::IDENTITY,
                     },
                     ..Default::default()
@@ -103,6 +104,7 @@ pub fn tower_trigger(
                         angle: direction_vec,
                         velocity: 600.,
                         dmg: 1,
+                        is_alive: true,
                     })
                     .insert(Collider::new_circle(
                         5., 
@@ -128,12 +130,7 @@ pub fn spawn_tower(mut commands: Commands, textures: Res<TextureAssets>) {
                     z: 0.,
                 },
                 rotation: Quat::IDENTITY,
-                scale: 2.
-                    * Vec3 {
-                        x: 1.,
-                        y: 1.,
-                        z: 1.,
-                    },
+                scale: SCALING_VEC3
             },
             ..Default::default()
         })
