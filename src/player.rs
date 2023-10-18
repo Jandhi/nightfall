@@ -48,7 +48,7 @@ fn spawn_player(mut commands: Commands, textures: Res<TextureAssets>, mut textur
     })
     .insert(Player)
     .insert(Collider::new_circle(50., Vec2 { x: 0., y: 0.}))
-    .insert(AnimationTimer(Timer::from_seconds(1. / 15., TimerMode::Repeating)))
+    .insert(AnimationTimer(Timer::from_seconds(1. / 10., TimerMode::Repeating)))
     .insert(AnimationController {
         state: animation_states.idle,
         is_facing_right: true,
