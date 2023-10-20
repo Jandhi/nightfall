@@ -1,13 +1,11 @@
 use bevy::{prelude::*, window::PrimaryWindow};
 
-use crate::{loading::TextureAssets, collision::collider::Collider, constants::SCALING_VEC3, animation::{make_animation_bundle, AnimationStateStorage}};
+use crate::{loading::TextureAssets, collision::collider::Collider, constants::SCALING_VEC3, animation::{make_animation_bundle, AnimationStateStorage}, combat::{health::{Health, DeathEvent}, teams::{TeamMember, Team}, healthbar::NeedsHealthBar}};
 
-pub type Health = u32;
 
 #[derive(Component, Clone)]
 pub struct Enemy {
     pub track_progress : f32,
-    pub health : Health,
 }
 
 #[derive(Event)]
@@ -22,13 +20,7 @@ pub enum ImpAnimationState {
 }
 
 impl Enemy {
-    pub fn take_damage(&mut self, dmg : Health) {
-        if dmg > self.health {
-            self.health = 0;
-        } else {
-            self.health -= dmg;
-        }
-    }
+    
 
     pub fn estimate_position(&self, transform : &Transform, time : f32) -> Vec2 {
         transform.translation.truncate()
@@ -37,18 +29,16 @@ impl Enemy {
 
 // Get it? Like the game?
 pub fn death_loop(
-    mut death_event : EventWriter<EnemyDeathEvent>,
+    mut ememy_death_event : EventWriter<EnemyDeathEvent>,
+    mut death_event : EventReader<DeathEvent>,
     mut q_enemies : Query<(Entity, &Enemy)>,
     mut commands : Commands
 ) {
-    for (entity, enemy) in q_enemies.iter_mut() {
-        // Skip healthy entities
-        if enemy.health > 0 {
-            continue;
+    for death_ev in death_event.iter() {
+        if let Ok((entity, enemy)) = q_enemies.get_mut(death_ev.entity) {
+            commands.entity(entity).despawn();
+            ememy_death_event.send(EnemyDeathEvent { entity: entity, enemy: enemy.clone() });
         }
-
-        commands.entity(entity).despawn();
-        death_event.send(EnemyDeathEvent { entity: entity, enemy: enemy.clone() });
     }
 }
 
@@ -68,9 +58,14 @@ pub fn spawn_enemy(
     );
     let texture_atlas_handle = texture_atlases.add(texture_atlas);
 
-    commands.spawn(Enemy{ track_progress: 0., health: 100 })
+    commands.spawn(Enemy{ track_progress: 0.})
+        .insert(Health::new(15))
         .insert(Collider::new_circle(10., Vec2 { x: 70., y: 70. }))
-        .insert(make_animation_bundle(ImpAnimationState::FLYING, imp_animations, texture_atlas_handle));
+        .insert(make_animation_bundle(ImpAnimationState::FLYING, imp_animations, texture_atlas_handle))
+        .insert(TeamMember{team: Team::Enemy})
+        .insert(NeedsHealthBar{
+            offset: Vec2 { x: 0., y: 0. }
+        });
 }
 
 pub fn follow_mouse(

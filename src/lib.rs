@@ -13,6 +13,7 @@ mod radians;
 mod collision;
 mod constants;
 mod animation;
+mod combat;
 
 use crate::actions::ActionsPlugin;
 use crate::audio::InternalAudioPlugin;
@@ -29,6 +30,7 @@ use bevy::app::App;
 use bevy::diagnostic::{FrameTimeDiagnosticsPlugin, LogDiagnosticsPlugin};
 use bevy::prelude::*;
 use collision::CollisionPlugin;
+use combat::CombatPlugin;
 
 // This example game uses States to separate logic
 // See https://bevy-cheatbook.github.io/programming/states.html
@@ -55,6 +57,7 @@ impl Plugin for GamePlugin {
             ActionsPlugin,
             InternalAudioPlugin,
             PlayerPlugin,
+            CombatPlugin,
             CooldownPlugin,
             EnemiesPlugin,
             TowersPlugin,

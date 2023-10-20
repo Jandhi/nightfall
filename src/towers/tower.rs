@@ -1,4 +1,7 @@
 use crate::collision::collider::Collider;
+use crate::combat::health::Health;
+use crate::combat::projectile::{Projectile, StraightMovement, DamageTarget, PiercingMode};
+use crate::combat::teams::Team;
 use crate::constants::{SCALING_VEC3, DISTANCE_SCALING};
 use crate::cooldown::Cooldown;
 use crate::enemies::enemy::Enemy;
@@ -11,8 +14,7 @@ use bevy_debug_text_overlay::screen_print;
 use std::f32::consts::PI;
 use std::time::Duration;
 
-use super::bullet::Bullet;
-use super::targeting::Targeting;
+use super::targeting::{Targeting, Target};
 
 pub struct TowerStats {
     pub range: f32,
@@ -35,27 +37,30 @@ pub struct Tower {
 
 pub fn tower_trigger(
     mut towers: Query<(Entity, &mut Tower, &mut Transform, &mut Cooldown)>,
-    mut enemies: Query<(Entity, &mut Enemy, &mut Transform), Without<Tower>>,
+    mut enemies: Query<(Entity, &Enemy, &Transform, &Health), Without<Tower>>,
     mut commands : Commands,
     textures: Res<TextureAssets>,
     time : Res<Time>,
 ) {
-
     for (_, mut tower, tower_transform, mut tower_cooldown) in towers.iter_mut() {
         let mut possible_targets = vec![];
-        for (enemys_entity, enemy, enemy_transform) in enemies.iter_mut() {
+        for (enemys_entity, enemy, enemy_transform, enemy_health) in enemies.iter_mut() {
             let distance_to_enemy = tower_transform
                 .translation
                 .truncate()
                 .distance(enemy_transform.translation.truncate()); 
             if distance_to_enemy <= tower.stats.range * DISTANCE_SCALING {
-                possible_targets.push((enemys_entity, enemy, enemy_transform));
+                possible_targets.push(Target{
+                    entity: enemys_entity,
+                    enemy: enemy.clone(),
+                    transform: enemy_transform.clone(),
+                    health: enemy_health.clone()
+                });
             }
         }
  
-        let target = tower.stats.targeting.find_best_target(&possible_targets);
-        if let Some((_, _, target_transform)) = target {
-            let direction = target_transform.translation.truncate() - tower_transform.translation.truncate();
+        if let Some(target) = tower.stats.targeting.find_best_target(&possible_targets) {
+            let direction = target.transform.translation.truncate() - tower_transform.translation.truncate();
 
             // obtain angle to target with respect to x-axis.
             let angle_to_target = Radian::from(direction.y.atan2(direction.x) - PI / 2.).normalize_to_half();
@@ -92,7 +97,7 @@ pub fn tower_trigger(
 
                 // Shoot!
                 commands.spawn(SpriteBundle{
-                    texture: textures.texture_bullet.clone(),
+                    texture: textures.texture_bullet_small.clone(),
                     transform: Transform {
                         translation: bullet_translation,
                         scale: SCALING_VEC3,
@@ -100,11 +105,16 @@ pub fn tower_trigger(
                     },
                     ..Default::default()
                 })
-                    .insert(Bullet{
+                    .insert(Projectile{
+                        dmg: 1,
+                        damage_target: DamageTarget::Team(Team::Enemy),
+                        piercing_mode: PiercingMode::None,
+                        entities_hit: 0,
+                        is_alive: true,
+                    })
+                    .insert(StraightMovement{
                         angle: direction_vec,
                         velocity: 600.,
-                        dmg: 1,
-                        is_alive: true,
                     })
                     .insert(Collider::new_circle(
                         5., 

@@ -15,10 +15,24 @@ pub enum ColliderShape {
     Circle(f32)
 }
 
-#[derive(Event)]
-pub struct CollisionEvent {
+pub struct Collision {
     pub entity_a : Entity,
     pub entity_b : Entity
+}
+
+#[derive(Event)]
+pub struct IsCollidingEvent {
+    pub collision : Collision
+}
+
+#[derive(Event)]
+pub struct CollisionStartEvent {
+    pub collision : Collision
+}
+
+#[derive(Event)]
+pub struct CollisionEndEvent {
+    
 }
 
 // Checks if vector b is between a and c
@@ -110,9 +124,15 @@ pub fn vec2_to_spatial_coord(translation : Vec2) -> SpatialCoord {
     return (vec.x.floor() as i32, vec.y.floor() as i32)
 }
 
+#[derive(Resource)]
+pub struct PreviousCollisions {
+    pub collisions : HashSet<(Entity, Entity)>
+}
+
 pub fn collision_tick (
     mut q_colliders : Query<(Entity, &mut Collider, &Transform)>,
-    mut collision_event : EventWriter<CollisionEvent>,
+    mut collision_event : EventWriter<IsCollidingEvent>,
+    mut prev_collisions : ResMut<PreviousCollisions>,
 ) {
     let collisions : HashSet<(Entity, Entity)> = HashSet::new();
     let mut spatial_grid = HashMap::new();
@@ -163,11 +183,12 @@ pub fn collision_tick (
                 if collisions.contains(&(other_entity.clone(), entity.clone())) {
                     continue; // Already logged collision
                 } else {
-                    collision_event.send(CollisionEvent { entity_a: entity, entity_b: *other_entity });
+                    collision_event.send(IsCollidingEvent { collision: Collision { entity_a: entity, entity_b: *other_entity } });
                 }
             }
         }
     }
 
+    prev_collisions.collisions = collisions;
 }
 
