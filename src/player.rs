@@ -7,30 +7,22 @@ use crate::collision::collider::Collider;
 use crate::constants::SCALING_VEC3;
 use crate::loading::TextureAssets;
 use crate::GameState;
-use bevy::utils::HashMap;
-use bevy::{prelude::*, animation};
+use bevy::prelude::*;
 
-#[derive(PartialEq, Eq, Hash, Clone, Copy)]
-enum PlayerAnimationState {
-    IDLE,
-    RUNNING
-}
+use self::animations::{PlayerAnimationState, PlayerAnimations};
+use self::shooting::{shoot, ShootingCooldown};
 
-impl Display for PlayerAnimationState {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(f, "{}", match self {
-            PlayerAnimationState::IDLE => "idle",
-            PlayerAnimationState::RUNNING => "running",
-        })
-    }
-}
-
-type PlayerAnimations = AnimationStateStorage<PlayerAnimationState>;
+mod animations;
+mod shooting;
+mod bullets_ui;
 
 pub struct PlayerPlugin;
 
 #[derive(Component)]
-pub struct Player;
+pub struct Player {
+    curr_bullets : usize,
+    max_bullets : usize,
+}
 
 /// This plugin handles player related stuff like movement
 /// Player logic is only active during the State `GameState::Playing`
@@ -38,20 +30,21 @@ impl Plugin for PlayerPlugin {
     fn build(&self, app: &mut App) {
         app.add_systems(OnEnter(GameState::Playing), spawn_player)
             .add_systems(Update, move_player.run_if(in_state(GameState::Playing)))
+            .add_systems(Update, shoot.run_if(in_state(GameState::Playing)))
+            .insert_resource(ShootingCooldown(Timer::from_seconds(1., TimerMode::Once)))
             .add_animation(vec![
                 AnimationStateInfo { 
-                    id: PlayerAnimationState::IDLE, 
+                    id: PlayerAnimationState::Idle, 
                     start_index: 0, 
                     frames: 2,
                     frame_duration: Duration::from_secs_f32(1. / 2.),
                 },
                 AnimationStateInfo { 
-                    id: PlayerAnimationState::RUNNING, 
+                    id: PlayerAnimationState::Running, 
                     start_index: 2, 
                     frames: 4,
                     frame_duration: Duration::from_secs_f32(1. / 10.),
                 }
-
             ]);
     }
 }
@@ -73,12 +66,16 @@ fn spawn_player(
     let texture_atlas_handle = texture_atlases.add(texture_atlas);
 
     commands
-    .spawn(Player)
+    .spawn(Player{
+        max_bullets: 6,
+        curr_bullets: 6,
+    })
     .insert(Collider::new_circle(50., Vec2 { x: 0., y: 0.}))
     .insert(make_animation_bundle(
-        PlayerAnimationState::IDLE, 
+        PlayerAnimationState::Idle, 
         player_animations, 
-        texture_atlas_handle
+        texture_atlas_handle,
+        Vec3 { x: 0., y: 0., z: 5. }
     ));
 }
 
@@ -94,10 +91,10 @@ fn move_player(
     
 
     if actions.player_movement.is_none() {
-        if animation_controller.get_state() != PlayerAnimationState::IDLE {
+        if animation_controller.get_state() != PlayerAnimationState::Idle {
             animation_change.send(AnimationStateChangeEvent{
                 id : entity,
-                state_id : PlayerAnimationState::IDLE
+                state_id : PlayerAnimationState::Idle
             });
         }
 
@@ -112,10 +109,10 @@ fn move_player(
 
     player_transform.translation += movement;
 
-    if animation_controller.get_state() != PlayerAnimationState::RUNNING {
+    if animation_controller.get_state() != PlayerAnimationState::Running {
         animation_change.send(AnimationStateChangeEvent{
             id : entity,
-            state_id : PlayerAnimationState::RUNNING
+            state_id : PlayerAnimationState::Running
         });
     }
 

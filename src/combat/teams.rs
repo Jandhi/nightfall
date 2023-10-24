@@ -2,6 +2,7 @@ use bevy::prelude::*;
 
 #[derive(Clone, Copy, PartialEq)]
 pub enum Team {
+    None,
     Player,
     Enemy
 }

@@ -6,7 +6,7 @@ use crate::constants::{SCALING_VEC3, DISTANCE_SCALING};
 use crate::cooldown::Cooldown;
 use crate::enemies::enemy::Enemy;
 use crate::loading::TextureAssets;
-use crate::radians::Radian;
+use crate::util::radians::Radian;
 use crate::towers::turret::Turret;
 use bevy::prelude::*;
 use bevy::transform::commands;

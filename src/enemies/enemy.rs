@@ -1,11 +1,20 @@
-use bevy::{prelude::*, window::PrimaryWindow};
+use std::f32::consts::PI;
 
-use crate::{loading::TextureAssets, collision::collider::Collider, constants::SCALING_VEC3, animation::{make_animation_bundle, AnimationStateStorage}, combat::{health::{Health, DeathEvent}, teams::{TeamMember, Team}, healthbar::NeedsHealthBar}};
+use bevy::prelude::*;
+
+use crate::constants::DISTANCE_SCALING;
+use crate::util::radians::Radian;
+use crate::player::Player;
+use crate::combat::{health::{Health, DeathEvent}, teams::{TeamMember, Team}, healthbar::NeedsHealthBar};
+use crate::animation::{make_animation_bundle, AnimationStateStorage};
+use crate::collision::collider::Collider;
+use crate::loading::TextureAssets;
 
 
 #[derive(Component, Clone)]
 pub struct Enemy {
     pub track_progress : f32,
+    pub speed : f32,
 }
 
 #[derive(Event)]
@@ -58,33 +67,45 @@ pub fn spawn_enemy(
     );
     let texture_atlas_handle = texture_atlases.add(texture_atlas);
 
-    commands.spawn(Enemy{ track_progress: 0.})
+    commands.spawn(Enemy{ track_progress: 0., speed: 1.})
         .insert(Health::new(15))
         .insert(Collider::new_circle(10., Vec2 { x: 70., y: 70. }))
-        .insert(make_animation_bundle(ImpAnimationState::FLYING, imp_animations, texture_atlas_handle))
+        .insert(make_animation_bundle(
+            ImpAnimationState::FLYING, 
+            imp_animations, 
+            texture_atlas_handle, 
+            Vec3 { x: 30., y: 30., z: 3. }))
         .insert(TeamMember{team: Team::Enemy})
-        .insert(NeedsHealthBar{
-            offset: Vec2 { x: 0., y: 0. }
-        });
+        .insert(NeedsHealthBar::default());
 }
 
-pub fn follow_mouse(
-    mut q_enemies : Query<(Entity, &mut Transform), With<Enemy>>,
-    q_windows: Query<&Window, With<PrimaryWindow>>,
+pub fn follow_player(
+    mut q_enemies : Query<(&mut Transform, &Enemy)>,
+    q_player : Query<&Transform, (With<Player>, Without<Enemy>)>
 ) {
-    let window = q_windows.single();
-    if let Some(cursor_position) = window.cursor_position() {
-        let target = Vec2::new(
-            cursor_position.x - window.width() / 2.,
-            window.height() / 2. - cursor_position.y,
-        );
+    let player_transform = q_player.single();
 
-        for (_, mut transform) in q_enemies.iter_mut() {
-            transform.translation = Vec3{
-                x: target.x,
-                y: target.y,
-                z: transform.translation.z
-            };
+    for (mut enemy_transform, enemy) in q_enemies.iter_mut() {
+        let direction = player_transform.translation.truncate() - enemy_transform.translation.truncate();
+        // obtain angle to target with respect to x-axis.
+        let angle_to_target = Radian::from(direction.y.atan2(direction.x) - PI / 2.);
+        let direction_vec = Vec2{
+            x: -angle_to_target.angle.sin(),
+            y: angle_to_target.angle.cos(),
+        };
+
+        if direction.length() < enemy.speed * DISTANCE_SCALING {
+            enemy_transform.translation = Vec3{
+                x : player_transform.translation.x,
+                y : player_transform.translation.y,
+                z : enemy_transform.translation.z,
+            }
+        } else {
+            enemy_transform.translation = Vec3{
+                x : enemy_transform.translation.x + direction_vec.x * enemy.speed * DISTANCE_SCALING,
+                y : enemy_transform.translation.y + direction_vec.y * enemy.speed * DISTANCE_SCALING,
+                z : enemy_transform.translation.z,
+            }
         }
     }
 }

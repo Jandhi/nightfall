@@ -75,7 +75,10 @@ fn handle_projectile_collision(
             // Will hit
         },
         DamageTarget::Team(team_to_hit) => {
-            if team_to_hit != hit_team {
+            let is_obstacle = hit_team == Team::None;
+            let can_hit_team = team_to_hit == hit_team;
+
+            if !is_obstacle && !can_hit_team {
                 // Can't hit this team
                 return;
             }

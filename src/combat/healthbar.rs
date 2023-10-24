@@ -10,7 +10,20 @@ const HEALTH_BAR_SEGMENTS : usize = 15;
 // If added to a component, the system will spawn a healthbar for it 
 #[derive(Component)]
 pub struct NeedsHealthBar{
-    pub offset : Vec2
+    pub offset : Vec2,
+    is_done : bool
+}
+
+impl NeedsHealthBar {
+    fn with_offset(offset : Vec2) -> NeedsHealthBar {
+        NeedsHealthBar { offset: offset, is_done: false }
+    }
+}
+
+impl Default for NeedsHealthBar {
+    fn default() -> Self {
+        Self { offset: Vec2::ZERO, is_done: false }
+    }
 }
 
 #[derive(Component)]
@@ -21,14 +34,18 @@ pub struct HealthBar {
 }
 
 pub fn spawn_healthbars(
-    mut q_entities : Query<(Entity, &Transform, &Health, &NeedsHealthBar)>,
+    mut q_entities : Query<(Entity, &Transform, &Health, &mut NeedsHealthBar)>,
     textures: Res<TextureAssets>, 
     mut texture_atlases: ResMut<Assets<TextureAtlas>>, 
     mut commands : Commands,
 ) {
     
 
-    for (entity, transform, health, needs_health_bar) in q_entities.iter() {
+    for (entity, transform, health, mut needs_health_bar) in q_entities.iter_mut() {
+        if needs_health_bar.is_done {
+            continue;
+        }
+        
         commands.entity(entity).remove::<NeedsHealthBar>();
 
         let texture_atlas = TextureAtlas::from_grid(
@@ -36,8 +53,8 @@ pub fn spawn_healthbars(
              Vec2 { x: 32., y: 32. },
               HEALTH_BAR_SEGMENTS,
                1,
-                Some(Vec2 { x: 4., y: 0. }),
-                 Some(Vec2 { x: 2., y: 0. })
+                None,
+                None
         );
         let texture_atlas_handle = texture_atlases.add(texture_atlas);
 
@@ -51,6 +68,7 @@ pub fn spawn_healthbars(
             is_alive: true,
             offset: Vec2{ x: 0., y: 0. }
         });
+        needs_health_bar.is_done = true;
     }
 } 
 
@@ -60,7 +78,11 @@ pub fn update_healthbars(
     mut commands : Commands,
 ) {
     for (healthbar_entity, mut healthbar_transform, mut healthbar, mut sprite_atlas) in q_healthbars.iter_mut() {
+       
+        
         if let Ok((_, parent_transform, health)) = q_entities.get(healthbar.entity) {
+            
+
             let translation_2d = parent_transform.translation.truncate() + healthbar.offset;
             healthbar_transform.translation = Vec3{
                 x: translation_2d.x,
@@ -70,13 +92,11 @@ pub fn update_healthbars(
 
             let index = match health.value {
                 _ if health.value == health.max => 0,
-                _ if health.value == 0 => HEALTH_BAR_SEGMENTS as u32 - 1,
-                _ => HEALTH_BAR_SEGMENTS as u32 - 1 - (health.value * (HEALTH_BAR_SEGMENTS as u32 - 1)) / health.max,
+                _ if health.value == 0 => HEALTH_BAR_SEGMENTS - 1,
+                _ => HEALTH_BAR_SEGMENTS - 2 - (health.value as usize * (HEALTH_BAR_SEGMENTS - 2)) / health.max as usize,
             };
-            sprite_atlas.index = index as usize;
-
-
-            screen_print!("Health is {}/{} so index is {}", health.value, health.max, sprite_atlas.index);
+            sprite_atlas.index = index;
+            
         } else if healthbar.is_alive {
             healthbar.is_alive = false;
             commands.entity(healthbar_entity).despawn();

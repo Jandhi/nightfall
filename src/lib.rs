@@ -9,7 +9,7 @@ mod menu;
 mod palette;
 mod player;
 mod towers;
-mod radians;
+mod util;
 mod collision;
 mod constants;
 mod animation;
@@ -23,7 +23,6 @@ use crate::loading::LoadingPlugin;
 use crate::menu::MenuPlugin;
 use crate::palette::PalettePlugin;
 use crate::player::PlayerPlugin;
-use crate::towers::TowersPlugin;
 
 use bevy::app::App;
 #[cfg(debug_assertions)]
@@ -60,7 +59,6 @@ impl Plugin for GamePlugin {
             CombatPlugin,
             CooldownPlugin,
             EnemiesPlugin,
-            TowersPlugin,
             CollisionPlugin,
         ));
 

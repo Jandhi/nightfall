@@ -80,10 +80,10 @@ pub struct AnimationTimer(pub Timer);
 Allows for easier setup of animation systems
 */
 pub trait AppAnimationSetup {
-    fn add_animation<T : Send + std::marker::Sync + 'static + Clone + Copy + Eq + Hash>(&mut self, states : Vec<AnimationStateInfo<T>>);
+    fn add_animation<T : Send + std::marker::Sync + 'static + Clone + Copy + Eq + Hash>(&mut self, states : Vec<AnimationStateInfo<T>>) -> &mut Self;
 }
 impl AppAnimationSetup for App {
-    fn add_animation<T : Send + std::marker::Sync + 'static + Clone + Copy + Eq + Hash>(&mut self, states : Vec<AnimationStateInfo<T>>) {
+    fn add_animation<T : Send + std::marker::Sync + 'static + Clone + Copy + Eq + Hash>(&mut self, states : Vec<AnimationStateInfo<T>>) -> &mut Self {
         self.add_systems(Update, update_animation_frames::<T>.run_if(in_state(GameState::Playing)))
             .add_systems(Update, update_animation_state::<T>.run_if(in_state(GameState::Playing)))
             .add_event::<AnimationStateChangeEvent<T>>()
@@ -91,6 +91,7 @@ impl AppAnimationSetup for App {
                 states: HashMap::from_iter(states.iter().map(|state| (state.id , state.clone()))),
                 size: states.iter().fold(0, |acc, state| acc + state.frames)
             });
+        self
     }
 }
 
@@ -126,13 +127,14 @@ pub fn make_animation_bundle<T: Send + std::marker::Sync + 'static + Clone + Cop
     start_state_id : T,
     animations : Res<AnimationStateStorage<T>>,
     texture_atlas_handle : Handle<TextureAtlas>,
+    position : Vec3,
 ) -> impl Bundle {
     let start_state = animations.get(start_state_id).unwrap();
     (
         SpriteSheetBundle {
             texture_atlas: texture_atlas_handle,
             sprite: TextureAtlasSprite::new(start_state.start_index),
-            transform: Transform { translation: Vec3::new(0., 0., 1.), rotation: Quat::IDENTITY, scale: SCALING_VEC3 },
+            transform: Transform { translation: position, rotation: Quat::IDENTITY, scale: SCALING_VEC3 },
             ..Default::default()
         },
         AnimationTimer(Timer::from_seconds(start_state.frame_duration.as_secs_f32(), TimerMode::Repeating)),
