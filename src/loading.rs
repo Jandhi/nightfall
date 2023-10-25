@@ -66,6 +66,9 @@ pub struct TextureAssets {
     #[asset(path = "textures/hatman_spritesheet.png")]
     pub texture_hatman: Handle<Image>,
 
-    #[asset(path = "textures/bullet_ui.png")]
-    pub texture_bullet_ui : Handle<Image>,
+    #[asset(path = "textures/ui/bullet_ui.png")]
+    pub texture_bullet_ui: Handle<Image>,
+
+    #[asset(path = "textures/ui/reload.png")]
+    pub texture_reload_ui: Handle<Image>,
 }

@@ -1,18 +1,21 @@
-use std::{ops::{Add, Sub, Mul, Div}, f32::consts::PI};
+use std::{
+    f32::consts::PI,
+    ops::{Add, Div, Mul, Sub},
+};
 
 #[derive(Clone, Copy)]
 pub struct Radian {
-    pub angle : f32,
+    pub angle: f32,
 }
 
 impl Radian {
-    pub const ZERO : Radian = Radian{ angle: 0. };
-    pub const HALF : Radian = Radian{ angle: PI };
-    pub const FULL : Radian = Radian{ angle: PI * 2. };
-    
+    pub const ZERO: Radian = Radian { angle: 0. };
+    pub const HALF: Radian = Radian { angle: PI };
+    pub const FULL: Radian = Radian { angle: PI * 2. };
+
     pub fn normalize(self) -> Radian {
         let mut angle = self.angle;
-        
+
         while angle > Radian::FULL.angle {
             angle -= Radian::FULL.angle;
         }
@@ -27,7 +30,6 @@ impl Radian {
     pub fn normalize_to_half(self) -> Radian {
         let mut angle = self.angle;
 
-        
         while angle > Radian::HALF.angle {
             angle -= Radian::FULL.angle;
         }
@@ -40,7 +42,9 @@ impl Radian {
     }
 
     pub fn abs(self) -> Radian {
-        Radian{ angle: self.angle.abs() }
+        Radian {
+            angle: self.angle.abs(),
+        }
     }
 }
 
@@ -54,7 +58,10 @@ impl Add for Radian {
     type Output = Radian;
 
     fn add(self, rhs: Self) -> Self::Output {
-        return Radian{ angle: self.angle + rhs.angle }.normalize()
+        return Radian {
+            angle: self.angle + rhs.angle,
+        }
+        .normalize();
     }
 }
 
@@ -62,7 +69,10 @@ impl Sub for Radian {
     type Output = Radian;
 
     fn sub(self, rhs: Self) -> Self::Output {
-        return Radian{ angle: self.angle - rhs.angle}.normalize()
+        return Radian {
+            angle: self.angle - rhs.angle,
+        }
+        .normalize();
     }
 }
 
@@ -70,7 +80,10 @@ impl Mul<f32> for Radian {
     type Output = Radian;
 
     fn mul(self, rhs: f32) -> Self::Output {
-        return Radian{ angle: self.angle * rhs}.normalize()
+        Radian {
+            angle: self.angle * rhs,
+        }
+        .normalize()
     }
 }
 
@@ -78,6 +91,9 @@ impl Div<f32> for Radian {
     type Output = Radian;
 
     fn div(self, rhs: f32) -> Self::Output {
-        return Radian{ angle: self.angle / rhs}.normalize()
+        Radian {
+            angle: self.angle / rhs,
+        }
+        .normalize()
     }
 }

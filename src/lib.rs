@@ -1,7 +1,11 @@
 #![allow(clippy::type_complexity)]
 
 mod actions;
+mod animation;
 mod audio;
+mod collision;
+mod combat;
+mod constants;
 mod cooldown;
 mod enemies;
 mod loading;
@@ -10,10 +14,6 @@ mod palette;
 mod player;
 mod towers;
 mod util;
-mod collision;
-mod constants;
-mod animation;
-mod combat;
 
 use crate::actions::ActionsPlugin;
 use crate::audio::InternalAudioPlugin;

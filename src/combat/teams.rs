@@ -4,10 +4,10 @@ use bevy::prelude::*;
 pub enum Team {
     None,
     Player,
-    Enemy
+    Enemy,
 }
 
 #[derive(Component)]
 pub struct TeamMember {
-    pub team : Team
+    pub team: Team,
 }

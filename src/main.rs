@@ -1,15 +1,14 @@
 // disable console on windows for release builds
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
-
 use bevy::prelude::*;
 use bevy::window::PrimaryWindow;
 use bevy::winit::WinitWindows;
 use bevy::DefaultPlugins;
+use bevy_debug_text_overlay::OverlayPlugin;
 use bevy_game::GamePlugin; // ToDo: Replace bevy_game with your new crate name.
 use std::io::Cursor;
 use winit::window::Icon;
-use bevy_debug_text_overlay::OverlayPlugin;
 
 mod palette;
 use palette::DARK_HEX;
@@ -37,7 +36,10 @@ fn main() {
                     ImagePlugin::default_nearest(),
                 ),
         )
-        .add_plugins(OverlayPlugin { font_size: 23.0, ..default() })
+        .add_plugins(OverlayPlugin {
+            font_size: 23.0,
+            ..default()
+        })
         .add_plugins(GamePlugin)
         .add_systems(Startup, set_window_icon)
         .run();

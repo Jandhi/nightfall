@@ -2,9 +2,12 @@ use std::time::Duration;
 
 use bevy::prelude::*;
 
-use crate::{GameState, animation::{AppAnimationSetup, AnimationStateInfo}};
+use crate::{
+    animation::{AnimationStateInfo, AppAnimationSetup},
+    GameState,
+};
 
-use self::enemy::{death_loop, EnemyDeathEvent, follow_player, ImpAnimationState, spawn_enemy};
+use self::enemy::{death_loop, follow_player, spawn_enemy, EnemyDeathEvent, ImpAnimationState};
 
 pub mod enemy;
 
@@ -16,13 +19,11 @@ impl Plugin for EnemiesPlugin {
             .add_event::<EnemyDeathEvent>()
             .add_systems(Update, follow_player.run_if(in_state(GameState::Playing)))
             .add_systems(OnEnter(GameState::Playing), spawn_enemy)
-            .add_animation(vec![
-                AnimationStateInfo{ 
-                    id: ImpAnimationState::FLYING, 
-                    start_index: 0, 
-                    frames: 4, 
-                    frame_duration: Duration::from_secs_f32(1. / 8.) 
-                }
-            ]);
+            .add_animation(vec![AnimationStateInfo {
+                id: ImpAnimationState::FLYING,
+                start_index: 0,
+                frames: 4,
+                frame_duration: Duration::from_secs_f32(1. / 8.),
+            }]);
     }
 }
