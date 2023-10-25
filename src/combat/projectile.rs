@@ -64,12 +64,12 @@ pub fn projectile_collision_check(
 }
 
 fn handle_projectile_collision(
-    mut projectile_entity: Entity,
+    projectile_entity: Entity,
     mut projectile: Mut<Projectile>,
-    mut hit_entity: Entity,
+    hit_entity: Entity,
     mut health: Mut<Health>,
-    mut hit_team: Team,
-    mut commands: &mut Commands,
+    hit_team: Team,
+    commands: &mut Commands,
 ) {
     if !projectile.is_alive {
         return; // This projectile should be dead

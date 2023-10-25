@@ -1,5 +1,4 @@
 use bevy::prelude::*;
-use bevy_debug_text_overlay::screen_print;
 
 use crate::{constants::SCALING_VEC3, loading::TextureAssets};
 
@@ -45,7 +44,7 @@ pub fn spawn_healthbars(
     mut texture_atlases: ResMut<Assets<TextureAtlas>>,
     mut commands: Commands,
 ) {
-    for (entity, transform, health, mut needs_health_bar) in q_entities.iter_mut() {
+    for (entity, _, _, mut needs_health_bar) in q_entities.iter_mut() {
         if needs_health_bar.is_done {
             continue;
         }

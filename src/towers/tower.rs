@@ -9,8 +9,6 @@ use crate::loading::TextureAssets;
 use crate::towers::turret::Turret;
 use crate::util::radians::Radian;
 use bevy::prelude::*;
-use bevy::transform::commands;
-use bevy_debug_text_overlay::screen_print;
 use std::f32::consts::PI;
 use std::time::Duration;
 

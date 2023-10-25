@@ -43,6 +43,7 @@ pub fn shoot(
     {
         if let Some(cursor_position) = window.cursor_position() {
             // Reset cooldown
+            shooting_cooldown.0.set_duration(Duration::from_secs_f32(player.shoot_time));
             shooting_cooldown.0.reset();
 
             let target = Vec2::new(

@@ -1,13 +1,13 @@
-use std::fmt::Display;
+
 use std::time::Duration;
 
 use crate::actions::Actions;
 use crate::animation::{
-    make_animation_bundle, update_animation_frames, AnimationController, AnimationStateChangeEvent,
-    AnimationStateInfo, AnimationStateStorage, AnimationTimer, AppAnimationSetup,
+    make_animation_bundle, AnimationController, AnimationStateChangeEvent,
+    AnimationStateInfo, AppAnimationSetup,
 };
 use crate::collision::collider::Collider;
-use crate::constants::{SortingLayers, SCALING_VEC3};
+use crate::constants::SortingLayers;
 use crate::loading::TextureAssets;
 use crate::GameState;
 use bevy::prelude::*;
@@ -123,7 +123,6 @@ fn spawn_player(
 fn move_player(
     time: Res<Time>,
     actions: Res<Actions>,
-    animation_states: Res<PlayerAnimations>,
     mut animation_change: EventWriter<AnimationStateChangeEvent<PlayerAnimationState>>,
     mut player_query: Query<(
         Entity,
@@ -132,7 +131,7 @@ fn move_player(
         &mut TextureAtlasSprite,
     )>,
 ) {
-    let (entity, mut player_transform, mut animation_controller, mut atlas) =
+    let (entity, mut player_transform, mut animation_controller, _) =
         player_query.single_mut();
 
     if actions.player_movement.is_none() {

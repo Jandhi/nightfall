@@ -1,12 +1,11 @@
 use bevy::{prelude::*, window::PrimaryWindow};
-use bevy_debug_text_overlay::screen_print;
+
 
 use crate::{
     animation::{
-        make_animation_bundle, AnimationController, AnimationStateChangeEvent,
+        make_animation_bundle, AnimationStateChangeEvent,
         AnimationStateStorage,
     },
-    collision::collider::Collider,
     loading::TextureAssets,
 };
 
@@ -28,7 +27,7 @@ pub type BulletUIAnimations = AnimationStateStorage<BulletUIAnimationState>;
 pub struct BulletUICount(pub usize);
 
 pub fn manage_bullet_ui_sprites(
-    q_player: Query<(&Player), Without<BulletUISprite>>,
+    q_player: Query<&Player, Without<BulletUISprite>>,
     mut q_bullets: Query<
         (Entity, &BulletUISprite, &TextureAtlasSprite, &mut Transform),
         Without<Player>,

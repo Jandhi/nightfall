@@ -1,6 +1,6 @@
 use std::time::Duration;
 
-use bevy::{prelude::*, window::PrimaryWindow};
+use bevy::prelude::*;
 
 use crate::{
     constants::{SortingLayers, SCALING_VEC3},
@@ -47,8 +47,8 @@ pub fn spawn_reload_ui(
 pub fn update_reload_ui(
     mut q_reload_ui: Query<(&mut Transform, &mut TextureAtlasSprite), With<ReloadUI>>,
     q_windows: Query<&Window, Without<ReloadUI>>,
-    q_player: Query<(&Player), (Without<ReloadUI>, Without<Window>)>,
-    mut timer: Res<ReloadTimer>,
+    q_player: Query<&Player, (Without<ReloadUI>, Without<Window>)>,
+    timer: Res<ReloadTimer>,
 ) {
     let (mut reload_transform, mut reload_atlas) = q_reload_ui.single_mut();
     let window = q_windows.single();
