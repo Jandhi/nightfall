@@ -51,7 +51,7 @@ pub fn tower_trigger(
                 possible_targets.push(Target {
                     entity: enemys_entity,
                     enemy: enemy.clone(),
-                    transform: enemy_transform.clone(),
+                    transform: *enemy_transform,
                     health: enemy_health.clone(),
                 });
             }

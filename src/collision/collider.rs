@@ -134,12 +134,12 @@ const SPATIAL_GRID_SIZE: f32 = 100.;
 
 pub fn vec3_to_spatial_coord(translation: Vec3) -> SpatialCoord {
     let vec = translation.truncate() / SPATIAL_GRID_SIZE;
-    return (vec.x.floor() as i32, vec.y.floor() as i32);
+    (vec.x.floor() as i32, vec.y.floor() as i32)
 }
 
 pub fn vec2_to_spatial_coord(translation: Vec2) -> SpatialCoord {
     let vec = translation / SPATIAL_GRID_SIZE;
-    return (vec.x.floor() as i32, vec.y.floor() as i32);
+    (vec.x.floor() as i32, vec.y.floor() as i32)
 }
 
 #[derive(Resource)]
@@ -159,9 +159,7 @@ pub fn collision_tick(
     for (entity, mut collider, transform) in q_colliders.iter_mut() {
         let spatial_coord = vec3_to_spatial_coord(transform.translation);
 
-        if !spatial_grid.contains_key(&spatial_coord) {
-            spatial_grid.insert(spatial_coord, vec![]);
-        }
+        spatial_grid.entry(spatial_coord).or_insert_with(std::vec::Vec::new);
 
         // Add entity to updated coordinate
         spatial_grid.get_mut(&spatial_coord).unwrap().push((
@@ -201,9 +199,9 @@ pub fn collision_tick(
             if collider.is_colliding(
                 transform.translation.truncate(),
                 other_collider,
-                other_position.clone(),
+                *other_position,
             ) {
-                if collisions.contains(&(other_entity.clone(), entity.clone())) {
+                if collisions.contains(&(*other_entity, entity)) {
                     continue; // Already logged collision
                 } else {
                     collision_event.send(IsCollidingEvent {

@@ -101,7 +101,7 @@ impl AppAnimationSetup for App {
         )
         .add_event::<AnimationStateChangeEvent<T>>()
         .insert_resource(AnimationStateStorage::<T> {
-            states: HashMap::from_iter(states.iter().map(|state| (state.id, state.clone()))),
+            states: HashMap::from_iter(states.iter().map(|state| (state.id, *state))),
             size: states.iter().fold(0, |acc, state| acc + state.frames),
         });
         self
@@ -127,7 +127,7 @@ pub fn update_animation_state<T: Send + std::marker::Sync + 'static + Clone + Co
                 return;
             }
 
-            controller.state = animation_storage.states[&change_event.state_id].clone();
+            controller.state = animation_storage.states[&change_event.state_id];
             timer.set_duration(controller.state.frame_duration);
             timer.set_elapsed(Duration::ZERO);
             atlas.index = controller.state.start_index;

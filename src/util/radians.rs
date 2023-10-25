@@ -24,7 +24,7 @@ impl Radian {
             angle += Radian::FULL.angle;
         }
 
-        Radian { angle: angle }
+        Radian { angle }
     }
 
     pub fn normalize_to_half(self) -> Radian {
@@ -38,7 +38,7 @@ impl Radian {
             angle += Radian::FULL.angle;
         }
 
-        Radian { angle: angle }
+        Radian { angle }
     }
 
     pub fn abs(self) -> Radian {
@@ -58,10 +58,10 @@ impl Add for Radian {
     type Output = Radian;
 
     fn add(self, rhs: Self) -> Self::Output {
-        return Radian {
+        Radian {
             angle: self.angle + rhs.angle,
         }
-        .normalize();
+        .normalize()
     }
 }
 
@@ -69,10 +69,10 @@ impl Sub for Radian {
     type Output = Radian;
 
     fn sub(self, rhs: Self) -> Self::Output {
-        return Radian {
+        Radian {
             angle: self.angle - rhs.angle,
         }
-        .normalize();
+        .normalize()
     }
 }
 

@@ -66,7 +66,7 @@ pub fn projectile_collision_check(
 fn handle_projectile_collision(
     projectile_entity: Entity,
     mut projectile: Mut<Projectile>,
-    hit_entity: Entity,
+    _hit_entity: Entity,
     mut health: Mut<Health>,
     hit_team: Team,
     commands: &mut Commands,

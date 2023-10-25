@@ -32,7 +32,7 @@ pub enum ImpAnimationState {
 }
 
 impl Enemy {
-    pub fn estimate_position(&self, transform: &Transform, time: f32) -> Vec2 {
+    pub fn estimate_position(&self, transform: &Transform, _time: f32) -> Vec2 {
         transform.translation.truncate()
     }
 }
@@ -48,7 +48,7 @@ pub fn death_loop(
         if let Ok((entity, enemy)) = q_enemies.get_mut(death_ev.entity) {
             commands.entity(entity).despawn();
             ememy_death_event.send(EnemyDeathEvent {
-                entity: entity,
+                entity,
                 enemy: enemy.clone(),
             });
         }

@@ -12,7 +12,7 @@ impl Health {
     pub fn new(max: HealthType) -> Health {
         Health {
             value: max,
-            max: max,
+            max,
         }
     }
 
@@ -45,7 +45,7 @@ pub fn check_death(
     for (entity, health) in q_health.iter() {
         if !health.is_alive() {
             commands.entity(entity).insert(Dead);
-            death_ev.send(DeathEvent { entity: entity });
+            death_ev.send(DeathEvent { entity });
         }
     }
 }

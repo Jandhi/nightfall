@@ -107,7 +107,7 @@ fn spawn_bullet_ui_sprite(
     let texture_atlas_handle = texture_atlases.add(texture_atlas);
 
     commands
-        .spawn(BulletUISprite { index: index })
+        .spawn(BulletUISprite { index })
         .insert(make_animation_bundle(
             BulletUIAnimationState::Available,
             animations,

@@ -16,7 +16,7 @@ pub struct NeedsHealthBar {
 impl NeedsHealthBar {
     fn with_offset(offset: Vec2) -> NeedsHealthBar {
         NeedsHealthBar {
-            offset: offset,
+            offset,
             is_done: false,
         }
     }
@@ -73,7 +73,7 @@ pub fn spawn_healthbars(
                 ..Default::default()
             })
             .insert(HealthBar {
-                entity: entity,
+                entity,
                 is_alive: true,
                 offset: Vec2 { x: 0., y: 0. },
             });

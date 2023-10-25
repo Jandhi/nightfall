@@ -18,8 +18,8 @@ pub struct Target {
 }
 
 impl Targeting {
-    pub fn find_best_target<'a>(&self, enemies: &'a Vec<Target>) -> Option<Target> {
-        if enemies.len() == 0 {
+    pub fn find_best_target(&self, enemies: &Vec<Target>) -> Option<Target> {
+        if enemies.is_empty() {
             None
         } else {
             Some(match self {

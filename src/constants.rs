@@ -16,9 +16,9 @@ pub enum SortingLayers {
     Action,
 }
 
-impl Into<f32> for SortingLayers {
-    fn into(self) -> f32 {
-        match self {
+impl From<SortingLayers> for f32 {
+    fn from(val: SortingLayers) -> Self {
+        match val {
             SortingLayers::UI => 10.,
             SortingLayers::Front => 6.,
             SortingLayers::Player => 5.,
