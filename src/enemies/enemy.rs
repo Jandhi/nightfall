@@ -74,7 +74,8 @@ pub fn spawn_enemy(
     );
     let texture_atlas_handle = texture_atlases.add(texture_atlas);
 
-    commands
+    for i in 0..5 {
+        commands
         .spawn(Enemy {
             track_progress: 0.,
             speed: 0.3,
@@ -85,15 +86,16 @@ pub fn spawn_enemy(
         .insert(make_animation_bundle(
             ImpAnimationState::FLYING,
             &imp_animations,
-            texture_atlas_handle,
+            texture_atlas_handle.clone(),
             Vec3 {
-                x: 30.,
+                x: -30. + (i as f32) * 15.,
                 y: 30.,
                 z: SortingLayers::Action.into(),
             },
         ))
         .insert(TeamMember { team: Team::Enemy })
         .insert(NeedsHealthBar::default());
+    }
 }
 
 pub fn follow_player(

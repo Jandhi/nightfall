@@ -41,7 +41,6 @@ pub fn drop_crystals(
 ) {
     for death_ev in enemy_death_event.iter() {
         for i in 0..death_ev.enemy.xp {
-            screen_print!("XP dropping {}", i);
 
             let rng = &mut crystal_rng.0.0;
 
@@ -64,7 +63,7 @@ pub fn drop_crystals(
                     force: 30.0,
                 },
                 magnetic: Magnetic{
-                    force: 10000.0,
+                    force: 1000000.0,
                 }
             });
         }

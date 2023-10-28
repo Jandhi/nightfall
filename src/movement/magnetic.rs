@@ -5,7 +5,7 @@ use bevy_debug_text_overlay::screen_print;
 
 use crate::{player::Player, util::radians::Radian};
 
-use super::velocity::Velocity;
+use super::{velocity::Velocity, pause::ActionPauseState};
 
 /*
 Things that are magnetically attracted to the player
@@ -20,7 +20,12 @@ pub fn magnet_update(
     q_player : Query<&Transform, (With<Player>, Without<Magnetic>)>,
     mut q_magnetics : Query<(&Magnetic, &mut Velocity, &Transform)>,
     time : Res<Time>,
+    pause_state : Res<ActionPauseState>,
 ) {
+    if pause_state.is_paused {
+        return;
+    }
+
     let player_transform = q_player.single();
     for (magnet, mut velocity, transform) in q_magnetics.iter_mut() {
         let direction = player_transform.translation.truncate() - transform.translation.truncate();
@@ -28,8 +33,7 @@ pub fn magnet_update(
         let angle_to_target = Radian::from(direction.y.atan2(direction.x) - PI / 2.);
         let direction_vec = angle_to_target.unit_vector();
 
-        let force = magnet.force / direction.length();
-        screen_print!("Magnetic force is {}", force);
+        let force = magnet.force / direction.length_squared();
         velocity.vec += direction_vec * force * time.delta().as_secs_f32();
     }
 }

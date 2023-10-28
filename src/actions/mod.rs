@@ -2,6 +2,7 @@ use bevy::math::Vec3Swizzles;
 use bevy::prelude::*;
 
 use crate::actions::game_control::{get_movement, GameControl};
+use crate::movement::pause::ActionPauseState;
 use crate::player::Player;
 use crate::GameState;
 
@@ -33,7 +34,12 @@ pub fn set_movement_actions(
     touch_input: Res<Touches>,
     player: Query<&Transform, With<Player>>,
     camera: Query<(&Camera, &GlobalTransform), With<Camera2d>>,
+    pause_state : Res<ActionPauseState>,
 ) {
+    if pause_state.is_paused {
+        return;
+    }
+
     let mut player_movement = Vec2::new(
         get_movement(GameControl::Right, &keyboard_input)
             - get_movement(GameControl::Left, &keyboard_input),
