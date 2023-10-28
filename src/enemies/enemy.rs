@@ -18,12 +18,14 @@ use crate::util::radians::Radian;
 pub struct Enemy {
     pub track_progress: f32,
     pub speed: f32,
+    pub xp: u32,
 }
 
 #[derive(Event)]
 pub struct EnemyDeathEvent {
     pub entity: Entity,
     pub enemy: Enemy,
+    pub location : Vec3, 
 }
 
 #[derive(PartialEq, Eq, Hash, Clone, Copy)]
@@ -41,15 +43,16 @@ impl Enemy {
 pub fn death_loop(
     mut ememy_death_event: EventWriter<EnemyDeathEvent>,
     mut death_event: EventReader<DeathEvent>,
-    mut q_enemies: Query<(Entity, &Enemy)>,
+    mut q_enemies: Query<(Entity, &Enemy, &Transform)>,
     mut commands: Commands,
 ) {
     for death_ev in death_event.iter() {
-        if let Ok((entity, enemy)) = q_enemies.get_mut(death_ev.entity) {
+        if let Ok((entity, enemy, transform)) = q_enemies.get_mut(death_ev.entity) {
             commands.entity(entity).despawn();
             ememy_death_event.send(EnemyDeathEvent {
                 entity,
                 enemy: enemy.clone(),
+                location: transform.translation,
             });
         }
     }
@@ -75,6 +78,7 @@ pub fn spawn_enemy(
         .spawn(Enemy {
             track_progress: 0.,
             speed: 0.3,
+            xp: 5,
         })
         .insert(Health::new(15))
         .insert(Collider::new_circle(10., Vec2 { x: 70., y: 70. }))
@@ -103,10 +107,7 @@ pub fn follow_player(
             player_transform.translation.truncate() - enemy_transform.translation.truncate();
         // obtain angle to target with respect to x-axis.
         let angle_to_target = Radian::from(direction.y.atan2(direction.x) - PI / 2.);
-        let direction_vec = Vec2 {
-            x: -angle_to_target.angle.sin(),
-            y: angle_to_target.angle.cos(),
-        };
+        let direction_vec = angle_to_target.unit_vector();
 
         if direction.length() < enemy.speed * DISTANCE_SCALING {
             enemy_transform.translation = Vec3 {

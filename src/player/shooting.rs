@@ -5,12 +5,12 @@ use bevy::{prelude::*, window::PrimaryWindow};
 use crate::{
     collision::collider::Collider,
     combat::{
-        projectile::{DamageTarget, PiercingMode, Projectile, StraightMovement},
+        projectile::{DamageTarget, PiercingMode, Projectile},
         teams::Team,
     },
     constants::{SortingLayers, SCALING_VEC3},
     loading::TextureAssets,
-    util::radians::Radian,
+    util::radians::Radian, movement::velocity::Velocity,
 };
 
 use super::{reload_ui::ReloadTimer, Player};
@@ -54,10 +54,7 @@ pub fn shoot(
             let direction = target - transform.translation.truncate();
             // obtain angle to target with respect to x-axis.
             let angle_to_target = Radian::from(direction.y.atan2(direction.x) - PI / 2.);
-            let direction_vec = Vec2 {
-                x: -angle_to_target.angle.sin(),
-                y: angle_to_target.angle.cos(),
-            };
+            let direction_vec = angle_to_target.unit_vector();
             let bullet_translation = transform.translation
                 + Vec3 {
                     x: direction_vec.x,
@@ -87,15 +84,14 @@ pub fn shoot(
                     ..Default::default()
                 })
                 .insert(Projectile {
-                    dmg: 1,
+                    dmg: 5,
                     damage_target: DamageTarget::Team(Team::Enemy),
                     piercing_mode: PiercingMode::None,
                     entities_hit: 0,
                     is_alive: true,
                 })
-                .insert(StraightMovement {
-                    angle: direction_vec,
-                    velocity: 600.,
+                .insert(Velocity {
+                    vec: direction_vec * 600.,
                 })
                 .insert(Collider::new_circle(5., bullet_translation.truncate()));
         }

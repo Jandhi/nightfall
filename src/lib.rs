@@ -14,6 +14,8 @@ mod palette;
 mod player;
 mod towers;
 mod util;
+mod experience;
+mod movement;
 
 use crate::actions::ActionsPlugin;
 use crate::audio::InternalAudioPlugin;
@@ -30,6 +32,9 @@ use bevy::diagnostic::{FrameTimeDiagnosticsPlugin, LogDiagnosticsPlugin};
 use bevy::prelude::*;
 use collision::CollisionPlugin;
 use combat::CombatPlugin;
+use experience::ExperiencePlugin;
+use movement::MovementPlugin;
+use util::UtilPlugin;
 
 // This example game uses States to separate logic
 // See https://bevy-cheatbook.github.io/programming/states.html
@@ -60,6 +65,9 @@ impl Plugin for GamePlugin {
             CooldownPlugin,
             EnemiesPlugin,
             CollisionPlugin,
+            ExperiencePlugin,
+            UtilPlugin,
+            MovementPlugin,
         ));
 
         #[cfg(debug_assertions)]

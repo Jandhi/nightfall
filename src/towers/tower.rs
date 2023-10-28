@@ -1,11 +1,12 @@
 use crate::collision::collider::Collider;
 use crate::combat::health::Health;
-use crate::combat::projectile::{DamageTarget, PiercingMode, Projectile, StraightMovement};
+use crate::combat::projectile::{DamageTarget, PiercingMode, Projectile};
 use crate::combat::teams::Team;
 use crate::constants::{DISTANCE_SCALING, SCALING_VEC3};
 use crate::cooldown::Cooldown;
 use crate::enemies::enemy::Enemy;
 use crate::loading::TextureAssets;
+use crate::movement::velocity::Velocity;
 use crate::towers::turret::Turret;
 use crate::util::radians::Radian;
 use bevy::prelude::*;
@@ -113,9 +114,8 @@ pub fn tower_trigger(
                         entities_hit: 0,
                         is_alive: true,
                     })
-                    .insert(StraightMovement {
-                        angle: direction_vec,
-                        velocity: 600.,
+                    .insert(Velocity {
+                        vec: direction_vec * 600.,
                     })
                     .insert(Collider::new_circle(5., bullet_translation.truncate()));
                 tower_cooldown.time_remaining += tower.stats.cooldown;

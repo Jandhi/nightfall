@@ -8,6 +8,7 @@ use crate::animation::{
 };
 use crate::collision::collider::Collider;
 use crate::constants::SortingLayers;
+use crate::experience::experience_meter::Experience;
 use crate::loading::TextureAssets;
 use crate::GameState;
 use bevy::prelude::*;
@@ -37,18 +38,16 @@ pub struct Player {
 /// Player logic is only active during the State `GameState::Playing`
 impl Plugin for PlayerPlugin {
     fn build(&self, app: &mut App) {
-        app.add_systems(OnEnter(GameState::Playing), spawn_player)
-            .add_systems(OnEnter(GameState::Playing), spawn_reload_ui)
-            .add_systems(Update, move_player.run_if(in_state(GameState::Playing)))
-            .add_systems(Update, shoot.run_if(in_state(GameState::Playing)))
-            .add_systems(
-                Update,
-                manage_bullet_ui_sprites.run_if(in_state(GameState::Playing)),
-            )
-            .add_systems(
-                Update,
-                update_reload_ui.run_if(in_state(GameState::Playing)),
-            )
+        app.add_systems(OnEnter(GameState::Playing), (
+                spawn_player,
+                spawn_reload_ui
+            ))
+            .add_systems(Update, (
+                move_player,
+                shoot,
+                manage_bullet_ui_sprites,
+                update_reload_ui,
+            ).run_if(in_state(GameState::Playing)))
             .insert_resource(ReloadTimer(Timer::from_seconds(0., TimerMode::Once)))
             .insert_resource(BulletUICount(0))
             .insert_resource(ShootingCooldown(Timer::from_seconds(1.0, TimerMode::Once)))
@@ -83,7 +82,7 @@ impl Plugin for PlayerPlugin {
     }
 }
 
-fn spawn_player(
+pub fn spawn_player(
     player_animations: Res<PlayerAnimations>,
     textures: Res<TextureAssets>,
     mut texture_atlases: ResMut<Assets<TextureAtlas>>,
@@ -117,7 +116,12 @@ fn spawn_player(
                 y: 0.,
                 z: SortingLayers::Player.into(),
             },
-        ));
+        )).insert(Experience{
+            curr_experience: 0,
+            level: 0,
+            xp_threshold: 10,
+            xp_pickup_distance: 6.0,
+        });
 }
 
 fn move_player(

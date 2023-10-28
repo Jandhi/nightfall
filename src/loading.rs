@@ -71,4 +71,7 @@ pub struct TextureAssets {
 
     #[asset(path = "textures/ui/reload.png")]
     pub texture_reload_ui: Handle<Image>,
+
+    #[asset(path = "textures/crystal.png")]
+    pub texture_crystal: Handle<Image>,
 }

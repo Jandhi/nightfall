@@ -3,6 +3,8 @@ use std::{
     ops::{Add, Div, Mul, Sub},
 };
 
+use bevy::prelude::Vec2;
+
 #[derive(Clone, Copy)]
 pub struct Radian {
     pub angle: f32,
@@ -44,6 +46,13 @@ impl Radian {
     pub fn abs(self) -> Radian {
         Radian {
             angle: self.angle.abs(),
+        }
+    }
+
+    pub fn unit_vector(&self) -> Vec2 {
+        Vec2 {
+            x: -self.angle.sin(),
+            y: self.angle.cos(),
         }
     }
 }

@@ -93,11 +93,10 @@ impl AppAnimationSetup for App {
     ) -> &mut Self {
         self.add_systems(
             Update,
-            update_animation_frames::<T>.run_if(in_state(GameState::Playing)),
-        )
-        .add_systems(
-            Update,
-            update_animation_state::<T>.run_if(in_state(GameState::Playing)),
+            (
+                update_animation_frames::<T>,
+                update_animation_state::<T>
+            ).run_if(in_state(GameState::Playing)),
         )
         .add_event::<AnimationStateChangeEvent<T>>()
         .insert_resource(AnimationStateStorage::<T> {

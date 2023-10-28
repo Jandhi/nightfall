@@ -44,7 +44,10 @@ pub fn check_death(
 ) {
     for (entity, health) in q_health.iter() {
         if !health.is_alive() {
-            commands.entity(entity).insert(Dead);
+            if let Some(mut e) = commands.get_entity(entity) {
+                e.insert(Dead);
+            }
+
             death_ev.send(DeathEvent { entity });
         }
     }

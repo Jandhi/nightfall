@@ -95,22 +95,3 @@ fn handle_projectile_collision(
     projectile.is_alive = false;
 }
 
-#[derive(Component)]
-pub struct StraightMovement {
-    pub angle: Vec2,
-    pub velocity: f32,
-}
-
-pub fn straight_movement(
-    mut q_projectiles: Query<(Entity, &StraightMovement, &mut Transform)>,
-    time: Res<Time>,
-) {
-    for (_, movement, mut transform) in q_projectiles.iter_mut() {
-        let diff = movement.angle * time.delta_seconds() * movement.velocity * DISTANCE_SCALING;
-        transform.translation += Vec3 {
-            x: diff.x,
-            y: diff.y,
-            z: 0.,
-        };
-    }
-}
