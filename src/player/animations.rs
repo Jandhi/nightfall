@@ -1,6 +1,6 @@
 use std::time::Duration;
 
-use crate::animation::{AnimationStateStorage, Animation, info::AnimationStateInfo};
+use crate::animation::{AnimationStateStorage, Animation, info::{AnimationStateInfo, AnimationInfoBuilder}};
 
 #[derive(PartialEq, Eq, Hash, Clone, Copy)]
 pub enum PlayerAnimationState {
@@ -10,20 +10,10 @@ pub enum PlayerAnimationState {
 
 impl Animation<PlayerAnimationState> for PlayerAnimationState {
     fn get_states() -> Vec<AnimationStateInfo<PlayerAnimationState>> {
-        vec![
-            AnimationStateInfo {
-                id: PlayerAnimationState::Idle,
-                start_index: 0,
-                frames: 2,
-                frame_duration: Duration::from_secs_f32(1. / 2.),
-            },
-            AnimationStateInfo {
-                id: PlayerAnimationState::Running,
-                start_index: 2,
-                frames: 4,
-                frame_duration: Duration::from_secs_f32(1. / 10.),
-            },
-        ]
+        AnimationInfoBuilder::new()
+            .add_frames(PlayerAnimationState::Idle, 2, Duration::from_secs_f32(1. / 2.))
+            .add_frames(PlayerAnimationState::Running, 4, Duration::from_secs_f32(1. / 10.))
+            .build()
     }
 }
 

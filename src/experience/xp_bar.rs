@@ -6,9 +6,9 @@ use bevy::{prelude::*, window::PrimaryWindow};
 use crate::{
     animation::{
         animation_bundle, AnimationStateChangeEvent,
-        AnimationStateStorage, Animation, controller::AnimationController, info::AnimationStateInfo,
+        AnimationStateStorage, Animation, controller::AnimationController, info::{AnimationStateInfo, AnimationInfoBuilder},
     },
-    loading::TextureAssets,
+    loading::TextureAssets, constants::SortingLayers,
 };
 
 use super::experience::Experience;
@@ -35,62 +35,16 @@ pub enum XPBarPosition {
 const BUBBLE_FRAME_DURATION : f32 = 0.1;
 impl Animation<XPBarAnimation> for XPBarAnimation {
     fn get_states() -> Vec<AnimationStateInfo<XPBarAnimation>> {
-        vec![
-            AnimationStateInfo {
-                id: XPBarAnimation::Empty(XPBarPosition::Left),
-                start_index: 0,
-                frames: 1,
-                frame_duration: Duration::from_secs_f32(1.),
-            },
-            AnimationStateInfo {
-                id: XPBarAnimation::Half(XPBarPosition::Left),
-                start_index: 1,
-                frames: 4,
-                frame_duration: Duration::from_secs_f32(BUBBLE_FRAME_DURATION),
-            },
-            AnimationStateInfo {
-                id: XPBarAnimation::Filled(XPBarPosition::Left),
-                start_index: 5,
-                frames: 4,
-                frame_duration: Duration::from_secs_f32(BUBBLE_FRAME_DURATION),
-            },
-            AnimationStateInfo {
-                id: XPBarAnimation::Empty(XPBarPosition::Center),
-                start_index: 9,
-                frames: 1,
-                frame_duration: Duration::from_secs_f32(1.),
-            },
-            AnimationStateInfo {
-                id: XPBarAnimation::Half(XPBarPosition::Center),
-                start_index: 10,
-                frames: 4,
-                frame_duration: Duration::from_secs_f32(BUBBLE_FRAME_DURATION),
-            },
-            AnimationStateInfo {
-                id: XPBarAnimation::Filled(XPBarPosition::Center),
-                start_index: 14,
-                frames: 4,
-                frame_duration: Duration::from_secs_f32(BUBBLE_FRAME_DURATION),
-            },
-            AnimationStateInfo {
-                id: XPBarAnimation::Empty(XPBarPosition::Right),
-                start_index: 18,
-                frames: 1,
-                frame_duration: Duration::from_secs_f32(1.),
-            },
-            AnimationStateInfo {
-                id: XPBarAnimation::Half(XPBarPosition::Right),
-                start_index: 19,
-                frames: 4,
-                frame_duration: Duration::from_secs_f32(BUBBLE_FRAME_DURATION),
-            },
-            AnimationStateInfo {
-                id: XPBarAnimation::Filled(XPBarPosition::Right),
-                start_index: 23,
-                frames: 4,
-                frame_duration: Duration::from_secs_f32(BUBBLE_FRAME_DURATION),
-            },
-        ]
+        let mut builder = AnimationInfoBuilder::new();
+
+        for pos in [XPBarPosition::Left, XPBarPosition::Center, XPBarPosition::Right] {
+            builder
+                .add_single(XPBarAnimation::Empty(pos))
+                .add_frames(XPBarAnimation::Half(pos), 4, Duration::from_secs_f32(BUBBLE_FRAME_DURATION))
+                .add_frames(XPBarAnimation::Filled(pos), 4, Duration::from_secs_f32(BUBBLE_FRAME_DURATION));
+        }
+        
+        builder.build()
     }
 }
 
@@ -130,7 +84,7 @@ pub fn manage_bullet_ui_sprites(
         transform.translation = Vec3 {
             x: 0. + 32. * xp_bar_slice.index as f32,
             y: window.height() / 2. - 30. ,
-            z: 5.,
+            z: SortingLayers::UI.into(),
         }
     }
 }

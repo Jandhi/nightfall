@@ -43,7 +43,7 @@ impl Animation<ImpAnimation> for ImpAnimation {
         vec![AnimationStateInfo {
             id: ImpAnimation::FLYING,
             start_index: 0,
-            frames: 4,
+            frame_count: 4,
             frame_duration: Duration::from_secs_f32(1. / 8.),
         }]
     }

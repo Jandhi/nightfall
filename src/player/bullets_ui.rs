@@ -6,9 +6,9 @@ use bevy::{prelude::*, window::PrimaryWindow};
 use crate::{
     animation::{
         animation_bundle, AnimationStateChangeEvent,
-        AnimationStateStorage, Animation, info::AnimationStateInfo,
+        AnimationStateStorage, Animation, info::{AnimationStateInfo, AnimationInfoBuilder},
     },
-    loading::TextureAssets,
+    loading::TextureAssets, constants::SortingLayers,
 };
 
 use super::Player;
@@ -26,20 +26,10 @@ pub enum BulletUIAnimation {
 
 impl Animation<BulletUIAnimation> for BulletUIAnimation {
     fn get_states() -> Vec<AnimationStateInfo<BulletUIAnimation>> {
-        vec![
-            AnimationStateInfo {
-                id: BulletUIAnimation::Available,
-                start_index: 0,
-                frames: 1,
-                frame_duration: Duration::from_secs_f32(1.),
-            },
-            AnimationStateInfo {
-                id: BulletUIAnimation::Unavailable,
-                start_index: 1,
-                frames: 1,
-                frame_duration: Duration::from_secs_f32(1.),
-            },
-        ]
+        AnimationInfoBuilder::new()
+            .add_single(BulletUIAnimation::Available)
+            .add_single(BulletUIAnimation::Unavailable)
+            .build()
     }
 }
 
@@ -98,7 +88,7 @@ pub fn manage_bullet_ui_sprites(
         transform.translation = Vec3 {
             x: window.width() / 2. - 40.,
             y: window.height() / 2. - 30. - 20. * (player.max_bullets - 1 - bullet.index) as f32,
-            z: 5.,
+            z: SortingLayers::UI.into(),
         }
     }
 }

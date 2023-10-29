@@ -82,7 +82,7 @@ pub fn update_animation_frames<T: Send + std::marker::Sync + 'static + Clone + C
 
         if timer.just_finished() {
             sprite.index =
-                if sprite.index >= controller.state.start_index + controller.state.frames - 1 {
+                if sprite.index >= controller.state.start_index + controller.state.frame_count - 1 {
                     controller.state.start_index
                 } else {
                     sprite.index + 1

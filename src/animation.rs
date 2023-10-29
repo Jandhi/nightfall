@@ -70,7 +70,7 @@ impl AppAnimationSetup for App {
         .add_event::<AnimationStateChangeEvent<T>>()
         .insert_resource(AnimationStateStorage::<T> {
             states: HashMap::from_iter(states.iter().map(|state| (state.id, *state))),
-            size: states.iter().fold(0, |acc, state| acc + state.frames),
+            size: states.iter().fold(0, |acc, state| acc + state.frame_count),
         });
         self
     }

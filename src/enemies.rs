@@ -3,7 +3,7 @@
 use bevy::prelude::*;
 
 use crate::{
-    animation::{AppAnimationSetup},
+    animation::AppAnimationSetup,
     GameState,
 };
 

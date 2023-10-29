@@ -6,7 +6,7 @@ use bevy::{prelude::*, window::PrimaryWindow};
 use crate::{
     animation::{
         animation_bundle, AnimationStateChangeEvent,
-        AnimationStateStorage, Animation, info::AnimationStateInfo,
+        AnimationStateStorage, Animation, info::{AnimationStateInfo, AnimationInfoBuilder},
     },
     loading::TextureAssets, combat::health::Health,
 };
@@ -26,20 +26,10 @@ pub enum HealthUIAnimationState {
 
 impl Animation<HealthUIAnimationState> for HealthUIAnimationState {
     fn get_states() -> Vec<AnimationStateInfo<HealthUIAnimationState>> {
-        vec![
-            AnimationStateInfo {
-                id: HealthUIAnimationState::Available,
-                start_index: 0,
-                frames: 1,
-                frame_duration: Duration::from_secs_f32(1.),
-            },
-            AnimationStateInfo {
-                id: HealthUIAnimationState::Unavailable,
-                start_index: 1,
-                frames: 1,
-                frame_duration: Duration::from_secs_f32(1.),
-            },
-        ]
+        AnimationInfoBuilder::new()
+            .add_single(HealthUIAnimationState::Available)
+            .add_single(HealthUIAnimationState::Unavailable)
+            .build()
     }
 }
 
