@@ -1,9 +1,12 @@
 use std::f32::consts::PI;
+use std::time::Duration;
 
 use bevy::prelude::*;
 
-use crate::animation::{make_animation_bundle, AnimationStateStorage};
-use crate::collision::collider::Collider;
+use crate::animation::info::AnimationStateInfo;
+use crate::animation::{animation_bundle, AnimationStateStorage, Animation};
+use crate::collision::collider::{Collider, CollisionStartEvent, IsCollidingEvent};
+use crate::combat::health::Dead;
 use crate::combat::{
     health::{DeathEvent, Health},
     healthbar::NeedsHealthBar,
@@ -21,6 +24,8 @@ pub struct Enemy {
     pub xp: u32,
 }
 
+
+
 #[derive(Event)]
 pub struct EnemyDeathEvent {
     pub entity: Entity,
@@ -29,8 +34,19 @@ pub struct EnemyDeathEvent {
 }
 
 #[derive(PartialEq, Eq, Hash, Clone, Copy)]
-pub enum ImpAnimationState {
+pub enum ImpAnimation {
     FLYING,
+}
+
+impl Animation<ImpAnimation> for ImpAnimation {
+    fn get_states() -> Vec<AnimationStateInfo<ImpAnimation>> {
+        vec![AnimationStateInfo {
+            id: ImpAnimation::FLYING,
+            start_index: 0,
+            frames: 4,
+            frame_duration: Duration::from_secs_f32(1. / 8.),
+        }]
+    }
 }
 
 impl Enemy {
@@ -58,8 +74,26 @@ pub fn death_loop(
     }
 }
 
+pub fn spread_enemies(
+    mut collisions : EventReader<IsCollidingEvent>,
+    mut q_enemies : Query<&mut Transform, With<Enemy>>
+) {
+    for collision_event in collisions.iter() {
+        if let Ok(mut entities) = q_enemies.get_many_mut([collision_event.collision.entity_a, collision_event.collision.entity_b]) {
+            let force = 1.0;
+            
+            let (slice_a, slice_b) = &mut entities.split_at_mut(1);
+            let a_transform = &mut slice_a[0];
+            let b_transform = &mut slice_b[0];
+            let diff = (a_transform.translation - b_transform.translation).normalize();
+            a_transform.translation += diff * force;
+            b_transform.translation -= diff * force;
+        }
+    }
+}
+
 pub fn spawn_enemy(
-    imp_animations: Res<AnimationStateStorage<ImpAnimationState>>,
+    imp_animations: Res<AnimationStateStorage<ImpAnimation>>,
     mut texture_atlases: ResMut<Assets<TextureAtlas>>,
     mut commands: Commands,
     textures: Res<TextureAssets>,
@@ -83,8 +117,8 @@ pub fn spawn_enemy(
         })
         .insert(Health::new(15))
         .insert(Collider::new_circle(10., Vec2 { x: 70., y: 70. }))
-        .insert(make_animation_bundle(
-            ImpAnimationState::FLYING,
+        .insert(animation_bundle(
+            ImpAnimation::FLYING,
             &imp_animations,
             texture_atlas_handle.clone(),
             Vec3 {

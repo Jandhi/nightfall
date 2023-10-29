@@ -15,6 +15,7 @@ pub enum ColliderShape {
     Circle(f32),
 }
 
+#[derive(Debug, Clone, Copy)]
 pub struct Collision {
     pub entity_a: Entity,
     pub entity_b: Entity,
@@ -31,7 +32,9 @@ pub struct CollisionStartEvent {
 }
 
 #[derive(Event)]
-pub struct CollisionEndEvent {}
+pub struct CollisionEndEvent {
+    pub collision: Collision,
+}
 
 // Checks if vector b is between a and c
 fn is_between(a: Vec2, b: Vec2, c: Vec2) -> bool {
@@ -149,7 +152,9 @@ pub struct PreviousCollisions {
 
 pub fn collision_tick(
     mut q_colliders: Query<(Entity, &mut Collider, &Transform)>,
+    mut collision_started_event: EventWriter<CollisionStartEvent>,
     mut collision_event: EventWriter<IsCollidingEvent>,
+    mut collision_ended_event: EventWriter<CollisionEndEvent>,
     mut prev_collisions: ResMut<PreviousCollisions>,
 ) {
     let collisions: HashSet<(Entity, Entity)> = HashSet::new();
@@ -201,18 +206,41 @@ pub fn collision_tick(
                 other_collider,
                 *other_position,
             ) {
+                
                 if collisions.contains(&(*other_entity, entity)) {
                     continue; // Already logged collision
                 } else {
+                    let collision = Collision {
+                        entity_a: entity,
+                        entity_b: *other_entity,
+                    };
+
+                    if prev_collisions.collisions.contains(&(entity, *other_entity)) || 
+                        prev_collisions.collisions.contains(&(*other_entity, entity)) {
+                        collision_started_event.send(CollisionStartEvent { collision: collision })
+                    }
+
                     collision_event.send(IsCollidingEvent {
-                        collision: Collision {
-                            entity_a: entity,
-                            entity_b: *other_entity,
-                        },
+                        collision: collision,
                     });
                 }
             }
         }
+    }
+
+    // Collision Ending
+    for collision in &prev_collisions.collisions {
+        let (a, b) = *collision;
+        let other_collision = &(b, a);
+        
+        if collisions.contains(collision) || collisions.contains(other_collision) {
+            continue;
+        }
+
+        collision_ended_event.send(CollisionEndEvent { collision: Collision {
+            entity_a: a,
+            entity_b: b,
+        }});
     }
 
     prev_collisions.collisions = collisions;

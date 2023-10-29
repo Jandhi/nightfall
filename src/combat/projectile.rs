@@ -2,7 +2,7 @@ use bevy::prelude::*;
 
 use crate::collision::collider::IsCollidingEvent;
 use crate::combat::health::HealthType;
-use crate::constants::DISTANCE_SCALING;
+
 
 use super::health::{Dead, Health};
 use super::teams::{Team, TeamMember};

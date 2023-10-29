@@ -1,12 +1,13 @@
 use bevy::prelude::*;
 
 use crate::GameState;
-use self::{magnetic::magnet_update, velocity::velocity_update, friction::friction_update, pause::ActionPauseState};
+use self::{magnetic::magnet_update, velocity::velocity_update, friction::friction_update, pause::ActionPauseState, edge_teleport::edge_teleporting};
 
 pub mod magnetic;
 pub mod velocity;
 pub mod friction;
 pub mod pause;
+pub mod edge_teleport;
 
 pub struct MovementPlugin;
 
@@ -18,6 +19,7 @@ impl Plugin for MovementPlugin {
                 velocity_update,
                 magnet_update,
                 friction_update,
+                edge_teleporting
             ).run_if(in_state(GameState::Playing)),)
             .insert_resource(ActionPauseState{ is_paused: false });
     }

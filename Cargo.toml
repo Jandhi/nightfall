@@ -59,6 +59,7 @@ image = { version = "0.24", default-features = false }
 bevy-debug-text-overlay = "6.0.0"
 rand_seeder = "0.2.3"
 rand_pcg = "0.3.1"
+bevy_easings = "0.11.1"
 
 [build-dependencies]
 embed-resource = "1.4"

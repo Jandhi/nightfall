@@ -8,33 +8,33 @@ use crate::{
         animation_bundle, AnimationStateChangeEvent,
         AnimationStateStorage, Animation, info::AnimationStateInfo,
     },
-    loading::TextureAssets,
+    loading::TextureAssets, combat::health::Health,
 };
 
 use super::Player;
 
 #[derive(Component)]
-pub struct BulletUISprite {
+pub struct HealthUISprite {
     index: u32,
 }
 
 #[derive(PartialEq, Eq, Hash, Clone, Copy)]
-pub enum BulletUIAnimation {
+pub enum HealthUIAnimationState {
     Available,
     Unavailable,
 }
 
-impl Animation<BulletUIAnimation> for BulletUIAnimation {
-    fn get_states() -> Vec<AnimationStateInfo<BulletUIAnimation>> {
+impl Animation<HealthUIAnimationState> for HealthUIAnimationState {
+    fn get_states() -> Vec<AnimationStateInfo<HealthUIAnimationState>> {
         vec![
             AnimationStateInfo {
-                id: BulletUIAnimation::Available,
+                id: HealthUIAnimationState::Available,
                 start_index: 0,
                 frames: 1,
                 frame_duration: Duration::from_secs_f32(1.),
             },
             AnimationStateInfo {
-                id: BulletUIAnimation::Unavailable,
+                id: HealthUIAnimationState::Unavailable,
                 start_index: 1,
                 frames: 1,
                 frame_duration: Duration::from_secs_f32(1.),
@@ -43,75 +43,75 @@ impl Animation<BulletUIAnimation> for BulletUIAnimation {
     }
 }
 
-pub type BulletUIAnimations = AnimationStateStorage<BulletUIAnimation>;
+pub type HealthUIAnimations = AnimationStateStorage<HealthUIAnimationState>;
 
 #[derive(Resource)]
-pub struct BulletUICount(pub u32);
+pub struct HealthUICount(pub u32);
 
-pub fn manage_bullet_ui_sprites(
-    q_player: Query<&Player, Without<BulletUISprite>>,
-    mut q_bullets: Query<
-        (Entity, &BulletUISprite, &TextureAtlasSprite, &mut Transform),
+pub fn manage_health_ui_sprites(
+    q_player: Query<&Health, (With<Player>, Without<HealthUISprite>)>,
+    mut q_hearts: Query<
+        (Entity, &HealthUISprite, &TextureAtlasSprite, &mut Transform),
         Without<Player>,
     >,
     q_windows: Query<&Window, With<PrimaryWindow>>,
-    mut animation_state_change: EventWriter<AnimationStateChangeEvent<BulletUIAnimation>>,
-    animations: Res<BulletUIAnimations>,
+    mut animation_state_change: EventWriter<AnimationStateChangeEvent<HealthUIAnimationState>>,
+    animations: Res<HealthUIAnimations>,
     textures: Res<TextureAssets>,
     mut texture_atlases: ResMut<Assets<TextureAtlas>>,
-    mut bullet_count: ResMut<BulletUICount>,
+    mut heart_count: ResMut<HealthUICount>,
     mut commands: Commands,
 ) {
-    let player = q_player.single();
+    let health = q_player.single();
     let window = q_windows.single();
 
-    while bullet_count.0 < player.max_bullets {
-        spawn_bullet_ui_sprite(
+    while heart_count.0 < health.max {
+        spawn_heart_ui_sprite(
             &animations,
             &textures,
             &mut texture_atlases,
             &mut commands,
-            bullet_count.0,
+            heart_count.0,
         );
 
-        bullet_count.0 += 1;
+        heart_count.0 += 1;
     }
 
-    for (entity, bullet, atlas, mut transform) in q_bullets.iter_mut() {
-        if bullet.index >= player.max_bullets {
+    for (entity, heart, atlas, mut transform) in q_hearts.iter_mut() {
+        if heart.index >= health.max {
             commands.entity(entity).despawn();
             continue;
         }
 
-        if atlas.index == 0 && bullet.index >= player.curr_bullets {
+        if atlas.index == 0 && heart.index >= health.value {
             animation_state_change.send(AnimationStateChangeEvent {
                 id: entity,
-                state_id: BulletUIAnimation::Unavailable,
+                state_id: HealthUIAnimationState::Unavailable,
             })
-        } else if atlas.index == 1 && bullet.index < player.curr_bullets {
+        } else if atlas.index == 1 && heart.index < health.value {
             animation_state_change.send(AnimationStateChangeEvent {
                 id: entity,
-                state_id: BulletUIAnimation::Available,
+                state_id: HealthUIAnimationState::Available,
             })
         }
 
         transform.translation = Vec3 {
-            x: window.width() / 2. - 40.,
-            y: window.height() / 2. - 30. - 20. * (player.max_bullets - 1 - bullet.index) as f32,
+            x: -window.width() / 2. + 40. + 40. * (health.max - 1 - heart.index) as f32,
+            y: window.height() / 2. - 30.,
             z: 5.,
         }
     }
 }
 
-fn spawn_bullet_ui_sprite(
-    animations: &Res<BulletUIAnimations>,
+fn spawn_heart_ui_sprite(
+    animations: &Res<HealthUIAnimations>,
     textures: &Res<TextureAssets>,
     texture_atlases: &mut ResMut<Assets<TextureAtlas>>,
     commands: &mut Commands,
     index: u32,
 ) {
     let texture_atlas = TextureAtlas::from_grid(
-        textures.texture_bullet_ui.clone(),
+        textures.texture_heart_ui.clone(),
         Vec2 { x: 16., y: 16. },
         2,
         1,
@@ -121,9 +121,9 @@ fn spawn_bullet_ui_sprite(
     let texture_atlas_handle = texture_atlases.add(texture_atlas);
 
     commands
-        .spawn(BulletUISprite { index })
+        .spawn(HealthUISprite { index })
         .insert(animation_bundle(
-            BulletUIAnimation::Available,
+            HealthUIAnimationState::Available,
             animations,
             texture_atlas_handle,
             default(),

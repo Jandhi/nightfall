@@ -69,8 +69,14 @@ pub struct TextureAssets {
     #[asset(path = "textures/ui/bullet_ui.png")]
     pub texture_bullet_ui: Handle<Image>,
 
+    #[asset(path = "textures/ui/xp_bar.png")]
+    pub texture_xp_bar: Handle<Image>,
+
     #[asset(path = "textures/ui/reload.png")]
     pub texture_reload_ui: Handle<Image>,
+
+    #[asset(path = "textures/ui/health.png")]
+    pub texture_heart_ui: Handle<Image>,
 
     #[asset(path = "textures/crystal.png")]
     pub texture_crystal: Handle<Image>,

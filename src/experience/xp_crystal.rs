@@ -1,12 +1,12 @@
-use std::f32::consts::PI;
 
-use bevy::{prelude::*, transform::commands};
-use bevy_debug_text_overlay::screen_print;
+
+use bevy::{prelude::*};
+
 use rand::Rng;
 
-use crate::{enemies::enemy::{EnemyDeathEvent, self, Enemy}, util::{rng::{GlobalSeed, RNG}, radians::Radian}, movement::{velocity::Velocity, friction::Friction, magnetic::Magnetic}, loading::TextureAssets, constants::{DISTANCE_SCALING, SCALING_VEC3}, player::Player};
+use crate::{enemies::enemy::{EnemyDeathEvent}, util::{rng::{GlobalSeed, RNG}, radians::Radian}, movement::{velocity::Velocity, friction::Friction, magnetic::Magnetic, edge_teleport::EdgeTeleports}, loading::TextureAssets, constants::{SCALING_VEC3}, player::Player};
 
-use super::experience_meter::Experience;
+use super::experience::Experience;
 
 #[derive(Resource)]
 pub struct CrystalRNG(pub RNG);
@@ -40,7 +40,7 @@ pub fn drop_crystals(
     mut commands : Commands,
 ) {
     for death_ev in enemy_death_event.iter() {
-        for i in 0..death_ev.enemy.xp {
+        for _i in 0..death_ev.enemy.xp {
 
             let rng = &mut crystal_rng.0.0;
 
@@ -60,12 +60,12 @@ pub fn drop_crystals(
                 crystal: XPCrystal,
                 velocity: (direction.unit_vector() * velocity).into(),
                 friction: Friction{
-                    force: 30.0,
+                    force: 50.0,
                 },
                 magnetic: Magnetic{
                     force: 1000000.0,
                 }
-            });
+            }).insert(EdgeTeleports);
         }
         
     }

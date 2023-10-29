@@ -2,19 +2,22 @@
 use std::time::Duration;
 
 use crate::actions::Actions;
+use crate::animation::controller::AnimationController;
 use crate::animation::{
-    make_animation_bundle, AnimationController, AnimationStateChangeEvent,
-    AnimationStateInfo, AppAnimationSetup,
+    animation_bundle, AnimationStateChangeEvent, AppAnimationSetup,
 };
 use crate::collision::collider::Collider;
+use crate::combat::health::Health;
 use crate::constants::SortingLayers;
-use crate::experience::experience_meter::Experience;
+use crate::experience::experience::Experience;
 use crate::loading::TextureAssets;
 use crate::GameState;
+use crate::movement::edge_teleport::EdgeTeleports;
 use bevy::prelude::*;
 
 use self::animations::{PlayerAnimationState, PlayerAnimations};
-use self::bullets_ui::{manage_bullet_ui_sprites, BulletUIAnimationState, BulletUICount};
+use self::bullets_ui::{manage_bullet_ui_sprites, BulletUIAnimation, BulletUICount};
+use self::health_ui::{manage_health_ui_sprites, HealthUICount, HealthUIAnimationState};
 use self::reload_ui::{spawn_reload_ui, update_reload_ui, ReloadTimer};
 use self::shooting::{shoot, ShootingCooldown};
 
@@ -22,13 +25,14 @@ mod animations;
 mod bullets_ui;
 mod reload_ui;
 mod shooting;
+mod health_ui;
 
 pub struct PlayerPlugin;
 
 #[derive(Component)]
 pub struct Player {
-    curr_bullets: usize,
-    max_bullets: usize,
+    curr_bullets: u32,
+    max_bullets: u32,
     reload_time: f32,
     shoot_time: f32,
     is_reloading: bool,
@@ -46,39 +50,16 @@ impl Plugin for PlayerPlugin {
                 move_player,
                 shoot,
                 manage_bullet_ui_sprites,
+                manage_health_ui_sprites,
                 update_reload_ui,
             ).run_if(in_state(GameState::Playing)))
             .insert_resource(ReloadTimer(Timer::from_seconds(0., TimerMode::Once)))
             .insert_resource(BulletUICount(0))
+            .insert_resource(HealthUICount(0))
             .insert_resource(ShootingCooldown(Timer::from_seconds(1.0, TimerMode::Once)))
-            .add_animation(vec![
-                AnimationStateInfo {
-                    id: PlayerAnimationState::Idle,
-                    start_index: 0,
-                    frames: 2,
-                    frame_duration: Duration::from_secs_f32(1. / 2.),
-                },
-                AnimationStateInfo {
-                    id: PlayerAnimationState::Running,
-                    start_index: 2,
-                    frames: 4,
-                    frame_duration: Duration::from_secs_f32(1. / 10.),
-                },
-            ])
-            .add_animation(vec![
-                AnimationStateInfo {
-                    id: BulletUIAnimationState::Available,
-                    start_index: 0,
-                    frames: 1,
-                    frame_duration: Duration::from_secs_f32(1.),
-                },
-                AnimationStateInfo {
-                    id: BulletUIAnimationState::Unavailable,
-                    start_index: 1,
-                    frames: 1,
-                    frame_duration: Duration::from_secs_f32(1.),
-                },
-            ]);
+            .add_animation::<PlayerAnimationState>()
+            .add_animation::<BulletUIAnimation>()
+            .add_animation::<HealthUIAnimationState>();
     }
 }
 
@@ -107,7 +88,7 @@ pub fn spawn_player(
             is_reloading: false,
         })
         .insert(Collider::new_circle(50., Vec2 { x: 0., y: 0. }))
-        .insert(make_animation_bundle(
+        .insert(animation_bundle(
             PlayerAnimationState::Idle,
             &player_animations,
             texture_atlas_handle,
@@ -120,7 +101,11 @@ pub fn spawn_player(
             curr_experience: 0,
             level: 0,
             xp_threshold: 10,
-            xp_pickup_distance: 6.0,
+            xp_pickup_distance: 10.0,
+        }).insert(EdgeTeleports)
+        .insert(Health{
+            value: 3,
+            max: 3,
         });
 }
 
