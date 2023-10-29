@@ -217,11 +217,11 @@ pub fn collision_tick(
 
                     if prev_collisions.collisions.contains(&(entity, *other_entity)) || 
                         prev_collisions.collisions.contains(&(*other_entity, entity)) {
-                        collision_started_event.send(CollisionStartEvent { collision: collision })
+                        collision_started_event.send(CollisionStartEvent { collision })
                     }
 
                     collision_event.send(IsCollidingEvent {
-                        collision: collision,
+                        collision,
                     });
                 }
             }

@@ -40,7 +40,7 @@ pub struct DeathEvent {
 pub fn check_death(
     q_health: Query<(Entity, &Health), Without<Dead>>,
     mut death_ev: EventWriter<DeathEvent>,
-    mut commands: Commands,
+    _commands: Commands,
 ) {
     for (entity, health) in q_health.iter() {
         if !health.is_alive() {

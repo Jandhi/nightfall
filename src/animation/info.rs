@@ -1,6 +1,6 @@
 use std::time::Duration;
 
-use bevy::prelude::*;
+
 
 #[derive(Clone, Copy)]
 pub struct AnimationStateInfo<TState: Clone + Copy> {
@@ -10,6 +10,6 @@ pub struct AnimationStateInfo<TState: Clone + Copy> {
     pub frame_duration: Duration,
 }
 
-pub fn build_animation_state_info<TState: Clone + Copy>(info : Vec<(TState)>) -> Vec<AnimationStateInfo<TState>> {
+pub fn build_animation_state_info<TState: Clone + Copy>(_info : Vec<TState>) -> Vec<AnimationStateInfo<TState>> {
     vec![]
 }

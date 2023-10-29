@@ -5,8 +5,8 @@ use bevy::prelude::*;
 
 use crate::animation::info::AnimationStateInfo;
 use crate::animation::{animation_bundle, AnimationStateStorage, Animation};
-use crate::collision::collider::{Collider, CollisionStartEvent, IsCollidingEvent};
-use crate::combat::health::Dead;
+use crate::collision::collider::{Collider, IsCollidingEvent};
+
 use crate::combat::{
     health::{DeathEvent, Health},
     healthbar::NeedsHealthBar,

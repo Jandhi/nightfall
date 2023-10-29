@@ -10,7 +10,7 @@ use crate::{
     },
     constants::{SortingLayers, SCALING_VEC3},
     loading::TextureAssets,
-    util::radians::Radian, movement::{velocity::Velocity, edge_teleport::EdgeTeleports},
+    util::radians::Radian, movement::{velocity::Velocity},
 };
 
 use super::{reload_ui::ReloadTimer, Player};
