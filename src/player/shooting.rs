@@ -1,6 +1,7 @@
 use std::{f32::consts::PI, time::Duration};
 
 use bevy::{prelude::*, window::PrimaryWindow};
+use bevy_kira_audio::AudioControl;
 
 use crate::{
     collision::collider::Collider,
@@ -9,11 +10,11 @@ use crate::{
         teams::Team,
     },
     constants::{SortingLayers, SCALING_VEC3},
-    loading::TextureAssets,
-    util::radians::Radian, movement::{velocity::Velocity},
+    loading::{TextureAssets, AudioAssets},
+    util::radians::Radian, movement::{velocity::Velocity, pause::ActionPauseState}, audio::{FXChannel, self},
 };
 
-use super::{reload_ui::ReloadTimer, Player};
+use super::{reload_ui::ReloadTimer, Player, ability::Ability};
 
 #[derive(Resource)]
 pub struct ShootingCooldown(pub Timer);
@@ -25,9 +26,16 @@ pub fn shoot(
     mut shooting_cooldown: ResMut<ShootingCooldown>,
     mut reload_timer: ResMut<ReloadTimer>,
     textures: Res<TextureAssets>,
+    audio_assets : Res<AudioAssets>,
+    fx_channel : Res<FXChannel>,
     time: Res<Time>,
+    pause : Res<ActionPauseState>,
     mut commands: Commands,
 ) {
+    if pause.is_paused {
+        return;
+    }
+
     shooting_cooldown.0.tick(time.delta());
     reload_timer.0.tick(time.delta());
 
@@ -69,13 +77,21 @@ pub fn shoot(
                 reload_timer
                     .0
                     .set_duration(Duration::from_secs_f32(player.reload_time));
-                reload_timer.0.reset()
+                reload_timer.0.reset();
+
+                fx_channel.play(audio_assets.reload.clone());
             }
 
+            // Play audio
+            fx_channel.play(audio_assets.gunshot.clone());
+            
             // Shoot!
             commands
                 .spawn(SpriteBundle {
-                    texture: textures.texture_bullet_small.clone(),
+                    texture: match player.abilities.contains(&Ability::BigBullets) {
+                        true => textures.bullet_medium.clone(),
+                        false => textures.bullet_small.clone(),
+                    },
                     transform: Transform {
                         translation: bullet_translation,
                         scale: SCALING_VEC3,

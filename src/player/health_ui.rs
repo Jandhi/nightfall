@@ -5,7 +5,7 @@ use bevy::{prelude::*, window::PrimaryWindow};
 
 use crate::{
     animation::{
-        animation_bundle, AnimationStateChangeEvent,
+        make_animation_bundle, AnimationStateChangeEvent,
         AnimationStateStorage, Animation, info::{AnimationStateInfo, AnimationInfoBuilder},
     },
     loading::TextureAssets, combat::health::Health,
@@ -101,7 +101,7 @@ fn spawn_heart_ui_sprite(
     index: u32,
 ) {
     let texture_atlas = TextureAtlas::from_grid(
-        textures.texture_heart_ui.clone(),
+        textures.heart_ui.clone(),
         Vec2 { x: 16., y: 16. },
         2,
         1,
@@ -112,7 +112,7 @@ fn spawn_heart_ui_sprite(
 
     commands
         .spawn(HealthUISprite { index })
-        .insert(animation_bundle(
+        .insert(make_animation_bundle(
             HealthUIAnimationState::Available,
             animations,
             texture_atlas_handle,

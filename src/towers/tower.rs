@@ -99,7 +99,7 @@ pub fn tower_trigger(
                 // Shoot!
                 commands
                     .spawn(SpriteBundle {
-                        texture: textures.texture_bullet_small.clone(),
+                        texture: textures.bullet_small.clone(),
                         transform: Transform {
                             translation: bullet_translation,
                             scale: SCALING_VEC3,
@@ -127,7 +127,7 @@ pub fn tower_trigger(
 pub fn spawn_tower(mut commands: Commands, textures: Res<TextureAssets>) {
     commands
         .spawn(SpriteBundle {
-            texture: textures.texture_tower.clone(),
+            texture: textures.tower.clone(),
             transform: Transform {
                 translation: Vec3 {
                     x: 0.,
@@ -161,7 +161,7 @@ pub fn spawn_tower(mut commands: Commands, textures: Res<TextureAssets>) {
             let parent_entity = parent.parent_entity();
             parent
                 .spawn(SpriteBundle {
-                    texture: textures.texture_turret.clone(),
+                    texture: textures.turret.clone(),
                     transform: Transform::from_translation(Vec3::new(0., 0., 2.)),
                     ..Default::default()
                 })

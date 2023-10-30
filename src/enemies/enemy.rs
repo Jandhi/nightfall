@@ -4,7 +4,7 @@ use std::time::Duration;
 use bevy::prelude::*;
 
 use crate::animation::info::AnimationStateInfo;
-use crate::animation::{animation_bundle, AnimationStateStorage, Animation};
+use crate::animation::{make_animation_bundle, AnimationStateStorage, Animation};
 use crate::collision::collider::{Collider, IsCollidingEvent};
 
 use crate::combat::{
@@ -14,6 +14,7 @@ use crate::combat::{
 };
 use crate::constants::{SortingLayers, DISTANCE_SCALING};
 use crate::loading::TextureAssets;
+use crate::movement::pause::ActionPauseState;
 use crate::player::Player;
 use crate::util::radians::Radian;
 
@@ -99,7 +100,7 @@ pub fn spawn_enemy(
     textures: Res<TextureAssets>,
 ) {
     let texture_atlas = TextureAtlas::from_grid(
-        textures.texture_imp.clone(),
+        textures.imp.clone(),
         Vec2 { x: 32., y: 32. },
         4,
         1,
@@ -117,7 +118,7 @@ pub fn spawn_enemy(
         })
         .insert(Health::new(15))
         .insert(Collider::new_circle(10., Vec2 { x: 70., y: 70. }))
-        .insert(animation_bundle(
+        .insert(make_animation_bundle(
             ImpAnimation::FLYING,
             &imp_animations,
             texture_atlas_handle.clone(),
@@ -135,7 +136,12 @@ pub fn spawn_enemy(
 pub fn follow_player(
     mut q_enemies: Query<(&mut Transform, &Enemy)>,
     q_player: Query<&Transform, (With<Player>, Without<Enemy>)>,
+    pause : Res<ActionPauseState>,
 ) {
+    if pause.is_paused {
+        return;
+    }
+    
     let player_transform = q_player.single();
 
     for (mut enemy_transform, enemy) in q_enemies.iter_mut() {

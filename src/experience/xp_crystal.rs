@@ -1,10 +1,10 @@
 
 
-use bevy::{prelude::*};
+use bevy::prelude::*;
 
 use rand::Rng;
 
-use crate::{enemies::enemy::{EnemyDeathEvent}, util::{rng::{GlobalSeed, RNG}, radians::Radian}, movement::{velocity::Velocity, friction::Friction, magnetic::Magnetic, edge_teleport::EdgeTeleports}, loading::TextureAssets, constants::{SCALING_VEC3}, player::Player};
+use crate::{enemies::enemy::EnemyDeathEvent, util::{rng::{GlobalSeed, RNG}, radians::Radian}, movement::{velocity::Velocity, friction::Friction, magnetic::Magnetic, edge_teleport::EdgeTeleports, fake_magnetic::FakeMagnetic}, loading::TextureAssets, constants::{SCALING_VEC3}, player::Player};
 
 use super::experience::Experience;
 
@@ -14,7 +14,7 @@ pub struct CrystalRNG(pub RNG);
 #[derive(Component)]
 pub struct XPCrystal;
 
-pub fn create_rng(
+pub fn create_xp_crystal_rng(
     seed : Res<GlobalSeed>,
     mut commands : Commands,
 ) {
@@ -30,7 +30,7 @@ pub struct XPCrystalBundle {
     pub crystal : XPCrystal,
     pub velocity : Velocity,
     pub friction: Friction,
-    pub magnetic : Magnetic
+    pub magnetic : FakeMagnetic
 }
 
 pub fn drop_crystals(
@@ -54,7 +54,7 @@ pub fn drop_crystals(
                         rotation: default(), 
                         scale: SCALING_VEC3 
                     },
-                        texture: textures.texture_crystal.clone(), 
+                        texture: textures.crystal.clone(), 
                         ..Default::default()
                 },
                 crystal: XPCrystal,
@@ -62,8 +62,8 @@ pub fn drop_crystals(
                 friction: Friction{
                     force: 50.0,
                 },
-                magnetic: Magnetic{
-                    force: 1000000.0,
+                magnetic: FakeMagnetic{
+                    force: 1_000_000.0,
                 }
             }).insert(EdgeTeleports);
         }
@@ -80,7 +80,7 @@ pub fn xp_crystal_update(
 
     for (entity, crystal_transform) in q_crystals.iter() {
         let distance = crystal_transform.translation.distance(player_transform.translation);
-        if distance < experience.xp_pickup_distance {
+        if distance < experience.pick_distance {
             commands.entity(entity).despawn();
             experience.curr_experience += 1;
         }

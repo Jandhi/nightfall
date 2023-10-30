@@ -11,46 +11,20 @@ impl Plugin for InternalAudioPlugin {
     fn build(&self, app: &mut App) {
         app.add_plugins(AudioPlugin)
             .add_systems(OnEnter(GameState::Playing), start_audio)
-            .add_systems(
-                Update,
-                control_flying_sound
-                    .after(set_movement_actions)
-                    .run_if(in_state(GameState::Playing)),
-            );
+            .add_audio_channel::<FX>()
+            .add_audio_channel::<Ambience>();
     }
 }
 
 #[derive(Resource)]
-struct FlyingAudio(Handle<AudioInstance>);
+pub struct FX;
+pub type FXChannel = AudioChannel<FX>;
+
+#[derive(Resource)]
+pub struct Ambience;
+pub type AmbienceChannel = AudioChannel<Ambience>;
+
 
 fn start_audio(mut commands: Commands, audio_assets: Res<AudioAssets>, audio: Res<Audio>) {
-    audio.pause();
-    let handle = audio
-        .play(audio_assets.flying.clone())
-        .looped()
-        .with_volume(0.3)
-        .handle();
-    commands.insert_resource(FlyingAudio(handle));
-}
-
-fn control_flying_sound(
-    actions: Res<Actions>,
-    audio: Res<FlyingAudio>,
-    mut audio_instances: ResMut<Assets<AudioInstance>>,
-) {
-    if let Some(instance) = audio_instances.get_mut(&audio.0) {
-        match instance.state() {
-            PlaybackState::Paused { .. } => {
-                if actions.player_movement.is_some() {
-                    instance.resume(AudioTween::default());
-                }
-            }
-            PlaybackState::Playing { .. } => {
-                if actions.player_movement.is_none() {
-                    instance.pause(AudioTween::default());
-                }
-            }
-            _ => {}
-        }
-    }
+    
 }

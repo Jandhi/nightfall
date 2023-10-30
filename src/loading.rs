@@ -15,7 +15,8 @@ impl Plugin for LoadingPlugin {
         )
         .add_collection_to_loading_state::<_, FontAssets>(GameState::Loading)
         .add_collection_to_loading_state::<_, AudioAssets>(GameState::Loading)
-        .add_collection_to_loading_state::<_, TextureAssets>(GameState::Loading);
+        .add_collection_to_loading_state::<_, TextureAssets>(GameState::Loading)
+        .add_collection_to_loading_state::<_, AbilityTextures>(GameState::Loading);
     }
 }
 
@@ -32,52 +33,89 @@ pub struct FontAssets {
 pub struct AudioAssets {
     #[asset(path = "audio/flying.ogg")]
     pub flying: Handle<AudioSource>,
+
+    #[asset(path = "audio/gunshot.ogg")]
+    pub gunshot: Handle<AudioSource>,
+
+    #[asset(path = "audio/reload.ogg")]
+    pub reload: Handle<AudioSource>,
+
+    #[asset(path = "audio/reload_done.ogg")]
+    pub reload_done: Handle<AudioSource>,
 }
 
 #[derive(AssetCollection, Resource)]
 pub struct TextureAssets {
     #[asset(path = "textures/bevy.png")]
-    pub texture_bevy: Handle<Image>,
+    pub bevy: Handle<Image>,
 
     #[asset(path = "textures/Flame.png")]
-    pub texture_flame: Handle<Image>,
+    pub flame: Handle<Image>,
 
     #[asset(path = "textures/tower.png")]
-    pub texture_tower: Handle<Image>,
+    pub tower: Handle<Image>,
 
     #[asset(path = "textures/turret.png")]
-    pub texture_turret: Handle<Image>,
+    pub turret: Handle<Image>,
 
     #[asset(path = "textures/bullet_small.png")]
-    pub texture_bullet_small: Handle<Image>,
+    pub bullet_small: Handle<Image>,
 
     #[asset(path = "textures/bullet_medium.png")]
-    pub texture_bullet_medium: Handle<Image>,
+    pub bullet_medium: Handle<Image>,
 
     #[asset(path = "textures/bullet_large.png")]
-    pub texture_bullet_large: Handle<Image>,
+    pub bullet_large: Handle<Image>,
 
     #[asset(path = "textures/imp.png")]
-    pub texture_imp: Handle<Image>,
+    pub imp: Handle<Image>,
 
     #[asset(path = "textures/healthbar.png")]
-    pub texture_healthbar: Handle<Image>,
+    pub healthbar: Handle<Image>,
 
     #[asset(path = "textures/hatman_spritesheet.png")]
-    pub texture_hatman: Handle<Image>,
+    pub hatman: Handle<Image>,
 
     #[asset(path = "textures/ui/bullet_ui.png")]
-    pub texture_bullet_ui: Handle<Image>,
+    pub bullet_ui: Handle<Image>,
 
     #[asset(path = "textures/ui/xp_bar.png")]
-    pub texture_xp_bar: Handle<Image>,
+    pub xp_bar: Handle<Image>,
 
     #[asset(path = "textures/ui/reload.png")]
-    pub texture_reload_ui: Handle<Image>,
+    pub reload_ui: Handle<Image>,
 
     #[asset(path = "textures/ui/health.png")]
-    pub texture_heart_ui: Handle<Image>,
+    pub heart_ui: Handle<Image>,
 
     #[asset(path = "textures/crystal.png")]
-    pub texture_crystal: Handle<Image>,
+    pub crystal: Handle<Image>,
+
+    
+
+
+}
+
+#[derive(AssetCollection, Resource)]
+pub struct AbilityTextures {
+    #[asset(path = "textures/abilities/frame.png")]
+    pub frame: Handle<Image>,
+
+    #[asset(path = "textures/abilities/big_bullets.png")]
+    pub big_bullets: Handle<Image>,
+
+    #[asset(path = "textures/abilities/crossbow.png")]
+    pub crossbow: Handle<Image>,
+
+    #[asset(path = "textures/abilities/double_barrel.png")]
+    pub double_barrel: Handle<Image>,
+
+    #[asset(path = "textures/abilities/flaming_bullets.png")]
+    pub flaming_bullets: Handle<Image>,
+
+    #[asset(path = "textures/abilities/shells.png")]
+    pub shells: Handle<Image>,
+
+    #[asset(path = "textures/abilities/sniper.png")]
+    pub sniper: Handle<Image>,
 }

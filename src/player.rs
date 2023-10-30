@@ -4,7 +4,7 @@
 use crate::actions::Actions;
 use crate::animation::controller::AnimationController;
 use crate::animation::{
-    animation_bundle, AnimationStateChangeEvent, AppAnimationSetup,
+    make_animation_bundle, AnimationStateChangeEvent, AppAnimationSetup,
 };
 use crate::collision::collider::Collider;
 use crate::combat::health::Health;
@@ -13,8 +13,11 @@ use crate::experience::experience::Experience;
 use crate::loading::TextureAssets;
 use crate::GameState;
 use crate::movement::edge_teleport::EdgeTeleports;
+use crate::movement::pause::ActionPauseState;
 use bevy::prelude::*;
+use bevy::utils::HashSet;
 
+use self::ability::Ability;
 use self::animations::{PlayerAnimationState, PlayerAnimations};
 use self::bullets_ui::{manage_bullet_ui_sprites, BulletUIAnimation, BulletUICount};
 use self::health_ui::{manage_health_ui_sprites, HealthUICount, HealthUIAnimationState};
@@ -26,6 +29,7 @@ mod bullets_ui;
 mod reload_ui;
 mod shooting;
 mod health_ui;
+pub mod ability;
 
 pub struct PlayerPlugin;
 
@@ -36,6 +40,7 @@ pub struct Player {
     reload_time: f32,
     shoot_time: f32,
     is_reloading: bool,
+    pub abilities : HashSet<Ability>,
 }
 
 /// This plugin handles player related stuff like movement
@@ -70,7 +75,7 @@ pub fn spawn_player(
     mut commands: Commands,
 ) {
     let texture_atlas = TextureAtlas::from_grid(
-        textures.texture_hatman.clone(),
+        textures.hatman.clone(),
         Vec2 { x: 32., y: 32. },
         6,
         1,
@@ -83,12 +88,13 @@ pub fn spawn_player(
         .spawn(Player {
             max_bullets: 6,
             curr_bullets: 6,
-            reload_time: 1.,
+            reload_time: 1.0,
             shoot_time: 0.5,
             is_reloading: false,
+            abilities: HashSet::new(),
         })
         .insert(Collider::new_circle(50., Vec2 { x: 0., y: 0. }))
-        .insert(animation_bundle(
+        .insert(make_animation_bundle(
             PlayerAnimationState::Idle,
             &player_animations,
             texture_atlas_handle,
@@ -100,8 +106,8 @@ pub fn spawn_player(
         )).insert(Experience{
             curr_experience: 0,
             level: 0,
-            xp_threshold: 10,
-            xp_pickup_distance: 10.0,
+            threshold: 20,
+            pick_distance: 10.0,
         }).insert(EdgeTeleports)
         .insert(Health{
             value: 3,
@@ -119,7 +125,12 @@ fn move_player(
         &mut AnimationController<PlayerAnimationState>,
         &mut TextureAtlasSprite,
     )>,
+    pause : Res<ActionPauseState>,
 ) {
+    if pause.is_paused {
+        return;
+    }
+
     let (entity, mut player_transform, mut animation_controller, _) =
         player_query.single_mut();
 

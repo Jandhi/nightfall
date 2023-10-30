@@ -5,7 +5,7 @@ use bevy::{prelude::*, window::PrimaryWindow};
 
 use crate::{
     animation::{
-        animation_bundle, AnimationStateChangeEvent,
+        make_animation_bundle, AnimationStateChangeEvent,
         AnimationStateStorage, Animation, controller::AnimationController, info::{AnimationStateInfo, AnimationInfoBuilder},
     },
     loading::TextureAssets, constants::SortingLayers,
@@ -50,7 +50,7 @@ impl Animation<XPBarAnimation> for XPBarAnimation {
 
 pub type XPBarAnimations = AnimationStateStorage<XPBarAnimation>;
 
-pub fn manage_bullet_ui_sprites(
+pub fn manage_xp_bar_sprites(
     q_player: Query<&Experience, Without<XPBarSprite>>,
     mut q_bullets: Query<
         (Entity, &AnimationController<XPBarAnimation>, &XPBarSprite, &mut Transform),
@@ -69,8 +69,8 @@ pub fn manage_bullet_ui_sprites(
             _ => XPBarPosition::Center,
         };
         let desired_state = match () {
-            _ if experience.curr_experience as f32 / experience.xp_threshold as f32 > (1 + xp_bar_slice.index) as f32 => XPBarAnimation::Filled(position),
-            _ if experience.curr_experience as f32 / experience.xp_threshold as f32 > xp_bar_slice.index as f32 => XPBarAnimation::Half(position),
+            _ if (experience.curr_experience as f32 / experience.threshold as f32) * 10.0 > (1 + xp_bar_slice.index) as f32 => XPBarAnimation::Filled(position),
+            _ if (experience.curr_experience as f32 / experience.threshold as f32) * 10.0 > xp_bar_slice.index as f32 => XPBarAnimation::Half(position),
             _ => XPBarAnimation::Empty(position),
         };
 
@@ -96,7 +96,7 @@ pub fn spawn_xp_bar(
     mut commands: Commands,
 ) {
     let texture_atlas = TextureAtlas::from_grid(
-        textures.texture_xp_bar.clone(),
+        textures.xp_bar.clone(),
         Vec2 { x: 16., y: 16. },
         27,
         1,
@@ -108,7 +108,7 @@ pub fn spawn_xp_bar(
     for i in 0..10 {
         commands
             .spawn(XPBarSprite { index: i })
-            .insert(animation_bundle(
+            .insert(make_animation_bundle(
                 match i {
                     0 => XPBarAnimation::Empty(XPBarPosition::Left),
                     9 => XPBarAnimation::Empty(XPBarPosition::Right),

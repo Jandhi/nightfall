@@ -52,7 +52,7 @@ pub fn spawn_healthbars(
         commands.entity(entity).remove::<NeedsHealthBar>();
 
         let texture_atlas = TextureAtlas::from_grid(
-            textures.texture_healthbar.clone(),
+            textures.healthbar.clone(),
             Vec2 { x: 32., y: 32. },
             HEALTH_BAR_SEGMENTS,
             1,

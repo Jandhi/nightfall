@@ -78,7 +78,7 @@ impl AppAnimationSetup for App {
 
 
 
-pub fn animation_bundle<T: Send + std::marker::Sync + 'static + Clone + Copy + Eq + Hash>(
+pub fn make_animation_bundle<T: Send + std::marker::Sync + 'static + Clone + Copy + Eq + Hash>(
     start_state_id: T,
     animations: &Res<AnimationStateStorage<T>>,
     texture_atlas_handle: Handle<TextureAtlas>,

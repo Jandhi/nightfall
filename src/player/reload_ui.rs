@@ -1,10 +1,11 @@
 use std::time::Duration;
 
 use bevy::prelude::*;
+use bevy_kira_audio::AudioControl;
 
 use crate::{
     constants::{SortingLayers, SCALING_VEC3},
-    loading::TextureAssets,
+    loading::{TextureAssets, AudioAssets}, audio::FXChannel,
 };
 
 use super::Player;
@@ -21,7 +22,7 @@ pub fn spawn_reload_ui(
     mut commands: Commands,
 ) {
     let texture_atlas = TextureAtlas::from_grid(
-        textures.texture_reload_ui.clone(),
+        textures.reload_ui.clone(),
         Vec2 { x: 16., y: 16. },
         10,
         1,
@@ -48,6 +49,8 @@ pub fn update_reload_ui(
     mut q_reload_ui: Query<(&mut Transform, &mut TextureAtlasSprite), With<ReloadUI>>,
     q_windows: Query<&Window, Without<ReloadUI>>,
     q_player: Query<&Player, (Without<ReloadUI>, Without<Window>)>,
+    audio_assets : Res<AudioAssets>,
+    fx_channel : Res<FXChannel>,
     timer: Res<ReloadTimer>,
 ) {
     let (mut reload_transform, mut reload_atlas) = q_reload_ui.single_mut();
@@ -65,5 +68,9 @@ pub fn update_reload_ui(
         reload_atlas.index = index as usize;
     } else {
         reload_atlas.index = 9;
+    }
+
+    if timer.0.just_finished() {
+        fx_channel.play(audio_assets.reload_done.clone());
     }
 }

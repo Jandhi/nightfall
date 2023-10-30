@@ -5,7 +5,7 @@ use bevy::{prelude::*, window::PrimaryWindow};
 
 use crate::{
     animation::{
-        animation_bundle, AnimationStateChangeEvent,
+        make_animation_bundle, AnimationStateChangeEvent,
         AnimationStateStorage, Animation, info::{AnimationStateInfo, AnimationInfoBuilder},
     },
     loading::TextureAssets, constants::SortingLayers,
@@ -101,7 +101,7 @@ fn spawn_bullet_ui_sprite(
     index: u32,
 ) {
     let texture_atlas = TextureAtlas::from_grid(
-        textures.texture_bullet_ui.clone(),
+        textures.bullet_ui.clone(),
         Vec2 { x: 16., y: 16. },
         2,
         1,
@@ -112,7 +112,7 @@ fn spawn_bullet_ui_sprite(
 
     commands
         .spawn(BulletUISprite { index })
-        .insert(animation_bundle(
+        .insert(make_animation_bundle(
             BulletUIAnimation::Available,
             animations,
             texture_atlas_handle,
