@@ -4,7 +4,7 @@ use crate::loading::AbilityTextures;
 
 
 
-#[derive(PartialEq, Eq, Hash)]
+#[derive(PartialEq, Eq, Hash, Clone, Copy)]
 pub enum Ability {
     BigBullets,
     Crossbow,

@@ -27,6 +27,7 @@ pub struct HoverEvent {
 pub struct SelectionEvent {
     pub parent : Entity,
     pub selected : Entity,
+    pub selected_index : usize,
 }
 
 pub fn update_selection_groups(
@@ -42,8 +43,8 @@ pub fn update_selection_groups(
         }
 
         if selection_group.is_horizontal {
-            let left_pressed = keyboard_input.just_pressed(KeyCode::Left) || keyboard_input.pressed(KeyCode::A);
-            let right_pressed = keyboard_input.just_pressed(KeyCode::Right) || keyboard_input.pressed(KeyCode::D);
+            let left_pressed = keyboard_input.just_pressed(KeyCode::Left) || keyboard_input.just_pressed(KeyCode::A);
+            let right_pressed = keyboard_input.just_pressed(KeyCode::Right) || keyboard_input.just_pressed(KeyCode::D);
         
             let child_count = children.len();
 
@@ -59,7 +60,11 @@ pub fn update_selection_groups(
         }
 
         if keyboard_input.just_pressed(KeyCode::Return) {
-            select.send(SelectionEvent { parent: entity, selected: *children.get(selection_group.hovered_index).unwrap() })
+            select.send(SelectionEvent { 
+                parent: entity, 
+                selected: *children.get(selection_group.hovered_index).unwrap(),
+                selected_index: selection_group.hovered_index, 
+            })
         }
     }
 }
