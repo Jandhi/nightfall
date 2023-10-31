@@ -9,6 +9,10 @@ pub struct Velocity {
     pub vec : Vec2,
 }
 
+impl Velocity {
+    pub const ZERO : Velocity = Velocity { vec: Vec2::ZERO };
+}
+
 pub fn velocity_update(
     mut q_velocity : Query<(&Velocity, &mut  Transform)>,
     time : Res<Time>,

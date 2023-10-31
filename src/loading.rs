@@ -110,6 +110,9 @@ pub struct AbilityTextures {
     #[asset(path = "textures/abilities/double_barrel.png")]
     pub double_barrel: Handle<Image>,
 
+    #[asset(path = "textures/abilities/triple_barrel.png")]
+    pub triple_barrel: Handle<Image>,
+
     #[asset(path = "textures/abilities/flaming_bullets.png")]
     pub flaming_bullets: Handle<Image>,
 
@@ -118,4 +121,10 @@ pub struct AbilityTextures {
 
     #[asset(path = "textures/abilities/sniper.png")]
     pub sniper: Handle<Image>,
+
+    #[asset(path = "textures/abilities/shotgun.png")]
+    pub shotgun: Handle<Image>,
+
+    #[asset(path = "textures/abilities/mega_shotgun.png")]
+    pub mega_shotgun: Handle<Image>,
 }

@@ -215,8 +215,11 @@ pub fn collision_tick(
                         entity_b: *other_entity,
                     };
 
-                    if prev_collisions.collisions.contains(&(entity, *other_entity)) || 
-                        prev_collisions.collisions.contains(&(*other_entity, entity)) {
+                    let previously_collided = 
+                        prev_collisions.collisions.contains(&(entity, *other_entity)) || 
+                        prev_collisions.collisions.contains(&(*other_entity, entity));
+
+                    if !previously_collided {
                         collision_started_event.send(CollisionStartEvent { collision })
                     }
 

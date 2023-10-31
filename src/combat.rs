@@ -5,13 +5,14 @@ use crate::GameState;
 use self::{
     health::{check_death, DeathEvent},
     healthbar::{spawn_healthbars, update_healthbars},
-    projectile::{projectile_collision_check},
+    projectile::{projectile_collision_check, ProjectileHitEvent}, knockback::knockback_update,
 };
 
 pub mod health;
 pub mod healthbar;
 pub mod projectile;
 pub mod teams;
+pub mod knockback;
 
 pub struct CombatPlugin;
 
@@ -23,9 +24,11 @@ impl Plugin for CombatPlugin {
                     projectile_collision_check,
                     update_healthbars,
                     check_death,
-                    spawn_healthbars
+                    spawn_healthbars,
+                    knockback_update.after(projectile_collision_check)
                 ).run_if(in_state(GameState::Playing)),
         )
-        .add_event::<DeathEvent>();
+        .add_event::<DeathEvent>()
+        .add_event::<ProjectileHitEvent>();
     }
 }

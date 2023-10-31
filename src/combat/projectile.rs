@@ -1,7 +1,8 @@
 use bevy::prelude::*;
 
-use crate::collision::collider::IsCollidingEvent;
+use crate::collision::collider::{IsCollidingEvent, CollisionStartEvent};
 use crate::combat::health::HealthType;
+use crate::util::radians::Radian;
 
 
 use super::health::{Dead, Health};
@@ -27,10 +28,17 @@ pub struct Projectile {
     pub is_alive: bool,
 }
 
+#[derive(Event)]
+pub struct ProjectileHitEvent {
+    pub projectile : Entity,
+    pub victim : Entity,
+}
+
 pub fn projectile_collision_check(
     mut q_projectiles: Query<&mut Projectile, Without<Dead>>,
     mut q_hittable: Query<(&mut Health, &TeamMember)>,
-    mut ev_collision: EventReader<IsCollidingEvent>,
+    mut ev_collision: EventReader<CollisionStartEvent>,
+    mut ev_hit: EventWriter<ProjectileHitEvent>,
     mut commands: Commands,
 ) {
     for ev_is_colliding in ev_collision.iter() {
@@ -44,6 +52,7 @@ pub fn projectile_collision_check(
                 ev_is_colliding.collision.entity_b,
                 health,
                 member.team,
+                &mut ev_hit,
                 &mut commands,
             );
         }
@@ -54,9 +63,11 @@ pub fn projectile_collision_check(
             handle_projectile_collision(
                 ev_is_colliding.collision.entity_b,
                 bullet,
+
                 ev_is_colliding.collision.entity_a,
                 health,
                 member.team,
+                &mut ev_hit,
                 &mut commands,
             );
         }
@@ -66,9 +77,10 @@ pub fn projectile_collision_check(
 fn handle_projectile_collision(
     projectile_entity: Entity,
     mut projectile: Mut<Projectile>,
-    _hit_entity: Entity,
+    hit_entity: Entity,
     mut health: Mut<Health>,
     hit_team: Team,
+    ev_hit : &mut EventWriter<ProjectileHitEvent>,
     commands: &mut Commands,
 ) {
     if !projectile.is_alive {
@@ -90,8 +102,20 @@ fn handle_projectile_collision(
         }
     }
 
-    commands.entity(projectile_entity).despawn();
+    ev_hit.send(ProjectileHitEvent { projectile: projectile_entity, victim: hit_entity });
+
+    projectile.entities_hit += 1;
     health.take_damage(projectile.dmg);
-    projectile.is_alive = false;
+
+    let is_dead = match projectile.piercing_mode {
+        PiercingMode::None => true,
+        PiercingMode::Count(count) => projectile.entities_hit >= count,
+        PiercingMode::All => false,
+    };
+
+    if is_dead {
+        commands.entity(projectile_entity).despawn();
+        projectile.is_alive = false;
+    }
 }
 

@@ -1,13 +1,14 @@
 use std::{f32::consts::PI, time::Duration};
 
 use bevy::{prelude::*, window::PrimaryWindow};
+use bevy_debug_text_overlay::screen_print;
 use bevy_kira_audio::AudioControl;
 
 use crate::{
     collision::collider::Collider,
     combat::{
         projectile::{DamageTarget, PiercingMode, Projectile},
-        teams::Team,
+        teams::Team, health::HealthType, knockback::Knockback,
     },
     constants::{SortingLayers, SCALING_VEC3},
     loading::{TextureAssets, AudioAssets},
@@ -84,32 +85,84 @@ pub fn shoot(
 
             // Play audio
             fx_channel.play(audio_assets.gunshot.clone());
+
+            let dmg = player.damage();
+            let velocity : f32 = 600.;
+
+            if player.abilities.contains(&Ability::MegaShotgun) {
+                let offset_angle = Radian::from_degrees(7.);
+                let bullets = 7;
+
+                for i in 0..bullets {
+                    spawn_bullet(&player, &mut commands, bullet_translation, &textures, (angle_to_target + offset_angle * ((bullets - 1) as f32 / -2. + i as f32)).normalize().unit_vector(), velocity, dmg);
+                }
+
+            } else if player.abilities.contains(&Ability::Shotgun) {
+                let offset_angle = Radian::from_degrees(7.);
+                let bullets = 5;
+
+                for i in 0..bullets {
+                    spawn_bullet(&player, &mut commands, bullet_translation, &textures, (angle_to_target + offset_angle * ((bullets - 1) as f32 / -2. + i as f32)).normalize().unit_vector(), velocity, dmg);
+                }
+
+            } else if player.abilities.contains(&Ability::TripleBarrel) {
+                let offset_angle = Radian::from_degrees(7.);
+                
+                spawn_bullet(&player, &mut commands, bullet_translation, &textures, (angle_to_target + offset_angle).normalize().unit_vector(), velocity, dmg);                
+                spawn_bullet(&player, &mut commands, bullet_translation, &textures, (angle_to_target).unit_vector(), velocity, dmg);                
+                spawn_bullet(&player, &mut commands, bullet_translation, &textures, (angle_to_target - offset_angle).normalize().unit_vector(), velocity, dmg);                
+
+            } else if player.abilities.contains(&Ability::DoubleBarrel) {
+                let perp_vec = Vec3{
+                    x: direction_vec.perp().x,
+                    y: direction_vec.perp().y,
+                    z: 0.
+                };
+
+                spawn_bullet(&player, &mut commands, bullet_translation + (perp_vec * 5.), &textures, direction_vec, velocity, dmg);
+                spawn_bullet(&player, &mut commands, bullet_translation - (perp_vec * 5.), &textures, direction_vec, velocity, dmg);
+            } else {
+                spawn_bullet(&player, &mut commands, bullet_translation, &textures, direction_vec, velocity, dmg);
+            }
             
             // Shoot!
-            commands
-                .spawn(SpriteBundle {
-                    texture: match player.abilities.contains(&Ability::BigBullets) {
-                        true => textures.bullet_medium.clone(),
-                        false => textures.bullet_small.clone(),
-                    },
-                    transform: Transform {
-                        translation: bullet_translation,
-                        scale: SCALING_VEC3,
-                        rotation: Quat::IDENTITY,
-                    },
-                    ..Default::default()
-                })
-                .insert(Projectile {
-                    dmg: 5,
-                    damage_target: DamageTarget::Team(Team::Enemy),
-                    piercing_mode: PiercingMode::None,
-                    entities_hit: 0,
-                    is_alive: true,
-                })
-                .insert(Velocity {
-                    vec: direction_vec * 600.,
-                })
-                .insert(Collider::new_circle(5., bullet_translation.truncate()));
+            
         }
     }
+}
+
+fn spawn_bullet(
+    player : &Player,
+    commands : &mut Commands,
+    translation : Vec3,
+    textures: &Res<TextureAssets>,
+    direction_vec : Vec2,
+    velocity : f32,
+    damage : HealthType,
+) {
+    commands
+        .spawn(SpriteBundle {
+            texture: match player.abilities.contains(&Ability::BigBullets) {
+                true => textures.bullet_medium.clone(),
+                false => textures.bullet_small.clone(),
+            },
+            transform: Transform {
+                translation: translation,
+                scale: SCALING_VEC3,
+                rotation: Quat::IDENTITY,
+            },
+            ..Default::default()
+        })
+        .insert(Projectile {
+            dmg: damage,
+            damage_target: DamageTarget::Team(Team::Enemy),
+            piercing_mode: PiercingMode::None,
+            entities_hit: 0,
+            is_alive: true,
+        })
+        .insert(Velocity {
+            vec: direction_vec * velocity,
+        })
+        .insert(Collider::new_circle(5., translation.truncate()))
+        .insert(Knockback{ force: 20. });
 }

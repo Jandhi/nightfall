@@ -1,9 +1,9 @@
 use std::iter;
 
-use bevy::{prelude::*, window::PrimaryWindow};
+use bevy::{prelude::*, window::PrimaryWindow, text::FontAtlas};
 use rand::seq::IteratorRandom;
 
-use crate::{util::rng::{RNG, GlobalSeed}, player::{Player, ability::Ability}, movement::pause::ActionPauseState, ui::{grid::{Grid, GridElement}, selection_group::{SelectionGroup, HoverEvent, UnhoverEvent, SelectionEvent}}, loading::{TextureAssets, AbilityTextures}, constants::{SortingLayers, SCALING_VEC3}, animation::{make_animation_bundle, Animation, info::{AnimationStateInfo, AnimationInfoBuilder}, AnimationStateStorage, controller::AnimationController, AnimationStateChangeEvent}};
+use crate::{util::rng::{RNG, GlobalSeed}, player::{Player, ability::Ability}, movement::pause::ActionPauseState, ui::{grid::{Grid, GridElement}, selection_group::{SelectionGroup, HoverEvent, UnhoverEvent, SelectionEvent}}, loading::{TextureAssets, AbilityTextures, FontAssets}, constants::{SortingLayers, SCALING_VEC3}, animation::{make_animation_bundle, Animation, info::{AnimationStateInfo, AnimationInfoBuilder}, AnimationStateStorage, controller::AnimationController, AnimationStateChangeEvent}, palette::Palette};
 
 use super::experience::LevelUpEvent;
 
@@ -70,7 +70,7 @@ pub fn on_select_ability(
 
     for selection_ev in selection_events.iter() {
         if let Ok((entity, selection)) = q_menu.get(selection_ev.parent) {
-            player.abilities.insert(selection.abilities[selection_ev.selected_index]);
+            player.abilities.push(selection.abilities[selection_ev.selected_index]);
             commmands.entity(entity).despawn_recursive();
             pause.is_paused = false;
         }
@@ -85,11 +85,17 @@ pub fn start_ability_selection(
     frame_animations: Res<AnimationStateStorage<AbilityFrameAnimation>>,
     mut texture_atlases: ResMut<Assets<TextureAtlas>>,
     mut rng : ResMut<AbilityRNG>,
+    font_assets : Res<FontAssets>,
+    palette : Res<Palette>,
     mut pause : ResMut<ActionPauseState>,
     mut commands : Commands,
     
 ) {
     if level_up_ev.iter().len() == 0 {
+        return;
+    }
+
+    if pause.is_paused {
         return;
     }
 

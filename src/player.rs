@@ -7,7 +7,7 @@ use crate::animation::{
     make_animation_bundle, AnimationStateChangeEvent, AppAnimationSetup,
 };
 use crate::collision::collider::Collider;
-use crate::combat::health::Health;
+use crate::combat::health::{Health, HealthType};
 use crate::constants::SortingLayers;
 use crate::experience::experience::Experience;
 use crate::loading::TextureAssets;
@@ -40,7 +40,13 @@ pub struct Player {
     reload_time: f32,
     shoot_time: f32,
     is_reloading: bool,
-    pub abilities : HashSet<Ability>,
+    pub abilities : Vec<Ability>,
+}
+
+impl Player {
+    pub fn damage(&self) -> HealthType {
+        5
+    }
 }
 
 /// This plugin handles player related stuff like movement
@@ -91,7 +97,7 @@ pub fn spawn_player(
             reload_time: 1.0,
             shoot_time: 0.5,
             is_reloading: false,
-            abilities: HashSet::new(),
+            abilities: vec![],
         })
         .insert(Collider::new_circle(50., Vec2 { x: 0., y: 0. }))
         .insert(make_animation_bundle(

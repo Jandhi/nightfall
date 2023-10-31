@@ -15,6 +15,14 @@ impl Radian {
     pub const HALF: Radian = Radian { angle: PI };
     pub const FULL: Radian = Radian { angle: PI * 2. };
 
+    pub fn from_degrees(degrees : f32) -> Radian {
+        Radian::FULL * (degrees / 360.)
+    }
+
+    pub fn to_degrees(&self) -> f32 {
+        self.angle / Radian::FULL.angle * 360.
+    }
+
     pub fn normalize(self) -> Radian {
         let mut angle = self.angle;
 

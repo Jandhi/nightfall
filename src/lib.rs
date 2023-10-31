@@ -12,7 +12,6 @@ mod loading;
 mod menu;
 mod palette;
 mod player;
-mod towers;
 mod util;
 mod experience;
 mod movement;

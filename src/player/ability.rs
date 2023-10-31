@@ -1,6 +1,6 @@
-use bevy::prelude::*;
+use bevy::{prelude::*, utils::HashSet};
 
-use crate::loading::AbilityTextures;
+use crate::{loading::AbilityTextures, combat::health::HealthType};
 
 
 
@@ -9,9 +9,12 @@ pub enum Ability {
     BigBullets,
     Crossbow,
     DoubleBarrel,
+    TripleBarrel,
     FlamingBullets,
     Shells,
     Sniper,
+    Shotgun,
+    MegaShotgun,
 }
 
 impl Ability {
@@ -20,9 +23,12 @@ impl Ability {
             Self::BigBullets, 
             Self::Crossbow,
             Self::DoubleBarrel,
+            Self::TripleBarrel,
             Self::FlamingBullets,
             Self::Shells,
-            Self::Sniper
+            Self::Sniper,
+            Self::Shotgun,
+            Self::MegaShotgun,
         ]
     }
 
@@ -31,9 +37,12 @@ impl Ability {
             Ability::BigBullets => textures.big_bullets.clone(),
             Ability::Crossbow => textures.crossbow.clone(),
             Ability::DoubleBarrel => textures.double_barrel.clone(),
+            Ability::TripleBarrel => textures.triple_barrel.clone(),
             Ability::FlamingBullets => textures.flaming_bullets.clone(),
             Ability::Shells => textures.shells.clone(),
             Ability::Sniper => textures.sniper.clone(),
+            Ability::Shotgun => textures.shotgun.clone(),
+            Ability::MegaShotgun => textures.mega_shotgun.clone(),
         }
     }
 
@@ -42,10 +51,51 @@ impl Ability {
             Ability::BigBullets => "Big Bullets",
             Ability::Crossbow => "Crossbow",
             Ability::DoubleBarrel => "Double Barrel",
+            Ability::TripleBarrel => "Triple Barrel",
             Ability::FlamingBullets => "Flaming Bullets",
             Ability::Shells => "Shells",
             Ability::Sniper => "Sniper",
+            Ability::Shotgun => "Shotgun",
+            Ability::MegaShotgun => "Mega Shotgun",
         }
+    }
+
+    pub fn is_available(&self, player_abilities : &Vec<Ability>) -> bool {
+        match self {
+            Ability::BigBullets => !player_abilities.contains(&Ability::BigBullets),
+            Ability::Crossbow => !player_abilities.contains(&Ability::Crossbow),
+            Ability::DoubleBarrel => !player_abilities.contains(&Ability::DoubleBarrel),
+            Ability::TripleBarrel => {
+                !player_abilities.contains(&Ability::TripleBarrel)
+                    && player_abilities.contains(&Ability::DoubleBarrel)
+            },
+            Ability::FlamingBullets => todo!(),
+            Ability::Shells => !player_abilities.contains(&Ability::Shells),
+            Ability::Sniper => !player_abilities.contains(&Ability::Sniper),
+            Ability::Shotgun => {
+                !player_abilities.contains(&Ability::Shotgun)
+                    && player_abilities.contains(&Ability::TripleBarrel)
+            },
+            Ability::MegaShotgun => {
+                !player_abilities.contains(&Ability::MegaShotgun)
+                    && player_abilities.contains(&Ability::Shotgun)
+            },
+        }
+    }
+
+    pub fn damage_mult(&self) -> f32 {
+        match self {
+            Ability::DoubleBarrel => 0.7,
+            Ability::TripleBarrel => 0.9,
+            Ability::Shotgun => 0.9,
+            _ => 1.
+        }
+    }
+}
+
+impl Into<String> for &Ability {
+    fn into(self) -> String {
+        String::from(self.get_name())
     }
 }
 
