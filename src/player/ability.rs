@@ -1,6 +1,6 @@
-use bevy::{prelude::*, utils::HashSet};
+use bevy::{prelude::*};
 
-use crate::{loading::AbilityTextures, combat::health::HealthType};
+use crate::{loading::AbilityTextures};
 
 
 
@@ -101,9 +101,7 @@ impl Ability {
     }
 
     pub fn reload_mult(&self) -> f32 {
-        match self {
-            _ => 1.
-        }
+        1.
     }
 
     pub fn shoot_speed_mult(&self) -> f32 {
@@ -114,9 +112,9 @@ impl Ability {
     }
 }
 
-impl Into<String> for &Ability {
-    fn into(self) -> String {
-        String::from(self.get_name())
+impl From<&Ability> for String {
+    fn from(val: &Ability) -> Self {
+        String::from(val.get_name())
     }
 }
 

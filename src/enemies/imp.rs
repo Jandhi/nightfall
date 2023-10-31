@@ -50,7 +50,7 @@ pub fn spawn_imp(
         .insert(Collider::new_circle(10., position.truncate()))
         .insert(make_animation_bundle(
             ImpAnimation::Flying,
-            &imp_animations,
+            imp_animations,
             texture_atlas_handle.clone(),
             position,
         ))

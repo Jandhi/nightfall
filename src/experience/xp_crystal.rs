@@ -4,7 +4,7 @@ use bevy::prelude::*;
 
 use rand::Rng;
 
-use crate::{enemies::enemy::EnemyDeathEvent, util::{rng::{GlobalSeed, RNG}, radians::Radian}, movement::{velocity::Velocity, friction::Friction, magnetic::Magnetic, edge_teleport::EdgeTeleports, fake_magnetic::FakeMagnetic}, loading::TextureAssets, constants::{SCALING_VEC3}, player::Player};
+use crate::{enemies::enemy::EnemyDeathEvent, util::{rng::{GlobalSeed, RNG}, radians::Radian}, movement::{velocity::Velocity, friction::Friction, edge_teleport::EdgeTeleports, fake_magnetic::FakeMagnetic}, loading::TextureAssets, constants::{SCALING_VEC3}, player::Player};
 
 use super::experience::Experience;
 

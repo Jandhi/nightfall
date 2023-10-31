@@ -1,9 +1,9 @@
-use std::iter;
 
-use bevy::{prelude::*, window::PrimaryWindow, text::FontAtlas};
+
+use bevy::{prelude::*, window::PrimaryWindow};
 use rand::seq::IteratorRandom;
 
-use crate::{util::rng::{RNG, GlobalSeed}, player::{Player, ability::Ability}, movement::pause::ActionPauseState, ui::{grid::{Grid, GridElement}, selection_group::{SelectionGroup, HoverEvent, UnhoverEvent, SelectionEvent}}, loading::{TextureAssets, AbilityTextures, FontAssets}, constants::{SortingLayers, SCALING_VEC3}, animation::{make_animation_bundle, Animation, info::{AnimationStateInfo, AnimationInfoBuilder}, AnimationStateStorage, controller::AnimationController, AnimationStateChangeEvent}, palette::Palette};
+use crate::{util::rng::{RNG, GlobalSeed}, player::{Player, ability::Ability}, movement::pause::ActionPauseState, ui::{grid::{Grid, GridElement}, selection_group::{SelectionGroup, HoverEvent, UnhoverEvent, SelectionEvent}}, loading::{AbilityTextures, FontAssets}, animation::{make_animation_bundle, Animation, info::{AnimationStateInfo, AnimationInfoBuilder}, AnimationStateStorage, controller::AnimationController, AnimationStateChangeEvent}, palette::Palette};
 
 use super::experience::LevelUpEvent;
 
@@ -36,7 +36,7 @@ impl Animation<AbilityFrameAnimation> for AbilityFrameAnimation {
 }
 
 pub fn ability_frame_update(
-    mut q_frames : Query<(Entity, &AnimationController<AbilityFrameAnimation>)>,
+    q_frames : Query<(Entity, &AnimationController<AbilityFrameAnimation>)>,
     mut animation_update : EventWriter<AnimationStateChangeEvent<AbilityFrameAnimation>>,
     mut hover_events : EventReader<HoverEvent>,
     mut unhover_events : EventReader<UnhoverEvent>,
@@ -61,7 +61,7 @@ pub struct AbilitySelection{
 
 pub fn on_select_ability(
     q_menu : Query<(Entity, &AbilitySelection)>,
-    mut q_player : Query<(&mut Player), Without<AbilitySelection>>,
+    mut q_player : Query<&mut Player, Without<AbilitySelection>>,
     mut selection_events : EventReader<SelectionEvent>,
     mut commmands : Commands,
     mut pause : ResMut<ActionPauseState>,
@@ -85,8 +85,8 @@ pub fn start_ability_selection(
     frame_animations: Res<AnimationStateStorage<AbilityFrameAnimation>>,
     mut texture_atlases: ResMut<Assets<TextureAtlas>>,
     mut rng : ResMut<AbilityRNG>,
-    font_assets : Res<FontAssets>,
-    palette : Res<Palette>,
+    _font_assets : Res<FontAssets>,
+    _palette : Res<Palette>,
     mut pause : ResMut<ActionPauseState>,
     mut commands : Commands,
     
@@ -102,7 +102,7 @@ pub fn start_ability_selection(
     pause.is_paused = true;
 
     let window = q_windows.single();
-    let mut player = q_player.single_mut();
+    let player = q_player.single_mut();
 
     let texture_atlas = TextureAtlas::from_grid(
         textures.frame.clone(),

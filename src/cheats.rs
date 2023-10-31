@@ -18,7 +18,7 @@ fn cheats (
     keyboard_input: Res<Input<KeyCode>>,
     mut levelup : EventWriter<LevelUpEvent>,
 ) {
-    let (player, xp) = q_player.single();
+    let (_player, xp) = q_player.single();
 
     if keyboard_input.just_pressed(KeyCode::L) {
         levelup.send(LevelUpEvent { new_level: xp.level + 1 });

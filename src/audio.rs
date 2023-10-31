@@ -1,4 +1,4 @@
-use crate::actions::{set_movement_actions, Actions};
+
 use crate::loading::AudioAssets;
 use crate::GameState;
 use bevy::prelude::*;
@@ -25,6 +25,6 @@ pub struct Ambience;
 pub type AmbienceChannel = AudioChannel<Ambience>;
 
 
-fn start_audio(mut commands: Commands, audio_assets: Res<AudioAssets>, audio: Res<Audio>) {
+fn start_audio(_commands: Commands, _audio_assets: Res<AudioAssets>, _audio: Res<Audio>) {
     
 }

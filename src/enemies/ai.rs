@@ -1,11 +1,11 @@
 use std::f32::consts::PI;
 
 use bevy::prelude::*;
-use bevy_debug_text_overlay::screen_print;
 
-use crate::{player::Player, movement::{pause::ActionPauseState, velocity::Velocity}, constants::DISTANCE_SCALING, util::radians::Radian};
 
-use super::enemy;
+use crate::{player::Player, movement::{pause::ActionPauseState, velocity::Velocity}, util::radians::Radian};
+
+
 
 
 #[derive(Component)]
@@ -119,14 +119,14 @@ pub fn move_and_shoot_ai(
 
         if ai.state == MoveAndShootAIState::Slow && velocity.vec.length() < 0.05 {
             ai.state = MoveAndShootAIState::Charge;
-            charge_ev.send(ChargeShootEvent { entity: entity });
+            charge_ev.send(ChargeShootEvent { entity });
             ai.charge_timer.reset();
         }
 
         if ai.state == MoveAndShootAIState::Charge && ai.charge_timer.just_finished() {
             ai.state = MoveAndShootAIState::Move;
             ai.refresh_timer.reset();
-            shoot_ev.send(ShootEvent { entity: entity, target: player_entity })
+            shoot_ev.send(ShootEvent { entity, target: player_entity })
         }
 
         if ai.state != MoveAndShootAIState::Slow && ai.state != MoveAndShootAIState::Move {

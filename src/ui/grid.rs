@@ -1,4 +1,4 @@
-use bevy::{prelude::*, utils::HashMap};
+use bevy::{prelude::*};
 
 #[derive(Component)]
 pub struct GridElement {
@@ -15,7 +15,7 @@ pub fn update_grid_elements(
     mut q_elements : Query<(&GridElement, &mut Transform, &Parent)>,
     q_grids : Query<(&Grid, &Transform), Without<GridElement>>,
 ) {
-    for (element, mut transform, parent) in q_elements.iter_mut() {
+    for (element, transform, parent) in q_elements.iter_mut() {
         if let Ok((grid, grid_transform)) = q_grids.get(parent.get()) {
             update_grid_element(element, transform, grid, grid_transform);
         }

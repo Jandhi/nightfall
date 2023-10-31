@@ -1,7 +1,7 @@
 use std::{f32::consts::PI, time::Duration};
 
 use bevy::{prelude::*, window::PrimaryWindow};
-use bevy_debug_text_overlay::screen_print;
+
 use bevy_kira_audio::AudioControl;
 
 use crate::{
@@ -12,7 +12,7 @@ use crate::{
     },
     constants::{SortingLayers, SCALING_VEC3},
     loading::{TextureAssets, AudioAssets},
-    util::radians::Radian, movement::{velocity::Velocity, pause::ActionPauseState}, audio::{FXChannel, self},
+    util::radians::Radian, movement::{velocity::Velocity, pause::ActionPauseState}, audio::{FXChannel},
 };
 
 use super::{reload_ui::ReloadTimer, Player, ability::Ability};
@@ -149,7 +149,7 @@ fn spawn_bullet(
                 false => textures.bullet_small.clone(),
             },
             transform: Transform {
-                translation: translation,
+                translation,
                 scale: SCALING_VEC3,
                 rotation: Quat::IDENTITY,
             },

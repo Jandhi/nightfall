@@ -4,7 +4,7 @@ use bevy::prelude::*;
 
 use crate::{animation::{AnimationStateStorage, make_animation_bundle, info::{AnimationStateInfo, AnimationInfoBuilder}, Animation, AnimationStateChangeEvent, controller::AnimationController}, loading::TextureAssets, movement::velocity::Velocity, combat::{health::Health, teams::{TeamMember, Team}, healthbar::NeedsHealthBar, projectile::{Projectile, DamageTarget, PiercingMode}}, collision::collider::Collider, player::Player, util::radians::Radian};
 
-use super::{enemy::{Enemy, EnemyType}, ai::{FollowPlayerAI, MoveAndShootAI, ShootEvent, ChargeShootEvent}};
+use super::{enemy::{Enemy, EnemyType}, ai::{MoveAndShootAI, ShootEvent, ChargeShootEvent}};
 
 #[derive(PartialEq, Eq, Hash, Clone, Copy)]
 pub enum BeholderAnimation {
@@ -64,7 +64,7 @@ pub fn beholder_update(
     for shoot in shoot_ev.iter() {
         if let Ok((entity, transform, _)) = q_beholders.get(shoot.entity) {
             animate.send(AnimationStateChangeEvent { id: entity, state_id: BeholderAnimation::Flying });
-            let (player_entity, player_transform) = q_player.single();
+            let (_player_entity, player_transform) = q_player.single();
 
             let direction = player_transform.translation.truncate() - transform.translation.truncate();
             // obtain angle to target with respect to x-axis.
@@ -122,7 +122,7 @@ pub fn spawn_beholder(
         .insert(Collider::new_circle(12., Vec2 { x: 70., y: 70. }))
         .insert(make_animation_bundle(
             BeholderAnimation::Flying,
-            &animations,
+            animations,
             texture_atlas_handle.clone(),
             position,
         ))
