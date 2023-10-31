@@ -69,7 +69,7 @@ impl Ability {
                 !player_abilities.contains(&Ability::TripleBarrel)
                     && player_abilities.contains(&Ability::DoubleBarrel)
             },
-            Ability::FlamingBullets => todo!(),
+            Ability::FlamingBullets => !player_abilities.contains(&Ability::FlamingBullets),
             Ability::Shells => !player_abilities.contains(&Ability::Shells),
             Ability::Sniper => !player_abilities.contains(&Ability::Sniper),
             Ability::Shotgun => {
@@ -88,6 +88,27 @@ impl Ability {
             Ability::DoubleBarrel => 0.7,
             Ability::TripleBarrel => 0.9,
             Ability::Shotgun => 0.9,
+            Ability::BigBullets => 2.0,
+            _ => 1.
+        }
+    }
+
+    pub fn knockback_mult(&self) -> f32 {
+        match self {
+            Ability::BigBullets => 2.0,
+            _ => 1.
+        }
+    }
+
+    pub fn reload_mult(&self) -> f32 {
+        match self {
+            _ => 1.
+        }
+    }
+
+    pub fn shoot_speed_mult(&self) -> f32 {
+        match self {
+            Ability::BigBullets => 0.7,
             _ => 1.
         }
     }

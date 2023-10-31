@@ -8,6 +8,7 @@ use crate::animation::{
 };
 use crate::collision::collider::Collider;
 use crate::combat::health::{Health, HealthType};
+use crate::combat::teams::{TeamMember, Team};
 use crate::constants::SortingLayers;
 use crate::experience::experience::Experience;
 use crate::loading::TextureAssets;
@@ -37,16 +38,28 @@ pub struct PlayerPlugin;
 pub struct Player {
     curr_bullets: u32,
     max_bullets: u32,
-    reload_time: f32,
-    shoot_time: f32,
     is_reloading: bool,
     pub abilities : Vec<Ability>,
 }
 
 impl Player {
     pub fn damage(&self) -> HealthType {
-        5
+        self.abilities.iter().fold(5., |dmg, ability| dmg * ability.damage_mult()) as u32
     }
+    
+    pub fn shoot_time(&self) -> f32 {
+        self.abilities.iter().fold(0.5, |dmg, ability| dmg * ability.shoot_speed_mult())
+    }
+     
+    pub fn reload_time(&self) -> f32 {
+        self.abilities.iter().fold(1.0, |dmg, ability| dmg * ability.reload_mult())
+    }
+
+    pub fn knockback(&self) -> f32 {
+        self.abilities.iter().fold(20., |dmg, ability| dmg * ability.knockback_mult())
+    }
+
+
 }
 
 /// This plugin handles player related stuff like movement
@@ -94,12 +107,10 @@ pub fn spawn_player(
         .spawn(Player {
             max_bullets: 6,
             curr_bullets: 6,
-            reload_time: 1.0,
-            shoot_time: 0.5,
             is_reloading: false,
             abilities: vec![],
         })
-        .insert(Collider::new_circle(50., Vec2 { x: 0., y: 0. }))
+        .insert(Collider::new_circle(10., Vec2 { x: 0., y: 0. }))
         .insert(make_animation_bundle(
             PlayerAnimationState::Idle,
             &player_animations,
@@ -118,7 +129,7 @@ pub fn spawn_player(
         .insert(Health{
             value: 3,
             max: 3,
-        });
+        }).insert(TeamMember{team: Team::Player});
 }
 
 fn move_player(

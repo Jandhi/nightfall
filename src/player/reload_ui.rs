@@ -64,7 +64,7 @@ pub fn update_reload_ui(
     };
 
     if timer.0.remaining() > Duration::ZERO {
-        let index = 9.0 * (1.0 - timer.0.remaining().as_secs_f32() / player.reload_time);
+        let index = 9.0 * (1.0 - timer.0.remaining().as_secs_f32() / player.reload_time());
         reload_atlas.index = index as usize;
     } else {
         reload_atlas.index = 9;

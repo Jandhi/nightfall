@@ -21,10 +21,14 @@ use crate::player::Player;
 use crate::util::radians::Radian;
 
 use super::ai::FollowPlayerAI;
+use super::beholder::{spawn_beholder, BeholderAnimation};
+use super::imp::ImpAnimation;
 
 #[derive(Copy, Clone)]
 pub enum EnemyType {
     Imp,
+    Beholder,
+    Zombie
 }
 
 
@@ -43,21 +47,7 @@ pub struct EnemyDeathEvent {
     pub location : Vec3, 
 }
 
-#[derive(PartialEq, Eq, Hash, Clone, Copy)]
-pub enum ImpAnimation {
-    FLYING,
-}
 
-impl Animation<ImpAnimation> for ImpAnimation {
-    fn get_states() -> Vec<AnimationStateInfo<ImpAnimation>> {
-        vec![AnimationStateInfo {
-            id: ImpAnimation::FLYING,
-            start_index: 0,
-            frame_count: 4,
-            frame_duration: Duration::from_secs_f32(1. / 8.),
-        }]
-    }
-}
 
 impl Enemy {
     pub fn estimate_position(&self, transform: &Transform, _time: f32) -> Vec2 {
@@ -74,7 +64,7 @@ pub fn death_loop(
 ) {
     for death_ev in death_event.iter() {
         if let Ok((entity, enemy, transform)) = q_enemies.get_mut(death_ev.entity) {
-            commands.entity(entity).despawn();
+            commands.entity(entity).despawn_recursive();
             ememy_death_event.send(EnemyDeathEvent {
                 entity,
                 enemy: enemy.clone(),
@@ -102,45 +92,14 @@ pub fn spread_enemies(
     }
 }
 
-pub fn spawn_enemy(
+pub fn initial_spawn(
     imp_animations: Res<AnimationStateStorage<ImpAnimation>>,
+    beholder_animations: Res<AnimationStateStorage<BeholderAnimation>>,
     mut texture_atlases: ResMut<Assets<TextureAtlas>>,
     mut commands: Commands,
     textures: Res<TextureAssets>,
 ) {
-    let texture_atlas = TextureAtlas::from_grid(
-        textures.imp.clone(),
-        Vec2 { x: 32., y: 32. },
-        4,
-        1,
-        None,
-        None,
-    );
-    let texture_atlas_handle = texture_atlases.add(texture_atlas);
-
-    for i in 0..5 {
-        commands
-        .spawn(Enemy {
-            xp: 5,
-            enemy_type: EnemyType::Imp,
-        })
-        .insert(FollowPlayerAI{ speed: 15., corrective_force: 1.0 })
-        .insert(Velocity::ZERO)
-        .insert(Health::new(15))
-        .insert(Collider::new_circle(10., Vec2 { x: 70., y: 70. }))
-        .insert(make_animation_bundle(
-            ImpAnimation::FLYING,
-            &imp_animations,
-            texture_atlas_handle.clone(),
-            Vec3 {
-                x: -30. + (i as f32) * 15.,
-                y: 30.,
-                z: SortingLayers::Action.into(),
-            },
-        ))
-        .insert(TeamMember { team: Team::Enemy })
-        .insert(NeedsHealthBar::default());
-    }
+    spawn_beholder(Vec3 { x: 30., y: 30., z: SortingLayers::Action.into() }, &beholder_animations, &textures, &mut texture_atlases, &mut commands);
 }
 
 

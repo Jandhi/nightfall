@@ -67,8 +67,14 @@ pub struct TextureAssets {
     #[asset(path = "textures/bullet_large.png")]
     pub bullet_large: Handle<Image>,
 
-    #[asset(path = "textures/imp.png")]
+    #[asset(path = "textures/enemies/imp.png")]
     pub imp: Handle<Image>,
+
+    #[asset(path = "textures/enemies/beholder.png")]
+    pub beholder: Handle<Image>,
+
+    #[asset(path = "textures/enemies/beholder_projectile.png")]
+    pub beholder_projectile: Handle<Image>,
 
     #[asset(path = "textures/healthbar.png")]
     pub healthbar: Handle<Image>,
