@@ -1,14 +1,22 @@
 #![allow(clippy::type_complexity)]
 
 mod actions;
+mod animation;
 mod audio;
+mod collision;
+mod combat;
+mod constants;
 mod cooldown;
 mod enemies;
 mod loading;
 mod menu;
-pub mod palette;
+mod palette;
 mod player;
-mod towers;
+mod util;
+mod experience;
+mod movement;
+mod ui;
+mod cheats;
 
 use crate::actions::ActionsPlugin;
 use crate::audio::InternalAudioPlugin;
@@ -18,12 +26,18 @@ use crate::loading::LoadingPlugin;
 use crate::menu::MenuPlugin;
 use crate::palette::PalettePlugin;
 use crate::player::PlayerPlugin;
-use crate::towers::TowersPlugin;
 
 use bevy::app::App;
 #[cfg(debug_assertions)]
 use bevy::diagnostic::{FrameTimeDiagnosticsPlugin, LogDiagnosticsPlugin};
 use bevy::prelude::*;
+use cheats::CheatsPlugin;
+use collision::CollisionPlugin;
+use combat::CombatPlugin;
+use experience::ExperiencePlugin;
+use movement::MovementPlugin;
+use ui::UIPlugin;
+use util::UtilPlugin;
 
 // This example game uses States to separate logic
 // See https://bevy-cheatbook.github.io/programming/states.html
@@ -50,9 +64,15 @@ impl Plugin for GamePlugin {
             ActionsPlugin,
             InternalAudioPlugin,
             PlayerPlugin,
+            CombatPlugin,
             CooldownPlugin,
             EnemiesPlugin,
-            TowersPlugin,
+            CollisionPlugin,
+            ExperiencePlugin,
+            UtilPlugin,
+            MovementPlugin,
+            UIPlugin,
+            CheatsPlugin,
         ));
 
         #[cfg(debug_assertions)]
