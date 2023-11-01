@@ -1,22 +1,50 @@
-use std::{time::Duration, f32::consts::PI};
+use std::{f32::consts::PI, time::Duration};
 
 use bevy::prelude::*;
 
-use crate::{animation::{AnimationStateStorage, make_animation_bundle, info::{AnimationStateInfo, AnimationInfoBuilder}, Animation, AnimationStateChangeEvent, controller::AnimationController}, loading::TextureAssets, movement::velocity::Velocity, combat::{health::Health, teams::{TeamMember, Team}, healthbar::NeedsHealthBar, projectile::{Projectile, DamageTarget, PiercingMode}}, collision::collider::Collider, player::Player, util::radians::Radian};
+use crate::{
+    animation::{
+        controller::AnimationController,
+        info::{AnimationInfoBuilder, AnimationStateInfo},
+        make_animation_bundle, Animation, AnimationStateChangeEvent, AnimationStateStorage,
+    },
+    collision::collider::Collider,
+    combat::{
+        health::Health,
+        healthbar::NeedsHealthBar,
+        projectile::{DamageTarget, PiercingMode, Projectile},
+        teams::{Team, TeamMember},
+    },
+    loading::TextureAssets,
+    movement::velocity::Velocity,
+    player::Player,
+    util::radians::Radian,
+};
 
-use super::{enemy::{Enemy, EnemyType}, ai::{MoveAndShootAI, ShootEvent, ChargeShootEvent}};
+use super::{
+    ai::{ChargeShootEvent, MoveAndShootAI, ShootEvent},
+    enemy::{Enemy, EnemyType},
+};
 
 #[derive(PartialEq, Eq, Hash, Clone, Copy)]
 pub enum BeholderAnimation {
     Flying,
-    Shoot
+    Shoot,
 }
 
 impl Animation<BeholderAnimation> for BeholderAnimation {
     fn get_states() -> Vec<AnimationStateInfo<BeholderAnimation>> {
         AnimationInfoBuilder::new()
-            .add_frames(BeholderAnimation::Flying, 16, Duration::from_secs_f32(1. / 8.))
-            .add_frames(BeholderAnimation::Shoot, 6, Duration::from_secs_f32(1. / 8.))
+            .add_frames(
+                BeholderAnimation::Flying,
+                16,
+                Duration::from_secs_f32(1. / 8.),
+            )
+            .add_frames(
+                BeholderAnimation::Shoot,
+                6,
+                Duration::from_secs_f32(1. / 8.),
+            )
             .build()
     }
 }
@@ -29,21 +57,28 @@ pub enum BeholderProjectileAnimation {
 impl Animation<BeholderProjectileAnimation> for BeholderProjectileAnimation {
     fn get_states() -> Vec<AnimationStateInfo<BeholderProjectileAnimation>> {
         AnimationInfoBuilder::new()
-            .add_frames(BeholderProjectileAnimation::Flying, 4, Duration::from_secs_f32(1. / 4.))
+            .add_frames(
+                BeholderProjectileAnimation::Flying,
+                4,
+                Duration::from_secs_f32(1. / 4.),
+            )
             .build()
     }
 }
 
 pub fn beholder_update(
-    q_beholders :  Query<(Entity, &Transform, &AnimationController<BeholderAnimation>), Without<Player>>,
-    q_player : Query<(Entity, &Transform), With<Player>>,
-    mut shoot_ev : EventReader<ShootEvent>,
-    mut charge_ev : EventReader<ChargeShootEvent>,
-    mut animate : EventWriter<AnimationStateChangeEvent<BeholderAnimation>>,
-    beholder_projetile_animations : Res<AnimationStateStorage<BeholderProjectileAnimation>>,
+    q_beholders: Query<
+        (Entity, &Transform, &AnimationController<BeholderAnimation>),
+        Without<Player>,
+    >,
+    q_player: Query<(Entity, &Transform), With<Player>>,
+    mut shoot_ev: EventReader<ShootEvent>,
+    mut charge_ev: EventReader<ChargeShootEvent>,
+    mut animate: EventWriter<AnimationStateChangeEvent<BeholderAnimation>>,
+    beholder_projetile_animations: Res<AnimationStateStorage<BeholderProjectileAnimation>>,
     textures: Res<TextureAssets>,
     mut texture_atlases: ResMut<Assets<TextureAtlas>>,
-    mut commands : Commands
+    mut commands: Commands,
 ) {
     let texture_atlas = TextureAtlas::from_grid(
         textures.beholder_projectile.clone(),
@@ -57,22 +92,34 @@ pub fn beholder_update(
 
     for charge in charge_ev.iter() {
         if let Ok((entity, _, _)) = q_beholders.get(charge.entity) {
-            animate.send(AnimationStateChangeEvent { id: entity, state_id: BeholderAnimation::Shoot })
-        } 
+            animate.send(AnimationStateChangeEvent {
+                id: entity,
+                state_id: BeholderAnimation::Shoot,
+            })
+        }
     }
 
     for shoot in shoot_ev.iter() {
         if let Ok((entity, transform, _)) = q_beholders.get(shoot.entity) {
-            animate.send(AnimationStateChangeEvent { id: entity, state_id: BeholderAnimation::Flying });
+            animate.send(AnimationStateChangeEvent {
+                id: entity,
+                state_id: BeholderAnimation::Flying,
+            });
             let (_player_entity, player_transform) = q_player.single();
 
-            let direction = player_transform.translation.truncate() - transform.translation.truncate();
+            let direction =
+                player_transform.translation.truncate() - transform.translation.truncate();
             // obtain angle to target with respect to x-axis.
             let angle_to_target = Radian::from(direction.y.atan2(direction.x) - PI / 2.);
             let direction_vec = angle_to_target.unit_vector();
 
             commands
-                .spawn(make_animation_bundle(BeholderProjectileAnimation::Flying, &beholder_projetile_animations, texture_atlas_handle.clone(), transform.translation))
+                .spawn(make_animation_bundle(
+                    BeholderProjectileAnimation::Flying,
+                    &beholder_projetile_animations,
+                    texture_atlas_handle.clone(),
+                    transform.translation,
+                ))
                 .insert(Projectile {
                     dmg: 1,
                     damage_target: DamageTarget::Team(Team::Player),
@@ -89,7 +136,7 @@ pub fn beholder_update(
 }
 
 pub fn spawn_beholder(
-    position : Vec3,
+    position: Vec3,
     animations: &Res<AnimationStateStorage<BeholderAnimation>>,
     textures: &Res<TextureAssets>,
     texture_atlases: &mut ResMut<Assets<TextureAtlas>>,
@@ -110,13 +157,7 @@ pub fn spawn_beholder(
             xp: 10,
             enemy_type: EnemyType::Beholder,
         })
-        .insert(MoveAndShootAI::new(
-            20., 
-            3., 
-            200., 
-            6./8., 
-            2.
-        ))
+        .insert(MoveAndShootAI::new(20., 3., 200., 6. / 8., 2.))
         .insert(Velocity::ZERO)
         .insert(Health::new(15))
         .insert(Collider::new_circle(12., Vec2 { x: 70., y: 70. }))

@@ -96,10 +96,6 @@ pub struct TextureAssets {
 
     #[asset(path = "textures/crystal.png")]
     pub crystal: Handle<Image>,
-
-    
-
-
 }
 
 #[derive(AssetCollection, Resource)]

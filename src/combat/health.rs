@@ -10,10 +10,7 @@ pub struct Health {
 
 impl Health {
     pub fn new(max: HealthType) -> Health {
-        Health {
-            value: max,
-            max,
-        }
+        Health { value: max, max }
     }
 
     pub fn take_damage(&mut self, dmg: HealthType) {

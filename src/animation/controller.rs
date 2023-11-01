@@ -2,7 +2,7 @@ use std::{hash::Hash, time::Duration};
 
 use bevy::prelude::*;
 
-use super::{AnimationStateInfo, AnimationStateStorage, AnimationStateChangeEvent};
+use super::{AnimationStateChangeEvent, AnimationStateInfo, AnimationStateStorage};
 
 /*
 The component used to control a spritesheet's animation
@@ -12,7 +12,6 @@ pub struct AnimationController<TState: Clone + Copy> {
     state: AnimationStateInfo<TState>,
     is_facing_right: bool,
 }
-
 
 impl<TState: Copy> AnimationController<TState> {
     pub fn is_facing_right(&self) -> bool {
@@ -81,12 +80,13 @@ pub fn update_animation_frames<T: Send + std::marker::Sync + 'static + Clone + C
         timer.tick(time.delta());
 
         if timer.just_finished() {
-            sprite.index =
-                if sprite.index >= controller.state.start_index + controller.state.frame_count - 1 {
-                    controller.state.start_index
-                } else {
-                    sprite.index + 1
-                };
+            sprite.index = if sprite.index
+                >= controller.state.start_index + controller.state.frame_count - 1
+            {
+                controller.state.start_index
+            } else {
+                sprite.index + 1
+            };
 
             sprite.flip_x = !controller.is_facing_right;
         }

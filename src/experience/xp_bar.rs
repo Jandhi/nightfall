@@ -2,17 +2,17 @@ use std::time::Duration;
 
 use bevy::{prelude::*, window::PrimaryWindow};
 
-
 use crate::{
     animation::{
-        make_animation_bundle, AnimationStateChangeEvent,
-        AnimationStateStorage, Animation, controller::AnimationController, info::{AnimationStateInfo, AnimationInfoBuilder},
+        controller::AnimationController,
+        info::{AnimationInfoBuilder, AnimationStateInfo},
+        make_animation_bundle, Animation, AnimationStateChangeEvent, AnimationStateStorage,
     },
-    loading::TextureAssets, constants::SortingLayers,
+    constants::SortingLayers,
+    loading::TextureAssets,
 };
 
 use super::experience::Experience;
-
 
 #[derive(Component)]
 pub struct XPBarSprite {
@@ -29,21 +29,33 @@ pub enum XPBarAnimation {
 pub enum XPBarPosition {
     Left,
     Center,
-    Right
+    Right,
 }
 
-const BUBBLE_FRAME_DURATION : f32 = 0.1;
+const BUBBLE_FRAME_DURATION: f32 = 0.1;
 impl Animation<XPBarAnimation> for XPBarAnimation {
     fn get_states() -> Vec<AnimationStateInfo<XPBarAnimation>> {
         let mut builder = AnimationInfoBuilder::new();
 
-        for pos in [XPBarPosition::Left, XPBarPosition::Center, XPBarPosition::Right] {
+        for pos in [
+            XPBarPosition::Left,
+            XPBarPosition::Center,
+            XPBarPosition::Right,
+        ] {
             builder
                 .add_single(XPBarAnimation::Empty(pos))
-                .add_frames(XPBarAnimation::Half(pos), 4, Duration::from_secs_f32(BUBBLE_FRAME_DURATION))
-                .add_frames(XPBarAnimation::Filled(pos), 4, Duration::from_secs_f32(BUBBLE_FRAME_DURATION));
+                .add_frames(
+                    XPBarAnimation::Half(pos),
+                    4,
+                    Duration::from_secs_f32(BUBBLE_FRAME_DURATION),
+                )
+                .add_frames(
+                    XPBarAnimation::Filled(pos),
+                    4,
+                    Duration::from_secs_f32(BUBBLE_FRAME_DURATION),
+                );
         }
-        
+
         builder.build()
     }
 }
@@ -53,7 +65,12 @@ pub type XPBarAnimations = AnimationStateStorage<XPBarAnimation>;
 pub fn manage_xp_bar_sprites(
     q_player: Query<&Experience, Without<XPBarSprite>>,
     mut q_bullets: Query<
-        (Entity, &AnimationController<XPBarAnimation>, &XPBarSprite, &mut Transform),
+        (
+            Entity,
+            &AnimationController<XPBarAnimation>,
+            &XPBarSprite,
+            &mut Transform,
+        ),
         Without<Experience>,
     >,
     q_windows: Query<&Window, With<PrimaryWindow>>,
@@ -69,21 +86,29 @@ pub fn manage_xp_bar_sprites(
             _ => XPBarPosition::Center,
         };
         let desired_state = match () {
-            _ if (experience.curr_experience as f32 / experience.threshold as f32) * 10.0 > (1 + xp_bar_slice.index) as f32 => XPBarAnimation::Filled(position),
-            _ if (experience.curr_experience as f32 / experience.threshold as f32) * 10.0 > xp_bar_slice.index as f32 => XPBarAnimation::Half(position),
+            _ if (experience.curr_experience as f32 / experience.threshold as f32) * 10.0
+                > (1 + xp_bar_slice.index) as f32 =>
+            {
+                XPBarAnimation::Filled(position)
+            }
+            _ if (experience.curr_experience as f32 / experience.threshold as f32) * 10.0
+                > xp_bar_slice.index as f32 =>
+            {
+                XPBarAnimation::Half(position)
+            }
             _ => XPBarAnimation::Empty(position),
         };
 
         if controller.get_state() != desired_state {
-            animation_state_change.send(AnimationStateChangeEvent { 
-                id: entity, 
-                state_id: desired_state 
+            animation_state_change.send(AnimationStateChangeEvent {
+                id: entity,
+                state_id: desired_state,
             });
         }
 
         transform.translation = Vec3 {
             x: 0. + 32. * xp_bar_slice.index as f32,
-            y: window.height() / 2. - 30. ,
+            y: window.height() / 2. - 30.,
             z: SortingLayers::UI.into(),
         }
     }

@@ -4,8 +4,9 @@ use bevy::prelude::*;
 use bevy_kira_audio::AudioControl;
 
 use crate::{
+    audio::FXChannel,
     constants::{SortingLayers, SCALING_VEC3},
-    loading::{TextureAssets, AudioAssets}, audio::FXChannel,
+    loading::{AudioAssets, TextureAssets},
 };
 
 use super::Player;
@@ -49,8 +50,8 @@ pub fn update_reload_ui(
     mut q_reload_ui: Query<(&mut Transform, &mut TextureAtlasSprite), With<ReloadUI>>,
     q_windows: Query<&Window, Without<ReloadUI>>,
     q_player: Query<&Player, (Without<ReloadUI>, Without<Window>)>,
-    audio_assets : Res<AudioAssets>,
-    fx_channel : Res<FXChannel>,
+    audio_assets: Res<AudioAssets>,
+    fx_channel: Res<FXChannel>,
     timer: Res<ReloadTimer>,
 ) {
     let (mut reload_transform, mut reload_atlas) = q_reload_ui.single_mut();

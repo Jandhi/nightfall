@@ -5,7 +5,6 @@ use self::rng::GlobalSeed;
 pub mod radians;
 pub mod rng;
 
-
 pub struct UtilPlugin;
 
 impl Plugin for UtilPlugin {

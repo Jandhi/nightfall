@@ -1,23 +1,11 @@
-
-
-
 use bevy::prelude::*;
 
+use crate::animation::AnimationStateStorage;
+use crate::collision::collider::IsCollidingEvent;
 
-use crate::animation::{AnimationStateStorage};
-use crate::collision::collider::{IsCollidingEvent};
-
-use crate::combat::{
-    health::{DeathEvent},
-};
-use crate::constants::{SortingLayers};
+use crate::combat::health::DeathEvent;
+use crate::constants::SortingLayers;
 use crate::loading::TextureAssets;
-
-
-
-
-
-
 
 use super::beholder::{spawn_beholder, BeholderAnimation};
 use super::imp::ImpAnimation;
@@ -26,26 +14,21 @@ use super::imp::ImpAnimation;
 pub enum EnemyType {
     Imp,
     Beholder,
-    Zombie
+    Zombie,
 }
-
 
 #[derive(Component, Clone)]
 pub struct Enemy {
-    pub enemy_type : EnemyType,
+    pub enemy_type: EnemyType,
     pub xp: u32,
 }
-
-
 
 #[derive(Event)]
 pub struct EnemyDeathEvent {
     pub entity: Entity,
     pub enemy: Enemy,
-    pub location : Vec3, 
+    pub location: Vec3,
 }
-
-
 
 impl Enemy {
     pub fn estimate_position(&self, transform: &Transform, _time: f32) -> Vec2 {
@@ -73,13 +56,16 @@ pub fn death_loop(
 }
 
 pub fn spread_enemies(
-    mut collisions : EventReader<IsCollidingEvent>,
-    mut q_enemies : Query<&mut Transform, With<Enemy>>
+    mut collisions: EventReader<IsCollidingEvent>,
+    mut q_enemies: Query<&mut Transform, With<Enemy>>,
 ) {
     for collision_event in collisions.iter() {
-        if let Ok(mut entities) = q_enemies.get_many_mut([collision_event.collision.entity_a, collision_event.collision.entity_b]) {
+        if let Ok(mut entities) = q_enemies.get_many_mut([
+            collision_event.collision.entity_a,
+            collision_event.collision.entity_b,
+        ]) {
             let force = 1.0;
-            
+
             let (slice_a, slice_b) = &mut entities.split_at_mut(1);
             let a_transform = &mut slice_a[0];
             let b_transform = &mut slice_b[0];
@@ -97,7 +83,15 @@ pub fn initial_spawn(
     mut commands: Commands,
     textures: Res<TextureAssets>,
 ) {
-    spawn_beholder(Vec3 { x: 30., y: 30., z: SortingLayers::Action.into() }, &beholder_animations, &textures, &mut texture_atlases, &mut commands);
+    spawn_beholder(
+        Vec3 {
+            x: 30.,
+            y: 30.,
+            z: SortingLayers::Action.into(),
+        },
+        &beholder_animations,
+        &textures,
+        &mut texture_atlases,
+        &mut commands,
+    );
 }
-
-

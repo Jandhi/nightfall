@@ -1,10 +1,15 @@
-use std::{hash::Hash};
+use std::hash::Hash;
 
 use bevy::{prelude::*, utils::HashMap};
 
 use crate::{constants::SCALING_VEC3, GameState};
 
-use self::{controller::{AnimationController, AnimationTimer, update_animation_frames, update_animation_state}, info::AnimationStateInfo};
+use self::{
+    controller::{
+        update_animation_frames, update_animation_state, AnimationController, AnimationTimer,
+    },
+    info::AnimationStateInfo,
+};
 
 pub mod controller;
 pub mod info;
@@ -45,27 +50,27 @@ impl<T: Eq + Hash + Clone + Copy> PartialEq for AnimationStateInfo<T> {
     }
 }
 
-
-
 /*
 Allows for easier setup of animation systems
 */
 pub trait AppAnimationSetup {
-    fn add_animation<T: Send + std::marker::Sync + 'static + Clone + Copy + Eq + Hash + Animation<T>>(
+    fn add_animation<
+        T: Send + std::marker::Sync + 'static + Clone + Copy + Eq + Hash + Animation<T>,
+    >(
         &mut self,
     ) -> &mut Self;
 }
 impl AppAnimationSetup for App {
-    fn add_animation<T: Send + std::marker::Sync + 'static + Clone + Copy + Eq + Hash + Animation<T>>(
+    fn add_animation<
+        T: Send + std::marker::Sync + 'static + Clone + Copy + Eq + Hash + Animation<T>,
+    >(
         &mut self,
     ) -> &mut Self {
         let states = T::get_states();
         self.add_systems(
             Update,
-            (
-                update_animation_frames::<T>,
-                update_animation_state::<T>
-            ).run_if(in_state(GameState::Playing)),
+            (update_animation_frames::<T>, update_animation_state::<T>)
+                .run_if(in_state(GameState::Playing)),
         )
         .add_event::<AnimationStateChangeEvent<T>>()
         .insert_resource(AnimationStateStorage::<T> {
@@ -75,8 +80,6 @@ impl AppAnimationSetup for App {
         self
     }
 }
-
-
 
 pub fn make_animation_bundle<T: Send + std::marker::Sync + 'static + Clone + Copy + Eq + Hash>(
     start_state_id: T,
@@ -103,5 +106,3 @@ pub fn make_animation_bundle<T: Send + std::marker::Sync + 'static + Clone + Cop
         AnimationController::new(start_state),
     )
 }
-
-

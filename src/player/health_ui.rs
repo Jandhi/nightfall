@@ -1,14 +1,12 @@
-
-
 use bevy::{prelude::*, window::PrimaryWindow};
-
 
 use crate::{
     animation::{
-        make_animation_bundle, AnimationStateChangeEvent,
-        AnimationStateStorage, Animation, info::{AnimationStateInfo, AnimationInfoBuilder},
+        info::{AnimationInfoBuilder, AnimationStateInfo},
+        make_animation_bundle, Animation, AnimationStateChangeEvent, AnimationStateStorage,
     },
-    loading::TextureAssets, combat::health::Health,
+    combat::health::Health,
+    loading::TextureAssets,
 };
 
 use super::Player;

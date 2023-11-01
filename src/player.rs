@@ -1,36 +1,30 @@
-
-
-
 use crate::actions::Actions;
 use crate::animation::controller::AnimationController;
-use crate::animation::{
-    make_animation_bundle, AnimationStateChangeEvent, AppAnimationSetup,
-};
+use crate::animation::{make_animation_bundle, AnimationStateChangeEvent, AppAnimationSetup};
 use crate::collision::collider::Collider;
 use crate::combat::health::{Health, HealthType};
-use crate::combat::teams::{TeamMember, Team};
+use crate::combat::teams::{Team, TeamMember};
 use crate::constants::SortingLayers;
 use crate::experience::experience::Experience;
 use crate::loading::TextureAssets;
-use crate::GameState;
 use crate::movement::edge_teleport::EdgeTeleports;
 use crate::movement::pause::ActionPauseState;
+use crate::GameState;
 use bevy::prelude::*;
-
 
 use self::ability::Ability;
 use self::animations::{PlayerAnimationState, PlayerAnimations};
 use self::bullets_ui::{manage_bullet_ui_sprites, BulletUIAnimation, BulletUICount};
-use self::health_ui::{manage_health_ui_sprites, HealthUICount, HealthUIAnimationState};
+use self::health_ui::{manage_health_ui_sprites, HealthUIAnimationState, HealthUICount};
 use self::reload_ui::{spawn_reload_ui, update_reload_ui, ReloadTimer};
 use self::shooting::{shoot, ShootingCooldown};
 
+pub mod ability;
 mod animations;
 mod bullets_ui;
+mod health_ui;
 mod reload_ui;
 mod shooting;
-mod health_ui;
-pub mod ability;
 
 pub struct PlayerPlugin;
 
@@ -39,44 +33,51 @@ pub struct Player {
     curr_bullets: u32,
     max_bullets: u32,
     is_reloading: bool,
-    pub abilities : Vec<Ability>,
+    pub abilities: Vec<Ability>,
 }
 
 impl Player {
     pub fn damage(&self) -> HealthType {
-        self.abilities.iter().fold(5., |dmg, ability| dmg * ability.damage_mult()) as u32
+        self.abilities
+            .iter()
+            .fold(5., |dmg, ability| dmg * ability.damage_mult()) as u32
     }
-    
+
     pub fn shoot_time(&self) -> f32 {
-        self.abilities.iter().fold(0.5, |dmg, ability| dmg * ability.shoot_speed_mult())
+        self.abilities
+            .iter()
+            .fold(0.5, |dmg, ability| dmg * ability.shoot_speed_mult())
     }
-     
+
     pub fn reload_time(&self) -> f32 {
-        self.abilities.iter().fold(1.0, |dmg, ability| dmg * ability.reload_mult())
+        self.abilities
+            .iter()
+            .fold(1.0, |dmg, ability| dmg * ability.reload_mult())
     }
 
     pub fn knockback(&self) -> f32 {
-        self.abilities.iter().fold(20., |dmg, ability| dmg * ability.knockback_mult())
+        self.abilities
+            .iter()
+            .fold(20., |dmg, ability| dmg * ability.knockback_mult())
     }
-
-
 }
 
 /// This plugin handles player related stuff like movement
 /// Player logic is only active during the State `GameState::Playing`
 impl Plugin for PlayerPlugin {
     fn build(&self, app: &mut App) {
-        app.add_systems(OnEnter(GameState::Playing), (
-                spawn_player,
-                spawn_reload_ui
-            ))
-            .add_systems(Update, (
-                move_player,
-                shoot,
-                manage_bullet_ui_sprites,
-                manage_health_ui_sprites,
-                update_reload_ui,
-            ).run_if(in_state(GameState::Playing)))
+        app.add_systems(OnEnter(GameState::Playing), (spawn_player, spawn_reload_ui))
+            .add_systems(
+                Update,
+                (
+                    move_player,
+                    shoot,
+                    manage_bullet_ui_sprites,
+                    manage_health_ui_sprites,
+                    update_reload_ui,
+                )
+                    .run_if(in_state(GameState::Playing)),
+            )
             .insert_resource(ReloadTimer(Timer::from_seconds(0., TimerMode::Once)))
             .insert_resource(BulletUICount(0))
             .insert_resource(HealthUICount(0))
@@ -120,16 +121,16 @@ pub fn spawn_player(
                 y: 0.,
                 z: SortingLayers::Player.into(),
             },
-        )).insert(Experience{
+        ))
+        .insert(Experience {
             curr_experience: 0,
             level: 0,
             threshold: 20,
             pick_distance: 10.0,
-        }).insert(EdgeTeleports)
-        .insert(Health{
-            value: 3,
-            max: 3,
-        }).insert(TeamMember{team: Team::Player});
+        })
+        .insert(EdgeTeleports)
+        .insert(Health { value: 3, max: 3 })
+        .insert(TeamMember { team: Team::Player });
 }
 
 fn move_player(
@@ -142,14 +143,13 @@ fn move_player(
         &mut AnimationController<PlayerAnimationState>,
         &mut TextureAtlasSprite,
     )>,
-    pause : Res<ActionPauseState>,
+    pause: Res<ActionPauseState>,
 ) {
     if pause.is_paused {
         return;
     }
 
-    let (entity, mut player_transform, mut animation_controller, _) =
-        player_query.single_mut();
+    let (entity, mut player_transform, mut animation_controller, _) = player_query.single_mut();
 
     if actions.player_movement.is_none() {
         if animation_controller.get_state() != PlayerAnimationState::Idle {

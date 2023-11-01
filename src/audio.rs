@@ -1,4 +1,3 @@
-
 use crate::loading::AudioAssets;
 use crate::GameState;
 use bevy::prelude::*;
@@ -24,7 +23,4 @@ pub type FXChannel = AudioChannel<FX>;
 pub struct Ambience;
 pub type AmbienceChannel = AudioChannel<Ambience>;
 
-
-fn start_audio(_commands: Commands, _audio_assets: Res<AudioAssets>, _audio: Res<Audio>) {
-    
-}
+fn start_audio(_commands: Commands, _audio_assets: Res<AudioAssets>, _audio: Res<Audio>) {}

@@ -1,9 +1,7 @@
 use bevy::prelude::*;
 
-use crate::collision::collider::{CollisionStartEvent};
+use crate::collision::collider::CollisionStartEvent;
 use crate::combat::health::HealthType;
-
-
 
 use super::health::{Dead, Health};
 use super::teams::{Team, TeamMember};
@@ -30,8 +28,8 @@ pub struct Projectile {
 
 #[derive(Event)]
 pub struct ProjectileHitEvent {
-    pub projectile : Entity,
-    pub victim : Entity,
+    pub projectile: Entity,
+    pub victim: Entity,
 }
 
 pub fn projectile_collision_check(
@@ -63,7 +61,6 @@ pub fn projectile_collision_check(
             handle_projectile_collision(
                 ev_is_colliding.collision.entity_b,
                 bullet,
-
                 ev_is_colliding.collision.entity_a,
                 health,
                 member.team,
@@ -80,7 +77,7 @@ fn handle_projectile_collision(
     hit_entity: Entity,
     mut health: Mut<Health>,
     hit_team: Team,
-    ev_hit : &mut EventWriter<ProjectileHitEvent>,
+    ev_hit: &mut EventWriter<ProjectileHitEvent>,
     commands: &mut Commands,
 ) {
     if !projectile.is_alive {
@@ -102,7 +99,10 @@ fn handle_projectile_collision(
         }
     }
 
-    ev_hit.send(ProjectileHitEvent { projectile: projectile_entity, victim: hit_entity });
+    ev_hit.send(ProjectileHitEvent {
+        projectile: projectile_entity,
+        victim: hit_entity,
+    });
 
     projectile.entities_hit += 1;
     health.take_damage(projectile.dmg);
@@ -118,4 +118,3 @@ fn handle_projectile_collision(
         projectile.is_alive = false;
     }
 }
-

@@ -2,10 +2,9 @@ use std::f32::consts::PI;
 
 use bevy::prelude::*;
 
-
 use crate::{player::Player, util::radians::Radian};
 
-use super::{velocity::Velocity, pause::ActionPauseState};
+use super::{pause::ActionPauseState, velocity::Velocity};
 
 /*
 Things that are magnetically attracted to the player
@@ -13,14 +12,14 @@ Things that are magnetically attracted to the player
 
 #[derive(Component)]
 pub struct Magnetic {
-    pub force : f32,
+    pub force: f32,
 }
 
 pub fn magnet_update(
-    q_player : Query<&Transform, (With<Player>, Without<Magnetic>)>,
-    mut q_magnetics : Query<(&Magnetic, &mut Velocity, &Transform)>,
-    time : Res<Time>,
-    pause_state : Res<ActionPauseState>,
+    q_player: Query<&Transform, (With<Player>, Without<Magnetic>)>,
+    mut q_magnetics: Query<(&Magnetic, &mut Velocity, &Transform)>,
+    time: Res<Time>,
+    pause_state: Res<ActionPauseState>,
 ) {
     if pause_state.is_paused {
         return;
