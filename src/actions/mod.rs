@@ -34,7 +34,7 @@ pub fn set_movement_actions(
     touch_input: Res<Touches>,
     player: Query<&Transform, With<Player>>,
     camera: Query<(&Camera, &GlobalTransform), With<Camera2d>>,
-    pause_state : Res<ActionPauseState>,
+    pause_state: Res<ActionPauseState>,
 ) {
     if pause_state.is_paused {
         return;

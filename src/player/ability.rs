@@ -1,8 +1,6 @@
 use bevy::{prelude::*, utils::HashSet};
 
-use crate::{loading::AbilityTextures, combat::health::HealthType};
-
-
+use crate::{combat::health::HealthType, loading::AbilityTextures};
 
 #[derive(PartialEq, Eq, Hash, Clone, Copy)]
 pub enum Ability {
@@ -20,7 +18,7 @@ pub enum Ability {
 impl Ability {
     pub fn all() -> Vec<Ability> {
         vec![
-            Self::BigBullets, 
+            Self::BigBullets,
             Self::Crossbow,
             Self::DoubleBarrel,
             Self::TripleBarrel,
@@ -32,7 +30,7 @@ impl Ability {
         ]
     }
 
-    pub fn get_texture(&self, textures : &Res<AbilityTextures>) -> Handle<Image> {
+    pub fn get_texture(&self, textures: &Res<AbilityTextures>) -> Handle<Image> {
         match self {
             Ability::BigBullets => textures.big_bullets.clone(),
             Ability::Crossbow => textures.crossbow.clone(),
@@ -60,7 +58,7 @@ impl Ability {
         }
     }
 
-    pub fn is_available(&self, player_abilities : &Vec<Ability>) -> bool {
+    pub fn is_available(&self, player_abilities: &Vec<Ability>) -> bool {
         match self {
             Ability::BigBullets => !player_abilities.contains(&Ability::BigBullets),
             Ability::Crossbow => !player_abilities.contains(&Ability::Crossbow),
@@ -68,38 +66,38 @@ impl Ability {
             Ability::TripleBarrel => {
                 !player_abilities.contains(&Ability::TripleBarrel)
                     && player_abilities.contains(&Ability::DoubleBarrel)
-            },
+            }
             Ability::FlamingBullets => !player_abilities.contains(&Ability::FlamingBullets),
             Ability::Shells => !player_abilities.contains(&Ability::Shells),
             Ability::Sniper => !player_abilities.contains(&Ability::Sniper),
             Ability::Shotgun => {
                 !player_abilities.contains(&Ability::Shotgun)
                     && player_abilities.contains(&Ability::TripleBarrel)
-            },
+            }
             Ability::MegaShotgun => {
                 !player_abilities.contains(&Ability::MegaShotgun)
                     && player_abilities.contains(&Ability::Shotgun)
-            },
+            }
         }
     }
 
     pub fn damage_mult(&self) -> f32 {
         match self {
             Ability::BigBullets => 2.0,
-            _ => 1.
+            _ => 1.,
         }
     }
 
     pub fn knockback_mult(&self) -> f32 {
         match self {
             Ability::BigBullets => 2.0,
-            _ => 1.
+            _ => 1.,
         }
     }
 
     pub fn reload_mult(&self) -> f32 {
         match self {
-            _ => 1.
+            _ => 1.,
         }
     }
 
@@ -109,7 +107,7 @@ impl Ability {
             Ability::TripleBarrel => 0.9,
             Ability::Shotgun => 0.9,
             Ability::BigBullets => 0.7,
-            _ => 1.
+            _ => 1.,
         }
     }
 }
@@ -119,4 +117,3 @@ impl Into<String> for &Ability {
         String::from(self.get_name())
     }
 }
-

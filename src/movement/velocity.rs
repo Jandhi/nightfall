@@ -6,17 +6,17 @@ use super::pause::ActionPauseState;
 
 #[derive(Component)]
 pub struct Velocity {
-    pub vec : Vec2,
+    pub vec: Vec2,
 }
 
 impl Velocity {
-    pub const ZERO : Velocity = Velocity { vec: Vec2::ZERO };
+    pub const ZERO: Velocity = Velocity { vec: Vec2::ZERO };
 }
 
 pub fn velocity_update(
-    mut q_velocity : Query<(&Velocity, &mut  Transform)>,
-    time : Res<Time>,
-    pause_state : Res<ActionPauseState>,
+    mut q_velocity: Query<(&Velocity, &mut Transform)>,
+    time: Res<Time>,
+    pause_state: Res<ActionPauseState>,
 ) {
     if pause_state.is_paused {
         return;
@@ -27,7 +27,8 @@ pub fn velocity_update(
             x: velocity.vec.x,
             y: velocity.vec.y,
             z: 0.,
-        } * time.delta_seconds() * DISTANCE_SCALING;
+        } * time.delta_seconds()
+            * DISTANCE_SCALING;
     }
 }
 

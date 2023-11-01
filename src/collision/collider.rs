@@ -85,13 +85,14 @@ impl Collider {
         }
     }
 
-    pub fn contains_point(&self, my_position : Vec2, point: Vec2) -> bool {
+    pub fn contains_point(&self, my_position: Vec2, point: Vec2) -> bool {
         match self.shape {
-            ColliderShape::Rect(size) => 
-                point.x >= my_position.x - size.x / 2. 
-                && point.x <= my_position.x + size.x / 2.
-                && point.y >= my_position.y - size.y / 2.
-                && point.y <= my_position.y + size.y / 2.,
+            ColliderShape::Rect(size) => {
+                point.x >= my_position.x - size.x / 2.
+                    && point.x <= my_position.x + size.x / 2.
+                    && point.y >= my_position.y - size.y / 2.
+                    && point.y <= my_position.y + size.y / 2.
+            }
             ColliderShape::Circle(radius) => my_position.distance(point) <= radius,
         }
     }
@@ -139,7 +140,10 @@ impl Collider {
         } else if circle_pos.y < rect_pos.y {
             (rect_pos.y - size.y / 2.) - circle_pos.y <= radius
         } else {
-            panic!("This should not be possible! Size: {} RectPos: {} Radius: {} CirclePos: {}", size, rect_pos, radius, circle_pos);
+            panic!(
+                "This should not be possible! Size: {} RectPos: {} Radius: {} CirclePos: {}",
+                size, rect_pos, radius, circle_pos
+            );
         }
     }
 }
@@ -175,7 +179,9 @@ pub fn collision_tick(
     for (entity, mut collider, transform) in q_colliders.iter_mut() {
         let spatial_coord = vec3_to_spatial_coord(transform.translation);
 
-        spatial_grid.entry(spatial_coord).or_insert_with(std::vec::Vec::new);
+        spatial_grid
+            .entry(spatial_coord)
+            .or_insert_with(std::vec::Vec::new);
 
         // Add entity to updated coordinate
         spatial_grid.get_mut(&spatial_coord).unwrap().push((
@@ -217,7 +223,6 @@ pub fn collision_tick(
                 other_collider,
                 *other_position,
             ) {
-                
                 if collisions.contains(&(*other_entity, entity)) {
                     continue; // Already logged collision
                 } else {
@@ -226,17 +231,18 @@ pub fn collision_tick(
                         entity_b: *other_entity,
                     };
 
-                    let previously_collided = 
-                        prev_collisions.collisions.contains(&(entity, *other_entity)) || 
-                        prev_collisions.collisions.contains(&(*other_entity, entity));
+                    let previously_collided = prev_collisions
+                        .collisions
+                        .contains(&(entity, *other_entity))
+                        || prev_collisions
+                            .collisions
+                            .contains(&(*other_entity, entity));
 
                     if !previously_collided {
                         collision_started_event.send(CollisionStartEvent { collision })
                     }
 
-                    collision_event.send(IsCollidingEvent {
-                        collision,
-                    });
+                    collision_event.send(IsCollidingEvent { collision });
                 }
             }
         }
@@ -246,15 +252,17 @@ pub fn collision_tick(
     for collision in &prev_collisions.collisions {
         let (a, b) = *collision;
         let other_collision = &(b, a);
-        
+
         if collisions.contains(collision) || collisions.contains(other_collision) {
             continue;
         }
 
-        collision_ended_event.send(CollisionEndEvent { collision: Collision {
-            entity_a: a,
-            entity_b: b,
-        }});
+        collision_ended_event.send(CollisionEndEvent {
+            collision: Collision {
+                entity_a: a,
+                entity_b: b,
+            },
+        });
     }
 
     prev_collisions.collisions = collisions;

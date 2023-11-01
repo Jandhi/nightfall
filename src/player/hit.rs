@@ -1,6 +1,10 @@
 use bevy::prelude::*;
 
-use crate::{combat::health::{Health, TookDamageEvent}, loading::TextureAssets, constants::{SCALING_VEC3, SortingLayers}};
+use crate::{
+    combat::health::{Health, TookDamageEvent},
+    constants::{SortingLayers, SCALING_VEC3},
+    loading::TextureAssets,
+};
 
 use super::Player;
 
@@ -8,10 +12,10 @@ use super::Player;
 pub struct HitSprite(Timer);
 
 pub fn update_hit_sprite(
-    mut q_hit : Query<(Entity, &mut HitSprite, &mut Visibility, &mut Transform), Without<Player>>,
-    q_player : Query<(Entity, &Health, &Transform), With<Player>>,
-    mut ev_dmgs : EventReader<TookDamageEvent>,
-    time : Res<Time>,
+    mut q_hit: Query<(Entity, &mut HitSprite, &mut Visibility, &mut Transform), Without<Player>>,
+    q_player: Query<(Entity, &Health, &Transform), With<Player>>,
+    mut ev_dmgs: EventReader<TookDamageEvent>,
+    time: Res<Time>,
 ) {
     let (player, p_health, p_transform) = q_player.single();
     let (entity, mut hit, mut visibility, mut transform) = q_hit.single_mut();
@@ -42,16 +46,21 @@ pub fn update_hit_sprite(
     }
 }
 
-pub fn spawn_hit_sprite(
-    textures : Res<TextureAssets>,
-    mut commands : Commands,
-) {
-    commands.spawn(
-        SpriteBundle {
+pub fn spawn_hit_sprite(textures: Res<TextureAssets>, mut commands: Commands) {
+    commands
+        .spawn(SpriteBundle {
             texture: textures.hit.clone(),
             visibility: Visibility::Hidden,
-            transform: Transform { translation: Vec3 { x: 0., y: 0., z: SortingLayers::UI.into() }, rotation: default(), scale: SCALING_VEC3 },
+            transform: Transform {
+                translation: Vec3 {
+                    x: 0.,
+                    y: 0.,
+                    z: SortingLayers::UI.into(),
+                },
+                rotation: default(),
+                scale: SCALING_VEC3,
+            },
             ..Default::default()
-        }
-    ).insert(HitSprite(Timer::from_seconds(0.25, TimerMode::Repeating)));
+        })
+        .insert(HitSprite(Timer::from_seconds(0.25, TimerMode::Repeating)));
 }

@@ -2,9 +2,24 @@ use std::time::Duration;
 
 use bevy::prelude::*;
 
-use crate::{animation::{AnimationStateStorage, make_animation_bundle, info::AnimationStateInfo, Animation}, loading::TextureAssets, movement::velocity::Velocity, combat::{health::Health, teams::{TeamMember, Team}, healthbar::NeedsHealthBar}, collision::collider::Collider};
+use crate::{
+    animation::{
+        info::AnimationStateInfo, make_animation_bundle, Animation, AnimationStateStorage,
+    },
+    collision::collider::Collider,
+    combat::{
+        health::Health,
+        healthbar::NeedsHealthBar,
+        teams::{Team, TeamMember},
+    },
+    loading::TextureAssets,
+    movement::velocity::Velocity,
+};
 
-use super::{enemy::{Enemy, EnemyType}, ai::FollowPlayerAI};
+use super::{
+    ai::FollowPlayerAI,
+    enemy::{Enemy, EnemyType},
+};
 
 #[derive(PartialEq, Eq, Hash, Clone, Copy)]
 pub enum ImpAnimation {
@@ -23,7 +38,7 @@ impl Animation<ImpAnimation> for ImpAnimation {
 }
 
 pub fn spawn_imp(
-    position : Vec3,
+    position: Vec3,
     imp_animations: &Res<AnimationStateStorage<ImpAnimation>>,
     textures: &Res<TextureAssets>,
     texture_atlases: &mut ResMut<Assets<TextureAtlas>>,
@@ -44,7 +59,10 @@ pub fn spawn_imp(
             xp: 5,
             enemy_type: EnemyType::Imp,
         })
-        .insert(FollowPlayerAI{ speed: 15., corrective_force: 1.0 })
+        .insert(FollowPlayerAI {
+            speed: 15.,
+            corrective_force: 1.0,
+        })
         .insert(Velocity::ZERO)
         .insert(Health::new(15))
         .insert(Collider::new_circle(10., position.truncate()))
@@ -63,7 +81,7 @@ pub fn spawn_imp(
 pub struct ImpQueen;
 
 pub fn spawn_imp_queen(
-    position : Vec3,
+    position: Vec3,
     imp_animations: &Res<AnimationStateStorage<ImpAnimation>>,
     textures: &Res<TextureAssets>,
     texture_atlases: &mut ResMut<Assets<TextureAtlas>>,
@@ -85,7 +103,10 @@ pub fn spawn_imp_queen(
             enemy_type: EnemyType::Imp,
         })
         .insert(ImpQueen)
-        .insert(FollowPlayerAI{ speed: 12., corrective_force: 3.0 })
+        .insert(FollowPlayerAI {
+            speed: 12.,
+            corrective_force: 3.0,
+        })
         .insert(Velocity::ZERO)
         .insert(Health::new(150))
         .insert(Collider::new_circle(15., position.truncate()))

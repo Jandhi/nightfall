@@ -15,7 +15,7 @@ impl Radian {
     pub const HALF: Radian = Radian { angle: PI };
     pub const FULL: Radian = Radian { angle: PI * 2. };
 
-    pub fn from_degrees(degrees : f32) -> Radian {
+    pub fn from_degrees(degrees: f32) -> Radian {
         Radian::FULL * (degrees / 360.)
     }
 

@@ -3,20 +3,20 @@
 mod actions;
 mod animation;
 mod audio;
+mod cheats;
 mod collision;
 mod combat;
 mod constants;
 mod cooldown;
 mod enemies;
+mod experience;
 mod loading;
 mod menu;
+mod movement;
 mod palette;
 mod player;
-mod util;
-mod experience;
-mod movement;
 mod ui;
-mod cheats;
+mod util;
 
 use crate::actions::ActionsPlugin;
 use crate::audio::InternalAudioPlugin;

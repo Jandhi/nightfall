@@ -2,7 +2,9 @@ use bevy::{prelude::*, utils::HashSet};
 
 pub mod collider;
 
-use self::collider::{collision_tick, IsCollidingEvent, PreviousCollisions, CollisionStartEvent, CollisionEndEvent};
+use self::collider::{
+    collision_tick, CollisionEndEvent, CollisionStartEvent, IsCollidingEvent, PreviousCollisions,
+};
 use crate::GameState;
 
 pub struct CollisionPlugin;

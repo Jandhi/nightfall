@@ -30,16 +30,11 @@ pub type AmbienceChannel = AudioChannel<Ambience>;
 pub struct Music;
 pub type MusicChannel = AudioChannel<Ambience>;
 
+fn start_audio(mut commands: Commands, audio_assets: Res<AudioAssets>, audio: Res<Audio>) {}
 
-fn start_audio(mut commands: Commands, audio_assets: Res<AudioAssets>, audio: Res<Audio>) {
-    
-}
-
-fn start_music(
-    music : Res<MusicChannel>,
-    audio_assets: Res<AudioAssets>,
-) {
-    music.play(audio_assets.theme.clone())
+fn start_music(music: Res<MusicChannel>, audio_assets: Res<AudioAssets>) {
+    music
+        .play(audio_assets.theme.clone())
         .with_volume(0.8)
         .looped();
 }

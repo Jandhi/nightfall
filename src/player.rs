@@ -1,24 +1,19 @@
-
-
-
 use crate::actions::Actions;
 use crate::animation::controller::AnimationController;
-use crate::animation::{
-    make_animation_bundle, AnimationStateChangeEvent, AppAnimationSetup,
-};
+use crate::animation::{make_animation_bundle, AnimationStateChangeEvent, AppAnimationSetup};
 use crate::audio::FXChannel;
 use crate::collision::collider::{Collider, CollisionStartEvent, IsCollidingEvent};
 use crate::combat::health::{Health, HealthType, TookDamageEvent};
 use crate::combat::projectile::projectile_collision_check;
-use crate::combat::teams::{TeamMember, Team};
+use crate::combat::teams::{Team, TeamMember};
 use crate::constants::SortingLayers;
 use crate::enemies::enemy::Enemy;
 use crate::experience::experience::Experience;
-use crate::loading::{TextureAssets, AudioAssets};
-use crate::GameState;
+use crate::loading::{AudioAssets, TextureAssets};
 use crate::movement::edge_teleport::EdgeTeleports;
 use crate::movement::pause::ActionPauseState;
 use crate::util::pitch_rng::PitchRNG;
+use crate::GameState;
 use bevy::prelude::*;
 use bevy::utils::HashSet;
 use bevy_kira_audio::AudioControl;
@@ -27,18 +22,18 @@ use rand::Rng;
 use self::ability::Ability;
 use self::animations::{PlayerAnimationState, PlayerAnimations};
 use self::bullets_ui::{manage_bullet_ui_sprites, BulletUIAnimation, BulletUICount};
-use self::health_ui::{manage_health_ui_sprites, HealthUICount, HealthUIAnimationState};
+use self::health_ui::{manage_health_ui_sprites, HealthUIAnimationState, HealthUICount};
 use self::hit::{spawn_hit_sprite, update_hit_sprite};
 use self::reload_ui::{spawn_reload_ui, update_reload_ui, ReloadTimer};
 use self::shooting::{shoot, ShootingCooldown};
 
+pub mod ability;
 mod animations;
 mod bullets_ui;
-mod reload_ui;
-mod shooting;
 mod health_ui;
 mod hit;
-pub mod ability;
+mod reload_ui;
+mod shooting;
 
 pub struct PlayerPlugin;
 
@@ -47,39 +42,46 @@ pub struct Player {
     curr_bullets: u32,
     max_bullets: u32,
     is_reloading: bool,
-    pub abilities : Vec<Ability>,
+    pub abilities: Vec<Ability>,
 }
 
 impl Player {
     pub fn damage(&self) -> HealthType {
-        self.abilities.iter().fold(5., |dmg, ability| dmg * ability.damage_mult()) as u32
+        self.abilities
+            .iter()
+            .fold(5., |dmg, ability| dmg * ability.damage_mult()) as u32
     }
-    
+
     pub fn shoot_time(&self) -> f32 {
-        self.abilities.iter().fold(0.5, |dmg, ability| dmg / ability.shoot_speed_mult())
+        self.abilities
+            .iter()
+            .fold(0.5, |dmg, ability| dmg / ability.shoot_speed_mult())
     }
-     
+
     pub fn reload_time(&self) -> f32 {
-        self.abilities.iter().fold(1.0, |dmg, ability| dmg / ability.reload_mult())
+        self.abilities
+            .iter()
+            .fold(1.0, |dmg, ability| dmg / ability.reload_mult())
     }
 
     pub fn knockback(&self) -> f32 {
-        self.abilities.iter().fold(20., |dmg, ability| dmg * ability.knockback_mult())
+        self.abilities
+            .iter()
+            .fold(20., |dmg, ability| dmg * ability.knockback_mult())
     }
-
-
 }
 
 /// This plugin handles player related stuff like movement
 /// Player logic is only active during the State `GameState::Playing`
 impl Plugin for PlayerPlugin {
     fn build(&self, app: &mut App) {
-        app.add_systems(OnEnter(GameState::Playing), (
-                spawn_player,
-                spawn_reload_ui,
-                spawn_hit_sprite
-            ))
-            .add_systems(Update, (
+        app.add_systems(
+            OnEnter(GameState::Playing),
+            (spawn_player, spawn_reload_ui, spawn_hit_sprite),
+        )
+        .add_systems(
+            Update,
+            (
                 move_player,
                 shoot,
                 manage_bullet_ui_sprites,
@@ -87,16 +89,23 @@ impl Plugin for PlayerPlugin {
                 update_reload_ui,
                 enemy_collision,
                 update_hit_sprite,
-                hit_immunity.after(projectile_collision_check).after(enemy_collision)
-            ).run_if(in_state(GameState::Playing)))
-            .insert_resource(ReloadTimer(Timer::from_seconds(0., TimerMode::Once)))
-            .insert_resource(BulletUICount(0))
-            .insert_resource(HealthUICount(0))
-            .insert_resource(InvincibilityTimer(Timer::from_seconds(3.0, TimerMode::Once)))
-            .insert_resource(ShootingCooldown(Timer::from_seconds(1.0, TimerMode::Once)))
-            .add_animation::<PlayerAnimationState>()
-            .add_animation::<BulletUIAnimation>()
-            .add_animation::<HealthUIAnimationState>();
+                hit_immunity
+                    .after(projectile_collision_check)
+                    .after(enemy_collision),
+            )
+                .run_if(in_state(GameState::Playing)),
+        )
+        .insert_resource(ReloadTimer(Timer::from_seconds(0., TimerMode::Once)))
+        .insert_resource(BulletUICount(0))
+        .insert_resource(HealthUICount(0))
+        .insert_resource(InvincibilityTimer(Timer::from_seconds(
+            3.0,
+            TimerMode::Once,
+        )))
+        .insert_resource(ShootingCooldown(Timer::from_seconds(1.0, TimerMode::Once)))
+        .add_animation::<PlayerAnimationState>()
+        .add_animation::<BulletUIAnimation>()
+        .add_animation::<HealthUIAnimationState>();
     }
 }
 
@@ -134,14 +143,16 @@ pub fn spawn_player(
                 z: SortingLayers::Player.into(),
             },
             1.,
-        )).insert(Experience{
+        ))
+        .insert(Experience {
             curr_experience: 0,
             level: 0,
             threshold: 20,
             pick_distance: 10.0,
-        }).insert(EdgeTeleports)
+        })
+        .insert(EdgeTeleports)
         .insert(Health::new(3))
-        .insert(TeamMember{team: Team::Player});
+        .insert(TeamMember { team: Team::Player });
 }
 
 fn move_player(
@@ -154,14 +165,13 @@ fn move_player(
         &mut AnimationController<PlayerAnimationState>,
         &mut TextureAtlasSprite,
     )>,
-    pause : Res<ActionPauseState>,
+    pause: Res<ActionPauseState>,
 ) {
     if pause.is_paused {
         return;
     }
 
-    let (entity, mut player_transform, mut animation_controller, _) =
-        player_query.single_mut();
+    let (entity, mut player_transform, mut animation_controller, _) = player_query.single_mut();
 
     if actions.player_movement.is_none() {
         if animation_controller.get_state() != PlayerAnimationState::Idle {
@@ -200,17 +210,17 @@ fn move_player(
 pub struct InvincibilityTimer(Timer);
 
 pub fn hit_immunity(
-    mut q_player : Query<(Entity, &mut Health), With<Player>>,
-    mut timer : ResMut<InvincibilityTimer>,
-    mut ev_dmg : EventReader<TookDamageEvent>,
-    time : Res<Time>,
-    audio_assets : Res<AudioAssets>,
-    fx_channel : Res<FXChannel>,
-    mut pitch_rng : ResMut<PitchRNG>
+    mut q_player: Query<(Entity, &mut Health), With<Player>>,
+    mut timer: ResMut<InvincibilityTimer>,
+    mut ev_dmg: EventReader<TookDamageEvent>,
+    time: Res<Time>,
+    audio_assets: Res<AudioAssets>,
+    fx_channel: Res<FXChannel>,
+    mut pitch_rng: ResMut<PitchRNG>,
 ) {
     timer.0.tick(time.delta());
     let (player_entity, mut player_health) = q_player.single_mut();
-    
+
     if timer.0.just_finished() {
         player_health.is_invincible = false;
     }
@@ -220,16 +230,18 @@ pub fn hit_immunity(
             player_health.is_invincible = true;
             timer.0.reset();
 
-            fx_channel.play(audio_assets.grunt.clone()).with_playback_rate(pitch_rng.0.0.gen_range(0.9..1.1));
+            fx_channel
+                .play(audio_assets.grunt.clone())
+                .with_playback_rate(pitch_rng.0 .0.gen_range(0.9..1.1));
         }
     }
 }
 
 pub fn enemy_collision(
-    mut q_player : Query<(Entity, &mut Health), With<Player>>,
-    q_enemies : Query<Entity, With<Enemy>>,
-    mut collisions : EventReader<IsCollidingEvent>,
-    mut ev_dmg : EventWriter<TookDamageEvent>,
+    mut q_player: Query<(Entity, &mut Health), With<Player>>,
+    q_enemies: Query<Entity, With<Enemy>>,
+    mut collisions: EventReader<IsCollidingEvent>,
+    mut ev_dmg: EventWriter<TookDamageEvent>,
 ) {
     let (player, mut health) = q_player.single_mut();
     let mut is_hit = false;

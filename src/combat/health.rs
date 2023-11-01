@@ -6,13 +6,13 @@ pub type HealthType = u32;
 pub struct Health {
     pub value: HealthType,
     pub max: HealthType,
-    pub is_invincible : bool,
+    pub is_invincible: bool,
 }
 
 #[derive(Event)]
 pub struct TookDamageEvent {
     pub entity: Entity,
-    pub amount : HealthType,
+    pub amount: HealthType,
 }
 
 impl Health {
@@ -24,7 +24,12 @@ impl Health {
         }
     }
 
-    pub fn take_damage(&mut self, my_entity: Entity, took_damage_ev : &mut EventWriter<TookDamageEvent>, dmg: HealthType) {
+    pub fn take_damage(
+        &mut self,
+        my_entity: Entity,
+        took_damage_ev: &mut EventWriter<TookDamageEvent>,
+        dmg: HealthType,
+    ) {
         if self.is_invincible {
             return;
         }
@@ -35,7 +40,10 @@ impl Health {
             self.value -= dmg;
         }
 
-        took_damage_ev.send(TookDamageEvent { entity: my_entity, amount: dmg });
+        took_damage_ev.send(TookDamageEvent {
+            entity: my_entity,
+            amount: dmg,
+        });
     }
 
     pub fn is_alive(&self) -> bool {

@@ -7,7 +7,7 @@ use bevy_kira_audio::AudioControl;
 use rand::Rng;
 
 use crate::animation::info::AnimationStateInfo;
-use crate::animation::{make_animation_bundle, AnimationStateStorage, Animation};
+use crate::animation::{make_animation_bundle, Animation, AnimationStateStorage};
 use crate::audio::FXChannel;
 use crate::collision::collider::{Collider, IsCollidingEvent};
 
@@ -17,7 +17,7 @@ use crate::combat::{
     teams::{Team, TeamMember},
 };
 use crate::constants::{SortingLayers, DISTANCE_SCALING};
-use crate::loading::{TextureAssets, AudioAssets};
+use crate::loading::{AudioAssets, TextureAssets};
 use crate::movement::friction::Friction;
 use crate::movement::pause::ActionPauseState;
 use crate::movement::velocity::Velocity;
@@ -57,23 +57,18 @@ impl EnemyType {
     }
 }
 
-
 #[derive(Component, Clone)]
 pub struct Enemy {
-    pub enemy_type : EnemyType,
+    pub enemy_type: EnemyType,
     pub xp: u32,
 }
-
-
 
 #[derive(Event)]
 pub struct EnemyDeathEvent {
     pub entity: Entity,
     pub enemy: Enemy,
-    pub location : Vec3, 
+    pub location: Vec3,
 }
-
-
 
 impl Enemy {
     pub fn estimate_position(&self, transform: &Transform, _time: f32) -> Vec2 {
@@ -86,9 +81,9 @@ pub fn death_loop(
     mut ememy_death_event: EventWriter<EnemyDeathEvent>,
     mut death_event: EventReader<DeathEvent>,
     mut q_enemies: Query<(Entity, &Enemy, &Transform)>,
-    mut fx_channel : Res<FXChannel>,
-    audio : Res<AudioAssets>,
-    mut pitch_rng : ResMut<PitchRNG>,
+    mut fx_channel: Res<FXChannel>,
+    audio: Res<AudioAssets>,
+    mut pitch_rng: ResMut<PitchRNG>,
     mut commands: Commands,
 ) {
     for death_ev in death_event.iter() {
@@ -96,7 +91,7 @@ pub fn death_loop(
             screen_print!("Despawn");
 
             fx_channel.play(match enemy.enemy_type {
-                EnemyType::Imp | EnemyType::ImpQueen => match pitch_rng.0.0.gen_range(0..4) {
+                EnemyType::Imp | EnemyType::ImpQueen => match pitch_rng.0 .0.gen_range(0..4) {
                     0 => audio.imp_death.clone(),
                     1 => audio.imp_death2.clone(),
                     2 => audio.imp_death3.clone(),
@@ -117,13 +112,16 @@ pub fn death_loop(
 }
 
 pub fn spread_enemies(
-    mut collisions : EventReader<IsCollidingEvent>,
-    mut q_enemies : Query<&mut Transform, With<Enemy>>
+    mut collisions: EventReader<IsCollidingEvent>,
+    mut q_enemies: Query<&mut Transform, With<Enemy>>,
 ) {
     for collision_event in collisions.iter() {
-        if let Ok(mut entities) = q_enemies.get_many_mut([collision_event.collision.entity_a, collision_event.collision.entity_b]) {
+        if let Ok(mut entities) = q_enemies.get_many_mut([
+            collision_event.collision.entity_a,
+            collision_event.collision.entity_b,
+        ]) {
             let force = 1.0;
-            
+
             let (slice_a, slice_b) = &mut entities.split_at_mut(1);
             let a_transform = &mut slice_a[0];
             let b_transform = &mut slice_b[0];
@@ -141,7 +139,15 @@ pub fn initial_spawn(
     mut commands: Commands,
     textures: Res<TextureAssets>,
 ) {
-    spawn_beholder(Vec3 { x: 30., y: 30., z: SortingLayers::Action.into() }, &beholder_animations, &textures, &mut texture_atlases, &mut commands);
+    spawn_beholder(
+        Vec3 {
+            x: 30.,
+            y: 30.,
+            z: SortingLayers::Action.into(),
+        },
+        &beholder_animations,
+        &textures,
+        &mut texture_atlases,
+        &mut commands,
+    );
 }
-
-

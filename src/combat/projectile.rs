@@ -1,9 +1,8 @@
 use bevy::prelude::*;
 
-use crate::collision::collider::{IsCollidingEvent, CollisionStartEvent};
+use crate::collision::collider::{CollisionStartEvent, IsCollidingEvent};
 use crate::combat::health::HealthType;
 use crate::util::radians::Radian;
-
 
 use super::health::{Dead, Health, TookDamageEvent};
 use super::teams::{Team, TeamMember};
@@ -30,8 +29,8 @@ pub struct Projectile {
 
 #[derive(Event)]
 pub struct ProjectileHitEvent {
-    pub projectile : Entity,
-    pub victim : Entity,
+    pub projectile: Entity,
+    pub victim: Entity,
 }
 
 pub fn projectile_collision_check(
@@ -39,7 +38,7 @@ pub fn projectile_collision_check(
     mut q_hittable: Query<(&mut Health, &TeamMember)>,
     mut ev_collision: EventReader<CollisionStartEvent>,
     mut ev_hit: EventWriter<ProjectileHitEvent>,
-    mut ev_dmg : EventWriter<TookDamageEvent>,
+    mut ev_dmg: EventWriter<TookDamageEvent>,
     mut commands: Commands,
 ) {
     for ev_is_colliding in ev_collision.iter() {
@@ -65,7 +64,6 @@ pub fn projectile_collision_check(
             handle_projectile_collision(
                 ev_is_colliding.collision.entity_b,
                 bullet,
-
                 ev_is_colliding.collision.entity_a,
                 health,
                 member.team,
@@ -83,8 +81,8 @@ fn handle_projectile_collision(
     hit_entity: Entity,
     mut health: Mut<Health>,
     hit_team: Team,
-    ev_hit : &mut EventWriter<ProjectileHitEvent>,
-    ev_dmg : &mut EventWriter<TookDamageEvent>,
+    ev_hit: &mut EventWriter<ProjectileHitEvent>,
+    ev_dmg: &mut EventWriter<TookDamageEvent>,
     commands: &mut Commands,
 ) {
     if !projectile.is_alive {
@@ -106,7 +104,10 @@ fn handle_projectile_collision(
         }
     }
 
-    ev_hit.send(ProjectileHitEvent { projectile: projectile_entity, victim: hit_entity });
+    ev_hit.send(ProjectileHitEvent {
+        projectile: projectile_entity,
+        victim: hit_entity,
+    });
 
     projectile.entities_hit += 1;
     health.take_damage(hit_entity, ev_dmg, projectile.dmg);
@@ -122,4 +123,3 @@ fn handle_projectile_collision(
         projectile.is_alive = false;
     }
 }
-

@@ -4,16 +4,15 @@ use crate::movement::velocity::Velocity;
 
 use super::projectile::ProjectileHitEvent;
 
-
 #[derive(Component)]
 pub struct Knockback {
-    pub force : f32,
+    pub force: f32,
 }
 
 pub fn knockback_update(
-    q_knock : Query<(&Knockback, &Velocity)>,
-    mut q_hit : Query<&mut Velocity, Without<Knockback>>,
-    mut ev_hits : EventReader<ProjectileHitEvent>,
+    q_knock: Query<(&Knockback, &Velocity)>,
+    mut q_hit: Query<&mut Velocity, Without<Knockback>>,
+    mut ev_hits: EventReader<ProjectileHitEvent>,
 ) {
     for hit in ev_hits.iter() {
         if let Ok((knock, projectile_velocity)) = q_knock.get(hit.projectile) {
