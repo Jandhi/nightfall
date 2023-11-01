@@ -34,8 +34,12 @@ impl Animation<BeholderProjectileAnimation> for BeholderProjectileAnimation {
     }
 }
 
+#[derive(Component)]
+pub struct BeholderPrince;
+
 pub fn beholder_update(
     q_beholders :  Query<(Entity, &Transform, &AnimationController<BeholderAnimation>), Without<Player>>,
+    q_beholder_prince : Query<&BeholderPrince>,
     q_player : Query<(Entity, &Transform), With<Player>>,
     mut shoot_ev : EventReader<ShootEvent>,
     mut charge_ev : EventReader<ChargeShootEvent>,
@@ -72,7 +76,7 @@ pub fn beholder_update(
             let direction_vec = angle_to_target.unit_vector();
 
             commands
-                .spawn(make_animation_bundle(BeholderProjectileAnimation::Flying, &beholder_projetile_animations, texture_atlas_handle.clone(), transform.translation))
+                .spawn(make_animation_bundle(BeholderProjectileAnimation::Flying, &beholder_projetile_animations, texture_atlas_handle.clone(), transform.translation, 1.,))
                 .insert(Projectile {
                     dmg: 1,
                     damage_target: DamageTarget::Team(Team::Player),
@@ -81,9 +85,40 @@ pub fn beholder_update(
                     is_alive: true,
                 })
                 .insert(Velocity {
-                    vec: direction_vec * 20.,
+                    vec: direction_vec * 40.,
                 })
                 .insert(Collider::new_circle(15., transform.translation.truncate()));
+
+
+            if let Ok(_) = q_beholder_prince.get(entity) {
+                commands
+                    .spawn(make_animation_bundle(BeholderProjectileAnimation::Flying, &beholder_projetile_animations, texture_atlas_handle.clone(), transform.translation, 1.,))
+                    .insert(Projectile {
+                        dmg: 1,
+                        damage_target: DamageTarget::Team(Team::Player),
+                        piercing_mode: PiercingMode::None,
+                        entities_hit: 0,
+                        is_alive: true,
+                    })
+                    .insert(Velocity {
+                        vec: (angle_to_target + Radian::from_degrees(10.)).unit_vector() * 40.,
+                    })
+                    .insert(Collider::new_circle(15., transform.translation.truncate()));
+
+                commands
+                    .spawn(make_animation_bundle(BeholderProjectileAnimation::Flying, &beholder_projetile_animations, texture_atlas_handle.clone(), transform.translation, 1.,))
+                    .insert(Projectile {
+                        dmg: 1,
+                        damage_target: DamageTarget::Team(Team::Player),
+                        piercing_mode: PiercingMode::None,
+                        entities_hit: 0,
+                        is_alive: true,
+                    })
+                    .insert(Velocity {
+                        vec: (angle_to_target - Radian::from_degrees(10.)).unit_vector() * 40.,
+                    })
+                    .insert(Collider::new_circle(15., transform.translation.truncate()));
+            }
         }
     }
 }
@@ -118,13 +153,58 @@ pub fn spawn_beholder(
             2.
         ))
         .insert(Velocity::ZERO)
-        .insert(Health::new(15))
+        .insert(Health::new(25))
         .insert(Collider::new_circle(12., Vec2 { x: 70., y: 70. }))
         .insert(make_animation_bundle(
             BeholderAnimation::Flying,
             &animations,
             texture_atlas_handle.clone(),
             position,
+            1.,
+        ))
+        .insert(TeamMember { team: Team::Enemy })
+        .insert(NeedsHealthBar::default());
+}
+
+pub fn spawn_beholder_prince(
+    position : Vec3,
+    animations: &Res<AnimationStateStorage<BeholderAnimation>>,
+    textures: &Res<TextureAssets>,
+    texture_atlases: &mut ResMut<Assets<TextureAtlas>>,
+    commands: &mut Commands,
+) {
+    let texture_atlas = TextureAtlas::from_grid(
+        textures.beholder_prince.clone(),
+        Vec2 { x: 32., y: 32. },
+        22,
+        1,
+        None,
+        None,
+    );
+    let texture_atlas_handle = texture_atlases.add(texture_atlas);
+
+    commands
+        .spawn(Enemy {
+            xp: 100,
+            enemy_type: EnemyType::BeholderPrince,
+        })
+        .insert(BeholderPrince)
+        .insert(MoveAndShootAI::new(
+            20., 
+            5., 
+            300., 
+            6./8., 
+            3.
+        ))
+        .insert(Velocity::ZERO)
+        .insert(Health::new(200))
+        .insert(Collider::new_circle(12., Vec2 { x: 100., y: 100. }))
+        .insert(make_animation_bundle(
+            BeholderAnimation::Flying,
+            &animations,
+            texture_atlas_handle.clone(),
+            position,
+            1.5,
         ))
         .insert(TeamMember { team: Team::Enemy })
         .insert(NeedsHealthBar::default());

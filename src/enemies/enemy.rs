@@ -3,9 +3,12 @@ use std::time::Duration;
 
 use bevy::prelude::*;
 use bevy_debug_text_overlay::screen_print;
+use bevy_kira_audio::AudioControl;
+use rand::Rng;
 
 use crate::animation::info::AnimationStateInfo;
 use crate::animation::{make_animation_bundle, AnimationStateStorage, Animation};
+use crate::audio::FXChannel;
 use crate::collision::collider::{Collider, IsCollidingEvent};
 
 use crate::combat::{
@@ -14,11 +17,12 @@ use crate::combat::{
     teams::{Team, TeamMember},
 };
 use crate::constants::{SortingLayers, DISTANCE_SCALING};
-use crate::loading::TextureAssets;
+use crate::loading::{TextureAssets, AudioAssets};
 use crate::movement::friction::Friction;
 use crate::movement::pause::ActionPauseState;
 use crate::movement::velocity::Velocity;
 use crate::player::Player;
+use crate::util::pitch_rng::PitchRNG;
 use crate::util::radians::Radian;
 
 use super::ai::FollowPlayerAI;
@@ -28,8 +32,29 @@ use super::imp::ImpAnimation;
 #[derive(Copy, Clone)]
 pub enum EnemyType {
     Imp,
+    ImpQueen,
     Beholder,
-    Zombie
+    BeholderPrince,
+}
+
+impl EnemyType {
+    pub fn all() -> Vec<EnemyType> {
+        vec![
+            EnemyType::Imp,
+            EnemyType::ImpQueen,
+            EnemyType::Beholder,
+            EnemyType::BeholderPrince,
+        ]
+    }
+
+    pub fn difficulty(&self) -> f32 {
+        match self {
+            EnemyType::Imp => 5.,
+            EnemyType::ImpQueen => 50.,
+            EnemyType::Beholder => 10.,
+            EnemyType::BeholderPrince => 100.,
+        }
+    }
 }
 
 
@@ -61,11 +86,26 @@ pub fn death_loop(
     mut ememy_death_event: EventWriter<EnemyDeathEvent>,
     mut death_event: EventReader<DeathEvent>,
     mut q_enemies: Query<(Entity, &Enemy, &Transform)>,
+    mut fx_channel : Res<FXChannel>,
+    audio : Res<AudioAssets>,
+    mut pitch_rng : ResMut<PitchRNG>,
     mut commands: Commands,
 ) {
     for death_ev in death_event.iter() {
         if let Ok((entity, enemy, transform)) = q_enemies.get_mut(death_ev.entity) {
             screen_print!("Despawn");
+
+            fx_channel.play(match enemy.enemy_type {
+                EnemyType::Imp | EnemyType::ImpQueen => match pitch_rng.0.0.gen_range(0..4) {
+                    0 => audio.imp_death.clone(),
+                    1 => audio.imp_death2.clone(),
+                    2 => audio.imp_death3.clone(),
+                    _ => audio.imp_death4.clone(),
+                },
+                EnemyType::Beholder => audio.beholder_death.clone(),
+                EnemyType::BeholderPrince => audio.beholder_prince_death.clone(),
+            });
+
             commands.entity(entity).despawn_recursive();
             ememy_death_event.send(EnemyDeathEvent {
                 entity,

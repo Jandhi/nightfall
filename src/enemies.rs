@@ -7,7 +7,7 @@ use crate::{
     GameState,
 };
 
-use self::{enemy::{death_loop, initial_spawn, EnemyDeathEvent, spread_enemies}, spawning::{spawn_loop, SpawnInfo}, ai::{follow_player, move_and_shoot_ai, ShootEvent, ChargeShootEvent}, imp::ImpAnimation, beholder::{BeholderAnimation, beholder_update, BeholderProjectileAnimation}};
+use self::{enemy::{death_loop, initial_spawn, EnemyDeathEvent, spread_enemies}, spawning::{spawn_loop, SpawnInfo, spawn_spawn_rng}, ai::{follow_player, move_and_shoot_ai, ShootEvent, ChargeShootEvent}, imp::ImpAnimation, beholder::{BeholderAnimation, beholder_update, BeholderProjectileAnimation}};
 
 pub mod enemy;
 pub mod spawning;
@@ -29,12 +29,15 @@ impl Plugin for EnemiesPlugin {
                 spawn_loop,
                 beholder_update,
             ).run_if(in_state(GameState::Playing)))
-            .add_systems(OnEnter(GameState::Playing), initial_spawn)
+            .add_systems(OnEnter(GameState::Playing), (
+                initial_spawn,
+                spawn_spawn_rng
+            ))
             .add_animation::<ImpAnimation>()
             .add_animation::<BeholderAnimation>()
             .add_animation::<BeholderProjectileAnimation>()
             .add_event::<ShootEvent>()
             .add_event::<ChargeShootEvent>()
-            .insert_resource(SpawnInfo{ timer: Timer::from_seconds(6., TimerMode::Repeating), count: 0 });
+            .insert_resource(SpawnInfo{ timer: Timer::from_seconds(3., TimerMode::Repeating), count: 0 });
     }
 }

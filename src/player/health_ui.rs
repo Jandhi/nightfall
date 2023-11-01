@@ -8,7 +8,7 @@ use crate::{
         make_animation_bundle, AnimationStateChangeEvent,
         AnimationStateStorage, Animation, info::{AnimationStateInfo, AnimationInfoBuilder},
     },
-    loading::TextureAssets, combat::health::Health,
+    loading::TextureAssets, combat::health::Health, constants::SortingLayers,
 };
 
 use super::Player;
@@ -116,6 +116,7 @@ fn spawn_heart_ui_sprite(
             HealthUIAnimationState::Available,
             animations,
             texture_atlas_handle,
-            default(),
+            Vec3 { x: 10000., y: 10000., z: SortingLayers::UIBack.into() },
+            1.,
         ));
 }

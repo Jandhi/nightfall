@@ -133,6 +133,7 @@ pub fn spawn_player(
                 y: 0.,
                 z: SortingLayers::Player.into(),
             },
+            1.,
         )).insert(Experience{
             curr_experience: 0,
             level: 0,

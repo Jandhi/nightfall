@@ -11,6 +11,7 @@ pub const IS_DEBUG: bool = true;
 
 pub enum SortingLayers {
     UI,
+    UIBack,
     Front,
     Player,
     Action,
@@ -20,6 +21,7 @@ impl From<SortingLayers> for f32 {
     fn from(val: SortingLayers) -> Self {
         match val {
             SortingLayers::UI => 10.,
+            SortingLayers::UIBack => 8.,
             SortingLayers::Front => 6.,
             SortingLayers::Player => 5.,
             SortingLayers::Action => 3.,

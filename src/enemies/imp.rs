@@ -53,6 +53,48 @@ pub fn spawn_imp(
             &imp_animations,
             texture_atlas_handle.clone(),
             position,
+            1.,
+        ))
+        .insert(TeamMember { team: Team::Enemy })
+        .insert(NeedsHealthBar::default());
+}
+
+#[derive(Component)]
+pub struct ImpQueen;
+
+pub fn spawn_imp_queen(
+    position : Vec3,
+    imp_animations: &Res<AnimationStateStorage<ImpAnimation>>,
+    textures: &Res<TextureAssets>,
+    texture_atlases: &mut ResMut<Assets<TextureAtlas>>,
+    commands: &mut Commands,
+) {
+    let texture_atlas = TextureAtlas::from_grid(
+        textures.imp_queen.clone(),
+        Vec2 { x: 32., y: 32. },
+        4,
+        1,
+        None,
+        None,
+    );
+    let texture_atlas_handle = texture_atlases.add(texture_atlas);
+
+    commands
+        .spawn(Enemy {
+            xp: 50,
+            enemy_type: EnemyType::Imp,
+        })
+        .insert(ImpQueen)
+        .insert(FollowPlayerAI{ speed: 12., corrective_force: 3.0 })
+        .insert(Velocity::ZERO)
+        .insert(Health::new(150))
+        .insert(Collider::new_circle(15., position.truncate()))
+        .insert(make_animation_bundle(
+            ImpAnimation::Flying,
+            &imp_animations,
+            texture_atlas_handle.clone(),
+            position,
+            1.5,
         ))
         .insert(TeamMember { team: Team::Enemy })
         .insert(NeedsHealthBar::default());

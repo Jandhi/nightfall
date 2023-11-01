@@ -139,7 +139,7 @@ impl Collider {
         } else if circle_pos.y < rect_pos.y {
             (rect_pos.y - size.y / 2.) - circle_pos.y <= radius
         } else {
-            panic!("This should not be possible");
+            panic!("This should not be possible! Size: {} RectPos: {} Radius: {} CirclePos: {}", size, rect_pos, radius, circle_pos);
         }
     }
 }

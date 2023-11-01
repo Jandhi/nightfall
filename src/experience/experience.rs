@@ -25,6 +25,7 @@ pub fn experience_update(
     if xp.curr_experience >= xp.threshold {
         xp.curr_experience -= xp.threshold;
         xp.level += 1;
+        xp.threshold = (xp.threshold as f32 * 1.3) as u32;
         
         level_up_ev.send(LevelUpEvent { new_level: xp.level });
     }

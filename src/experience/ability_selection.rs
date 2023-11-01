@@ -117,7 +117,7 @@ pub fn start_ability_selection(
 
     let all_abilities = Ability::all();
     let chosen_abilities = all_abilities.iter()
-        .filter(|ability| !player.abilities.contains(*ability))
+        .filter(|ability| ability.is_available(&player.abilities))
         .choose_multiple(&mut rng.0.0, 3);
 
     commands.spawn(
@@ -136,7 +136,10 @@ pub fn start_ability_selection(
             is_horizontal: true,
         }
     ).insert(
-        SpriteBundle::default()
+        SpriteBundle {
+            transform: Transform::from_translation(Vec3 { x: 0., y: 0., z: SortingLayers::UI.into() }),
+            ..Default::default()
+        }
     ).with_children(|parent| {
         for i in 0..3 {
             parent.spawn(make_animation_bundle(
@@ -146,12 +149,14 @@ pub fn start_ability_selection(
                 }, 
                 &frame_animations, 
                 texture_atlas_handle.clone(), 
-                Vec3::ZERO)
-            ).insert(
+                Vec3::ZERO,
+                1.,
+            )).insert(
                 GridElement{ index: IVec2{ x: i, y: 0 } }
             ).with_children(|parent|{
                 parent.spawn(SpriteBundle{
                     texture: chosen_abilities[i as usize].get_texture(&textures),
+                    transform: Transform::from_translation(Vec3 { x: 0., y: 0., z: SortingLayers::UI.into() }),
                     ..Default::default()
                 });
             }).insert(SelectionElement{ index: i as usize })

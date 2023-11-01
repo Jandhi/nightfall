@@ -49,6 +49,27 @@ pub struct AudioAssets {
     #[asset(path = "audio/reload_done.ogg")]
     pub reload_done: Handle<AudioSource>,
 
+    #[asset(path = "audio/beholder_death.ogg")]
+    pub beholder_death: Handle<AudioSource>,
+
+    #[asset(path = "audio/beholder_prince_death.ogg")]
+    pub beholder_prince_death: Handle<AudioSource>,
+
+    #[asset(path = "audio/fireball.ogg")]
+    pub fireball: Handle<AudioSource>,
+
+    #[asset(path = "audio/imp_death.ogg")]
+    pub imp_death: Handle<AudioSource>,
+
+    #[asset(path = "audio/imp_death2.ogg")]
+    pub imp_death2: Handle<AudioSource>,
+
+    #[asset(path = "audio/imp_death3.ogg")]
+    pub imp_death3: Handle<AudioSource>,
+
+    #[asset(path = "audio/imp_death4.ogg")]
+    pub imp_death4: Handle<AudioSource>,
+
     #[asset(path = "audio/theme.ogg")]
     pub theme: Handle<AudioSource>,
 }
@@ -76,8 +97,14 @@ pub struct TextureAssets {
     #[asset(path = "textures/enemies/imp.png")]
     pub imp: Handle<Image>,
 
+    #[asset(path = "textures/enemies/imp_mother.png")]
+    pub imp_queen: Handle<Image>,
+
     #[asset(path = "textures/enemies/beholder.png")]
     pub beholder: Handle<Image>,
+
+    #[asset(path = "textures/enemies/beholder_prince.png")]
+    pub beholder_prince: Handle<Image>,
 
     #[asset(path = "textures/enemies/beholder_projectile.png")]
     pub beholder_projectile: Handle<Image>,
