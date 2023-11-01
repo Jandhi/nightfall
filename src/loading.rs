@@ -37,11 +37,20 @@ pub struct AudioAssets {
     #[asset(path = "audio/gunshot.ogg")]
     pub gunshot: Handle<AudioSource>,
 
+    #[asset(path = "audio/gunshot_2.ogg")]
+    pub gunshot2: Handle<AudioSource>,
+
+    #[asset(path = "audio/grunt.ogg")]
+    pub grunt: Handle<AudioSource>,
+
     #[asset(path = "audio/reload.ogg")]
     pub reload: Handle<AudioSource>,
 
     #[asset(path = "audio/reload_done.ogg")]
     pub reload_done: Handle<AudioSource>,
+
+    #[asset(path = "audio/theme.ogg")]
+    pub theme: Handle<AudioSource>,
 }
 
 #[derive(AssetCollection, Resource)]
@@ -52,11 +61,8 @@ pub struct TextureAssets {
     #[asset(path = "textures/Flame.png")]
     pub flame: Handle<Image>,
 
-    #[asset(path = "textures/tower.png")]
-    pub tower: Handle<Image>,
-
-    #[asset(path = "textures/turret.png")]
-    pub turret: Handle<Image>,
+    #[asset(path = "textures/hit.png")]
+    pub hit: Handle<Image>,
 
     #[asset(path = "textures/bullet_small.png")]
     pub bullet_small: Handle<Image>,

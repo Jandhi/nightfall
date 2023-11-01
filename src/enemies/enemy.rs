@@ -2,6 +2,7 @@ use std::f32::consts::PI;
 use std::time::Duration;
 
 use bevy::prelude::*;
+use bevy_debug_text_overlay::screen_print;
 
 use crate::animation::info::AnimationStateInfo;
 use crate::animation::{make_animation_bundle, AnimationStateStorage, Animation};
@@ -64,6 +65,7 @@ pub fn death_loop(
 ) {
     for death_ev in death_event.iter() {
         if let Ok((entity, enemy, transform)) = q_enemies.get_mut(death_ev.entity) {
+            screen_print!("Despawn");
             commands.entity(entity).despawn_recursive();
             ememy_death_event.send(EnemyDeathEvent {
                 entity,

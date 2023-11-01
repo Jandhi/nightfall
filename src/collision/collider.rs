@@ -85,6 +85,17 @@ impl Collider {
         }
     }
 
+    pub fn contains_point(&self, my_position : Vec2, point: Vec2) -> bool {
+        match self.shape {
+            ColliderShape::Rect(size) => 
+                point.x >= my_position.x - size.x / 2. 
+                && point.x <= my_position.x + size.x / 2.
+                && point.y >= my_position.y - size.y / 2.
+                && point.y <= my_position.y + size.y / 2.,
+            ColliderShape::Circle(radius) => my_position.distance(point) <= radius,
+        }
+    }
+
     pub fn is_colliding(&self, position: Vec2, other: &Collider, other_position: Vec2) -> bool {
         match (&self.shape, &other.shape) {
             (ColliderShape::Rect(_), ColliderShape::Rect(_)) => {

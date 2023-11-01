@@ -10,8 +10,10 @@ pub struct InternalAudioPlugin;
 impl Plugin for InternalAudioPlugin {
     fn build(&self, app: &mut App) {
         app.add_plugins(AudioPlugin)
+            .add_systems(OnEnter(GameState::Menu), start_music)
             .add_systems(OnEnter(GameState::Playing), start_audio)
             .add_audio_channel::<FX>()
+            .add_audio_channel::<Music>()
             .add_audio_channel::<Ambience>();
     }
 }
@@ -24,7 +26,20 @@ pub type FXChannel = AudioChannel<FX>;
 pub struct Ambience;
 pub type AmbienceChannel = AudioChannel<Ambience>;
 
+#[derive(Resource)]
+pub struct Music;
+pub type MusicChannel = AudioChannel<Ambience>;
+
 
 fn start_audio(mut commands: Commands, audio_assets: Res<AudioAssets>, audio: Res<Audio>) {
     
+}
+
+fn start_music(
+    music : Res<MusicChannel>,
+    audio_assets: Res<AudioAssets>,
+) {
+    music.play(audio_assets.theme.clone())
+        .with_volume(0.8)
+        .looped();
 }

@@ -1,9 +1,8 @@
 use std::f32::consts::PI;
 
 use bevy::prelude::*;
-use bevy_debug_text_overlay::screen_print;
 
-use crate::{player::Player, movement::{pause::ActionPauseState, velocity::Velocity}, constants::DISTANCE_SCALING, util::radians::Radian};
+use crate::{player::Player, movement::{pause::ActionPauseState, velocity::Velocity}, util::radians::Radian};
 
 use super::enemy;
 

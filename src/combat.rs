@@ -3,7 +3,7 @@ use bevy::prelude::*;
 use crate::GameState;
 
 use self::{
-    health::{check_death, DeathEvent},
+    health::{check_death, DeathEvent, TookDamageEvent},
     healthbar::{spawn_healthbars, update_healthbars},
     projectile::{projectile_collision_check, ProjectileHitEvent}, knockback::knockback_update,
 };
@@ -29,6 +29,7 @@ impl Plugin for CombatPlugin {
                 ).run_if(in_state(GameState::Playing)),
         )
         .add_event::<DeathEvent>()
+        .add_event::<TookDamageEvent>()
         .add_event::<ProjectileHitEvent>();
     }
 }

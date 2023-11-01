@@ -85,9 +85,6 @@ impl Ability {
 
     pub fn damage_mult(&self) -> f32 {
         match self {
-            Ability::DoubleBarrel => 0.7,
-            Ability::TripleBarrel => 0.9,
-            Ability::Shotgun => 0.9,
             Ability::BigBullets => 2.0,
             _ => 1.
         }
@@ -108,6 +105,9 @@ impl Ability {
 
     pub fn shoot_speed_mult(&self) -> f32 {
         match self {
+            Ability::DoubleBarrel => 0.7,
+            Ability::TripleBarrel => 0.9,
+            Ability::Shotgun => 0.9,
             Ability::BigBullets => 0.7,
             _ => 1.
         }

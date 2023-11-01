@@ -3,7 +3,7 @@ use std::iter;
 use bevy::{prelude::*, window::PrimaryWindow, text::FontAtlas};
 use rand::seq::IteratorRandom;
 
-use crate::{util::rng::{RNG, GlobalSeed}, player::{Player, ability::Ability}, movement::pause::ActionPauseState, ui::{grid::{Grid, GridElement}, selection_group::{SelectionGroup, HoverEvent, UnhoverEvent, SelectionEvent}}, loading::{TextureAssets, AbilityTextures, FontAssets}, constants::{SortingLayers, SCALING_VEC3}, animation::{make_animation_bundle, Animation, info::{AnimationStateInfo, AnimationInfoBuilder}, AnimationStateStorage, controller::AnimationController, AnimationStateChangeEvent}, palette::Palette};
+use crate::{util::rng::{RNG, GlobalSeed}, player::{Player, ability::Ability}, movement::pause::ActionPauseState, ui::{grid::{Grid, GridElement}, selection_group::{SelectionGroup, HoverEvent, UnhoverEvent, SelectionEvent, SelectionElement}}, loading::{TextureAssets, AbilityTextures, FontAssets}, constants::{SortingLayers, SCALING_VEC3}, animation::{make_animation_bundle, Animation, info::{AnimationStateInfo, AnimationInfoBuilder}, AnimationStateStorage, controller::AnimationController, AnimationStateChangeEvent}, palette::Palette, collision::collider::Collider};
 
 use super::experience::LevelUpEvent;
 
@@ -154,7 +154,8 @@ pub fn start_ability_selection(
                     texture: chosen_abilities[i as usize].get_texture(&textures),
                     ..Default::default()
                 });
-            });
+            }).insert(SelectionElement{ index: i as usize })
+            .insert(Collider::new_rect(Vec2 { x: 64., y: 64. }, Vec2::ZERO));
         }
     });
 }

@@ -1,7 +1,9 @@
 use std::marker::PhantomData;
 
-use bevy::prelude::*;
+use bevy::{prelude::*, window::PrimaryWindow};
 use bevy_debug_text_overlay::screen_print;
+
+use crate::collision::collider::Collider;
 
 
 #[derive(Component)]
@@ -9,6 +11,11 @@ pub struct SelectionGroup {
     pub is_focused : bool,
     pub hovered_index : usize,
     pub is_horizontal : bool
+}
+
+#[derive(Component)]
+pub struct SelectionElement {
+    pub index : usize
 }
 
 #[derive(Event)]
@@ -32,11 +39,43 @@ pub struct SelectionEvent {
 
 pub fn update_selection_groups(
     mut selection_groups : Query<(Entity, &mut SelectionGroup, &Children)>,
+    mut selection_elements : Query<(Entity, &Transform, &Parent, &Collider, &SelectionElement), Without<SelectionGroup>>,
+    q_windows: Query<&Window, With<PrimaryWindow>>,
     mut hover : EventWriter<HoverEvent>,
     mut unhover : EventWriter<UnhoverEvent>,
     mut select : EventWriter<SelectionEvent>,
+    mouse_button : Res<Input<MouseButton>>,
     keyboard_input: Res<Input<KeyCode>>,
 ) {
+    let window = q_windows.single();
+
+    for (entity, transform, parent, collider, element) in selection_elements.iter() {
+        if let Ok((parent_entity, mut group, children)) = selection_groups.get_mut(parent.get()) {
+            if let Some(cursor_position) = window.cursor_position() {
+                let cursor_point = Vec2::new(
+                    cursor_position.x - window.width() / 2.,
+                    window.height() / 2. - cursor_position.y,
+                );
+
+                if collider.contains_point(transform.translation.truncate(), cursor_point) {
+                    if group.hovered_index != element.index {
+                        unhover.send(UnhoverEvent { parent: parent_entity, unhovered: *children.get(group.hovered_index).unwrap() });
+                        group.hovered_index = element.index;
+                        hover.send(HoverEvent { parent: parent_entity, hovered: entity });
+                    }
+
+                    if mouse_button.just_pressed(MouseButton::Left) {
+                        select.send(SelectionEvent { 
+                            parent: parent_entity, 
+                            selected: *children.get(group.hovered_index).unwrap(),
+                            selected_index: group.hovered_index, 
+                        })
+                    }
+                }
+            }
+        }
+    }
+
     for (entity, mut selection_group, children) in selection_groups.iter_mut() {
         if !selection_group.is_focused {
             continue;

@@ -84,7 +84,10 @@ pub fn shoot(
             }
 
             // Play audio
-            fx_channel.play(audio_assets.gunshot.clone());
+            fx_channel.play(match player.abilities.contains(&Ability::Shotgun) {
+                true => audio_assets.gunshot2.clone(),
+                false => audio_assets.gunshot.clone(),
+            });
 
             let dmg = player.damage();
             let knockback = player.knockback();
