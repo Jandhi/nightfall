@@ -84,7 +84,6 @@ pub fn death_loop(
 ) {
     for death_ev in death_event.iter() {
         if let Ok((entity, enemy, transform)) = q_enemies.get_mut(death_ev.entity) {
-            screen_print!("Despawn");
 
             fx_channel.play(match enemy.enemy_type {
                 EnemyType::Imp | EnemyType::ImpQueen => match pitch_rng.0 .0.gen_range(0..4) {

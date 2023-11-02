@@ -19,7 +19,6 @@ impl Ability {
     pub fn all() -> Vec<Ability> {
         vec![
             Self::BigBullets,
-            Self::BigBullets,
             Self::Crossbow,
             Self::DoubleBarrel,
             Self::TripleBarrel,
