@@ -1,18 +1,20 @@
 use bevy::prelude::*;
 
 use crate::{animation::AppAnimationSetup, GameState};
+use crate::{animation::AppAnimationSetup, GameState};
 
 use self::{
     ai::{follow_player, move_and_shoot_ai, ChargeShootEvent, ShootEvent},
     beholder::{beholder_update, BeholderAnimation, BeholderProjectileAnimation},
     enemy::{death_loop, initial_spawn, spread_enemies, EnemyDeathEvent},
     imp::ImpAnimation,
-    spawning::{spawn_loop, SpawnInfo},
+    spawning::{spawn_loop, spawn_spawn_rng, SpawnInfo},
 };
 
 pub mod ai;
 pub mod beholder;
 pub mod enemy;
+pub mod imp;
 pub mod imp;
 pub mod spawning;
 pub mod zombie;
@@ -34,14 +36,17 @@ impl Plugin for EnemiesPlugin {
                 )
                     .run_if(in_state(GameState::Playing)),
             )
-            .add_systems(OnEnter(GameState::Playing), initial_spawn)
+            .add_systems(
+                OnEnter(GameState::Playing),
+                (initial_spawn, spawn_spawn_rng),
+            )
             .add_animation::<ImpAnimation>()
             .add_animation::<BeholderAnimation>()
             .add_animation::<BeholderProjectileAnimation>()
             .add_event::<ShootEvent>()
             .add_event::<ChargeShootEvent>()
             .insert_resource(SpawnInfo {
-                timer: Timer::from_seconds(6., TimerMode::Repeating),
+                timer: Timer::from_seconds(3., TimerMode::Repeating),
                 count: 0,
             });
     }

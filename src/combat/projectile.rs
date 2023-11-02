@@ -1,9 +1,10 @@
 use bevy::prelude::*;
 
-use crate::collision::collider::CollisionStartEvent;
+use crate::collision::collider::{CollisionStartEvent, IsCollidingEvent};
 use crate::combat::health::HealthType;
+use crate::util::radians::Radian;
 
-use super::health::{Dead, Health};
+use super::health::{Dead, Health, TookDamageEvent};
 use super::teams::{Team, TeamMember};
 
 pub enum DamageTarget {
@@ -30,6 +31,8 @@ pub struct Projectile {
 pub struct ProjectileHitEvent {
     pub projectile: Entity,
     pub victim: Entity,
+    pub projectile: Entity,
+    pub victim: Entity,
 }
 
 pub fn projectile_collision_check(
@@ -37,6 +40,7 @@ pub fn projectile_collision_check(
     mut q_hittable: Query<(&mut Health, &TeamMember)>,
     mut ev_collision: EventReader<CollisionStartEvent>,
     mut ev_hit: EventWriter<ProjectileHitEvent>,
+    mut ev_dmg: EventWriter<TookDamageEvent>,
     mut commands: Commands,
 ) {
     for ev_is_colliding in ev_collision.iter() {
@@ -51,6 +55,7 @@ pub fn projectile_collision_check(
                 health,
                 member.team,
                 &mut ev_hit,
+                &mut ev_dmg,
                 &mut commands,
             );
         }
@@ -65,6 +70,7 @@ pub fn projectile_collision_check(
                 health,
                 member.team,
                 &mut ev_hit,
+                &mut ev_dmg,
                 &mut commands,
             );
         }
@@ -78,6 +84,7 @@ fn handle_projectile_collision(
     mut health: Mut<Health>,
     hit_team: Team,
     ev_hit: &mut EventWriter<ProjectileHitEvent>,
+    ev_dmg: &mut EventWriter<TookDamageEvent>,
     commands: &mut Commands,
 ) {
     if !projectile.is_alive {
@@ -103,9 +110,13 @@ fn handle_projectile_collision(
         projectile: projectile_entity,
         victim: hit_entity,
     });
+    ev_hit.send(ProjectileHitEvent {
+        projectile: projectile_entity,
+        victim: hit_entity,
+    });
 
     projectile.entities_hit += 1;
-    health.take_damage(projectile.dmg);
+    health.take_damage(hit_entity, ev_dmg, projectile.dmg);
 
     let is_dead = match projectile.piercing_mode {
         PiercingMode::None => true,

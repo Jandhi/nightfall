@@ -4,8 +4,11 @@ use crate::{
     animation::{
         info::{AnimationInfoBuilder, AnimationStateInfo},
         make_animation_bundle, Animation, AnimationStateChangeEvent, AnimationStateStorage,
+        info::{AnimationInfoBuilder, AnimationStateInfo},
+        make_animation_bundle, Animation, AnimationStateChangeEvent, AnimationStateStorage,
     },
     combat::health::Health,
+    constants::SortingLayers,
     loading::TextureAssets,
 };
 
@@ -114,6 +117,11 @@ fn spawn_heart_ui_sprite(
             HealthUIAnimationState::Available,
             animations,
             texture_atlas_handle,
-            default(),
+            Vec3 {
+                x: 10000.,
+                y: 10000.,
+                z: SortingLayers::UIBack.into(),
+            },
+            1.,
         ));
 }

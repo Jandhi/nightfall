@@ -86,6 +86,7 @@ pub fn make_animation_bundle<T: Send + std::marker::Sync + 'static + Clone + Cop
     animations: &Res<AnimationStateStorage<T>>,
     texture_atlas_handle: Handle<TextureAtlas>,
     position: Vec3,
+    scaling: f32,
 ) -> impl Bundle {
     let start_state = animations.get(start_state_id).unwrap();
     (
@@ -95,7 +96,7 @@ pub fn make_animation_bundle<T: Send + std::marker::Sync + 'static + Clone + Cop
             transform: Transform {
                 translation: position,
                 rotation: Quat::IDENTITY,
-                scale: SCALING_VEC3,
+                scale: SCALING_VEC3 * scaling,
             },
             ..Default::default()
         },

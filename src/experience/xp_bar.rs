@@ -142,6 +142,7 @@ pub fn spawn_xp_bar(
                 &animations,
                 texture_atlas_handle.clone(),
                 default(),
+                1.,
             ));
     }
 }

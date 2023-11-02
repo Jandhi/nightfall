@@ -115,5 +115,6 @@ fn spawn_bullet_ui_sprite(
             animations,
             texture_atlas_handle,
             default(),
+            1.,
         ));
 }

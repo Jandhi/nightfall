@@ -1,7 +1,13 @@
-use bevy::prelude::Plugin;
+use bevy::prelude::*;
 
-use self::rng::GlobalSeed;
+use crate::GameState;
 
+use self::{
+    pitch_rng::spawn_pitch_rng,
+    rng::{GlobalSeed, RNG},
+};
+
+pub mod pitch_rng;
 pub mod radians;
 pub mod rng;
 
@@ -9,6 +15,7 @@ pub struct UtilPlugin;
 
 impl Plugin for UtilPlugin {
     fn build(&self, app: &mut bevy::prelude::App) {
-        app.insert_resource(GlobalSeed("test".into()));
+        app.add_systems(OnEnter(GameState::Playing), spawn_pitch_rng)
+            .insert_resource(GlobalSeed("test".into()));
     }
 }

@@ -1,4 +1,6 @@
-use bevy::{prelude::*, window::PrimaryWindow};
+use std::iter;
+
+use bevy::{prelude::*, text::FontAtlas, window::PrimaryWindow};
 use rand::seq::IteratorRandom;
 
 use crate::{
@@ -7,13 +9,17 @@ use crate::{
         info::{AnimationInfoBuilder, AnimationStateInfo},
         make_animation_bundle, Animation, AnimationStateChangeEvent, AnimationStateStorage,
     },
-    loading::{AbilityTextures, FontAssets},
+    collision::collider::Collider,
+    constants::{SortingLayers, SCALING_VEC3},
+    loading::{AbilityTextures, FontAssets, TextureAssets},
     movement::pause::ActionPauseState,
     palette::Palette,
     player::{ability::Ability, Player},
     ui::{
         grid::{Grid, GridElement},
-        selection_group::{HoverEvent, SelectionEvent, SelectionGroup, UnhoverEvent},
+        selection_group::{
+            HoverEvent, SelectionElement, SelectionEvent, SelectionGroup, UnhoverEvent,
+        },
     },
     util::rng::{GlobalSeed, RNG},
 };
@@ -25,11 +31,14 @@ pub struct AbilityRNG(pub RNG);
 
 pub fn create_ability_selection_rng(seed: Res<GlobalSeed>, mut commands: Commands) {
     commands.insert_resource(AbilityRNG(RNG::new(seed.0.as_str(), "ability_rng")))
+pub fn create_ability_selection_rng(seed: Res<GlobalSeed>, mut commands: Commands) {
+    commands.insert_resource(AbilityRNG(RNG::new(seed.0.as_str(), "ability_rng")))
 }
 
 #[derive(PartialEq, Eq, Hash, Clone, Copy)]
 pub enum AbilityFrameAnimation {
     Hovered,
+    NonHovered,
     NonHovered,
 }
 
@@ -43,13 +52,17 @@ impl Animation<AbilityFrameAnimation> for AbilityFrameAnimation {
 }
 
 pub fn ability_frame_update(
-    q_frames: Query<(Entity, &AnimationController<AbilityFrameAnimation>)>,
+    mut q_frames: Query<(Entity, &AnimationController<AbilityFrameAnimation>)>,
     mut animation_update: EventWriter<AnimationStateChangeEvent<AbilityFrameAnimation>>,
     mut hover_events: EventReader<HoverEvent>,
     mut unhover_events: EventReader<UnhoverEvent>,
 ) {
     for hover_ev in hover_events.iter() {
         if let Ok((entity, _)) = q_frames.get(hover_ev.hovered) {
+            animation_update.send(AnimationStateChangeEvent {
+                id: entity,
+                state_id: AbilityFrameAnimation::Hovered,
+            });
             animation_update.send(AnimationStateChangeEvent {
                 id: entity,
                 state_id: AbilityFrameAnimation::Hovered,
@@ -63,6 +76,10 @@ pub fn ability_frame_update(
                 id: entity,
                 state_id: AbilityFrameAnimation::NonHovered,
             });
+            animation_update.send(AnimationStateChangeEvent {
+                id: entity,
+                state_id: AbilityFrameAnimation::NonHovered,
+            });
         }
     }
 }
@@ -70,11 +87,13 @@ pub fn ability_frame_update(
 #[derive(Component)]
 pub struct AbilitySelection {
     abilities: Vec<Ability>,
+pub struct AbilitySelection {
+    abilities: Vec<Ability>,
 }
 
 pub fn on_select_ability(
     q_menu: Query<(Entity, &AbilitySelection)>,
-    mut q_player: Query<&mut Player, Without<AbilitySelection>>,
+    mut q_player: Query<(&mut Player), Without<AbilitySelection>>,
     mut selection_events: EventReader<SelectionEvent>,
     mut commmands: Commands,
     mut pause: ResMut<ActionPauseState>,
@@ -86,6 +105,9 @@ pub fn on_select_ability(
             player
                 .abilities
                 .push(selection.abilities[selection_ev.selected_index]);
+            player
+                .abilities
+                .push(selection.abilities[selection_ev.selected_index]);
             commmands.entity(entity).despawn_recursive();
             pause.is_paused = false;
         }
@@ -94,14 +116,17 @@ pub fn on_select_ability(
 
 pub fn start_ability_selection(
     mut q_player: Query<&mut Player>,
+    mut q_player: Query<&mut Player>,
     q_windows: Query<&Window, With<PrimaryWindow>>,
+    mut level_up_ev: EventReader<LevelUpEvent>,
+    textures: Res<AbilityTextures>,
     mut level_up_ev: EventReader<LevelUpEvent>,
     textures: Res<AbilityTextures>,
     frame_animations: Res<AnimationStateStorage<AbilityFrameAnimation>>,
     mut texture_atlases: ResMut<Assets<TextureAtlas>>,
     mut rng: ResMut<AbilityRNG>,
-    _font_assets: Res<FontAssets>,
-    _palette: Res<Palette>,
+    font_assets: Res<FontAssets>,
+    palette: Res<Palette>,
     mut pause: ResMut<ActionPauseState>,
     mut commands: Commands,
 ) {
@@ -131,9 +156,15 @@ pub fn start_ability_selection(
     let all_abilities = Ability::all();
     let chosen_abilities = all_abilities
         .iter()
-        .filter(|ability| !player.abilities.contains(*ability))
+        .filter(|ability| ability.is_available(&player.abilities))
         .choose_multiple(&mut rng.0 .0, 3);
 
+    commands
+        .spawn(Grid {
+            size: Vec2 {
+                x: window.width(),
+                y: 0.,
+            },
     commands
         .spawn(Grid {
             size: Vec2 {
@@ -143,14 +174,25 @@ pub fn start_ability_selection(
             grid_size: IVec2 { x: 3, y: 1 },
         })
         .insert(AbilitySelection {
+        })
+        .insert(AbilitySelection {
             abilities: chosen_abilities.iter().map(|a| **a).collect(),
+        })
+        .insert(SelectionGroup {
         })
         .insert(SelectionGroup {
             is_focused: true,
             hovered_index: 0,
             is_horizontal: true,
         })
-        .insert(SpriteBundle::default())
+        .insert(SpriteBundle {
+            transform: Transform::from_translation(Vec3 {
+                x: 0.,
+                y: 0.,
+                z: SortingLayers::UI.into(),
+            }),
+            ..Default::default()
+        })
         .with_children(|parent| {
             for i in 0..3 {
                 parent
@@ -162,6 +204,7 @@ pub fn start_ability_selection(
                         &frame_animations,
                         texture_atlas_handle.clone(),
                         Vec3::ZERO,
+                        1.,
                     ))
                     .insert(GridElement {
                         index: IVec2 { x: i, y: 0 },
@@ -169,9 +212,17 @@ pub fn start_ability_selection(
                     .with_children(|parent| {
                         parent.spawn(SpriteBundle {
                             texture: chosen_abilities[i as usize].get_texture(&textures),
+                            transform: Transform::from_translation(Vec3 {
+                                x: 0.,
+                                y: 0.,
+                                z: SortingLayers::UI.into(),
+                            }),
                             ..Default::default()
                         });
-                    });
+                    })
+                    .insert(SelectionElement { index: i as usize })
+                    .insert(Collider::new_rect(Vec2 { x: 64., y: 64. }, Vec2::ZERO));
             }
         });
 }
+
