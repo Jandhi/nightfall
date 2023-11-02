@@ -3,17 +3,23 @@ use bevy::{prelude::*, utils::HashMap};
 pub struct Layout(HorizontalLayout, VerticalLayout);
 pub enum HorizontalLayout {
     Left,
+    Left,
     Center,
+    Right,
     Right,
 }
 pub enum VerticalLayout {
     Top,
     Middle,
     Bottom,
+    Bottom,
 }
 
 #[derive(Component)]
 pub struct UIElement {
+    parent: Option<Entity>,
+    area: Vec2,
+    layout: Layout,
     parent: Option<Entity>,
     area: Vec2,
     layout: Layout,

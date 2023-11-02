@@ -1,7 +1,7 @@
 use std::{f32::consts::PI, time::Duration};
 
 use bevy::{prelude::*, window::PrimaryWindow};
-use bevy_debug_text_overlay::screen_print;
+
 use bevy_kira_audio::AudioControl;
 
 use crate::{
@@ -10,15 +10,22 @@ use crate::{
     combat::{
         health::HealthType,
         knockback::Knockback,
+        health::HealthType,
+        knockback::Knockback,
         projectile::{DamageTarget, PiercingMode, Projectile},
+        teams::Team,
         teams::Team,
     },
     constants::{SortingLayers, SCALING_VEC3},
     loading::{AudioAssets, TextureAssets},
     movement::{pause::ActionPauseState, velocity::Velocity},
     util::radians::Radian,
+    loading::{AudioAssets, TextureAssets},
+    movement::{pause::ActionPauseState, velocity::Velocity},
+    util::radians::Radian,
 };
 
+use super::{ability::Ability, reload_ui::ReloadTimer, Player};
 use super::{ability::Ability, reload_ui::ReloadTimer, Player};
 
 #[derive(Resource)]
@@ -33,7 +40,10 @@ pub fn shoot(
     textures: Res<TextureAssets>,
     audio_assets: Res<AudioAssets>,
     fx_channel: Res<FXChannel>,
+    audio_assets: Res<AudioAssets>,
+    fx_channel: Res<FXChannel>,
     time: Res<Time>,
+    pause: Res<ActionPauseState>,
     pause: Res<ActionPauseState>,
     mut commands: Commands,
 ) {
@@ -56,6 +66,9 @@ pub fn shoot(
     {
         if let Some(cursor_position) = window.cursor_position() {
             // Reset cooldown
+            shooting_cooldown
+                .0
+                .set_duration(Duration::from_secs_f32(player.shoot_time()));
             shooting_cooldown
                 .0
                 .set_duration(Duration::from_secs_f32(player.shoot_time()));
@@ -98,6 +111,7 @@ pub fn shoot(
             let dmg = player.damage();
             let knockback = player.knockback();
             let velocity: f32 = 600.;
+            let velocity: f32 = 600.;
 
             if player.abilities.contains(&Ability::MegaShotgun) {
                 let offset_angle = Radian::from_degrees(7.);
@@ -116,12 +130,36 @@ pub fn shoot(
                         dmg,
                         knockback,
                     );
+                    spawn_bullet(
+                        &player,
+                        &mut commands,
+                        bullet_translation,
+                        &textures,
+                        (angle_to_target + offset_angle * ((bullets - 1) as f32 / -2. + i as f32))
+                            .normalize()
+                            .unit_vector(),
+                        velocity,
+                        dmg,
+                        knockback,
+                    );
                 }
             } else if player.abilities.contains(&Ability::Shotgun) {
                 let offset_angle = Radian::from_degrees(7.);
                 let bullets = 5;
 
                 for i in 0..bullets {
+                    spawn_bullet(
+                        &player,
+                        &mut commands,
+                        bullet_translation,
+                        &textures,
+                        (angle_to_target + offset_angle * ((bullets - 1) as f32 / -2. + i as f32))
+                            .normalize()
+                            .unit_vector(),
+                        velocity,
+                        dmg,
+                        knockback,
+                    );
                     spawn_bullet(
                         &player,
                         &mut commands,
@@ -168,13 +206,66 @@ pub fn shoot(
                     dmg,
                     knockback,
                 );
+
+                spawn_bullet(
+                    &player,
+                    &mut commands,
+                    bullet_translation,
+                    &textures,
+                    (angle_to_target + offset_angle).normalize().unit_vector(),
+                    velocity,
+                    dmg,
+                    knockback,
+                );
+                spawn_bullet(
+                    &player,
+                    &mut commands,
+                    bullet_translation,
+                    &textures,
+                    (angle_to_target).unit_vector(),
+                    velocity,
+                    dmg,
+                    knockback,
+                );
+                spawn_bullet(
+                    &player,
+                    &mut commands,
+                    bullet_translation,
+                    &textures,
+                    (angle_to_target - offset_angle).normalize().unit_vector(),
+                    velocity,
+                    dmg,
+                    knockback,
+                );
             } else if player.abilities.contains(&Ability::DoubleBarrel) {
+                let perp_vec = Vec3 {
                 let perp_vec = Vec3 {
                     x: direction_vec.perp().x,
                     y: direction_vec.perp().y,
                     z: 0.,
+                    z: 0.,
                 };
 
+                spawn_bullet(
+                    &player,
+                    &mut commands,
+                    bullet_translation + (perp_vec * 5.),
+                    &textures,
+                    direction_vec,
+                    velocity,
+                    dmg,
+                    knockback,
+                );
+                spawn_bullet(
+                    &player,
+                    &mut commands,
+                    bullet_translation - (perp_vec * 5.),
+                    &textures,
+                    direction_vec,
+                    velocity,
+                    dmg,
+                    knockback,
+                );
                 spawn_bullet(
                     &player,
                     &mut commands,
@@ -206,7 +297,18 @@ pub fn shoot(
                     dmg,
                     knockback,
                 );
+                spawn_bullet(
+                    &player,
+                    &mut commands,
+                    bullet_translation,
+                    &textures,
+                    direction_vec,
+                    velocity,
+                    dmg,
+                    knockback,
+                );
             }
+
 
             // Shoot!
         }
@@ -217,7 +319,14 @@ fn spawn_bullet(
     player: &Player,
     commands: &mut Commands,
     translation: Vec3,
+    player: &Player,
+    commands: &mut Commands,
+    translation: Vec3,
     textures: &Res<TextureAssets>,
+    direction_vec: Vec2,
+    velocity: f32,
+    damage: HealthType,
+    knockback: f32,
     direction_vec: Vec2,
     velocity: f32,
     damage: HealthType,
@@ -230,7 +339,7 @@ fn spawn_bullet(
                 false => textures.bullet_small.clone(),
             },
             transform: Transform {
-                translation: translation,
+                translation,
                 scale: SCALING_VEC3,
                 rotation: Quat::IDENTITY,
             },
@@ -248,4 +357,6 @@ fn spawn_bullet(
         })
         .insert(Collider::new_circle(5., translation.truncate()))
         .insert(Knockback { force: knockback });
+        .insert(Knockback { force: knockback });
 }
+

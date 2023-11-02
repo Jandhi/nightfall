@@ -4,6 +4,8 @@ use crate::{
     animation::{
         info::{AnimationInfoBuilder, AnimationStateInfo},
         make_animation_bundle, Animation, AnimationStateChangeEvent, AnimationStateStorage,
+        info::{AnimationInfoBuilder, AnimationStateInfo},
+        make_animation_bundle, Animation, AnimationStateChangeEvent, AnimationStateStorage,
     },
     combat::health::Health,
     constants::SortingLayers,

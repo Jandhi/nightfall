@@ -1,6 +1,3 @@
-use std::f32::consts::PI;
-use std::time::Duration;
-
 use bevy::prelude::*;
 use bevy_debug_text_overlay::screen_print;
 use bevy_kira_audio::AudioControl;
@@ -25,7 +22,6 @@ use crate::player::Player;
 use crate::util::pitch_rng::PitchRNG;
 use crate::util::radians::Radian;
 
-use super::ai::FollowPlayerAI;
 use super::beholder::{spawn_beholder, BeholderAnimation};
 use super::imp::ImpAnimation;
 
@@ -60,6 +56,7 @@ impl EnemyType {
 #[derive(Component, Clone)]
 pub struct Enemy {
     pub enemy_type: EnemyType,
+    pub enemy_type: EnemyType,
     pub xp: u32,
 }
 
@@ -67,6 +64,7 @@ pub struct Enemy {
 pub struct EnemyDeathEvent {
     pub entity: Entity,
     pub enemy: Enemy,
+    pub location: Vec3,
     pub location: Vec3,
 }
 
@@ -114,13 +112,20 @@ pub fn death_loop(
 pub fn spread_enemies(
     mut collisions: EventReader<IsCollidingEvent>,
     mut q_enemies: Query<&mut Transform, With<Enemy>>,
+    mut collisions: EventReader<IsCollidingEvent>,
+    mut q_enemies: Query<&mut Transform, With<Enemy>>,
 ) {
     for collision_event in collisions.iter() {
         if let Ok(mut entities) = q_enemies.get_many_mut([
             collision_event.collision.entity_a,
             collision_event.collision.entity_b,
         ]) {
+        if let Ok(mut entities) = q_enemies.get_many_mut([
+            collision_event.collision.entity_a,
+            collision_event.collision.entity_b,
+        ]) {
             let force = 1.0;
+
 
             let (slice_a, slice_b) = &mut entities.split_at_mut(1);
             let a_transform = &mut slice_a[0];
@@ -133,12 +138,23 @@ pub fn spread_enemies(
 }
 
 pub fn initial_spawn(
-    imp_animations: Res<AnimationStateStorage<ImpAnimation>>,
+    _imp_animations: Res<AnimationStateStorage<ImpAnimation>>,
     beholder_animations: Res<AnimationStateStorage<BeholderAnimation>>,
     mut texture_atlases: ResMut<Assets<TextureAtlas>>,
     mut commands: Commands,
     textures: Res<TextureAssets>,
 ) {
+    spawn_beholder(
+        Vec3 {
+            x: 30.,
+            y: 30.,
+            z: SortingLayers::Action.into(),
+        },
+        &beholder_animations,
+        &textures,
+        &mut texture_atlases,
+        &mut commands,
+    );
     spawn_beholder(
         Vec3 {
             x: 30.,

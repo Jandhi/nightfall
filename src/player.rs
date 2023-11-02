@@ -28,6 +28,7 @@ use self::reload_ui::{spawn_reload_ui, update_reload_ui, ReloadTimer};
 use self::shooting::{shoot, ShootingCooldown};
 
 pub mod ability;
+pub mod ability;
 mod animations;
 mod bullets_ui;
 mod health_ui;
@@ -43,6 +44,7 @@ pub struct Player {
     max_bullets: u32,
     is_reloading: bool,
     pub abilities: Vec<Ability>,
+    pub abilities: Vec<Ability>,
 }
 
 impl Player {
@@ -50,13 +52,18 @@ impl Player {
         self.abilities
             .iter()
             .fold(5., |dmg, ability| dmg * ability.damage_mult()) as u32
+        self.abilities
+            .iter()
+            .fold(5., |dmg, ability| dmg * ability.damage_mult()) as u32
     }
+
 
     pub fn shoot_time(&self) -> f32 {
         self.abilities
             .iter()
             .fold(0.5, |dmg, ability| dmg / ability.shoot_speed_mult())
     }
+
 
     pub fn reload_time(&self) -> f32 {
         self.abilities
@@ -65,6 +72,9 @@ impl Player {
     }
 
     pub fn knockback(&self) -> f32 {
+        self.abilities
+            .iter()
+            .fold(20., |dmg, ability| dmg * ability.knockback_mult())
         self.abilities
             .iter()
             .fold(20., |dmg, ability| dmg * ability.knockback_mult())
@@ -166,11 +176,13 @@ fn move_player(
         &mut TextureAtlasSprite,
     )>,
     pause: Res<ActionPauseState>,
+    pause: Res<ActionPauseState>,
 ) {
     if pause.is_paused {
         return;
     }
 
+    let (entity, mut player_transform, mut animation_controller, _) = player_query.single_mut();
     let (entity, mut player_transform, mut animation_controller, _) = player_query.single_mut();
 
     if actions.player_movement.is_none() {

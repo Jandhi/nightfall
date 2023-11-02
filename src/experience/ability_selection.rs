@@ -31,11 +31,14 @@ pub struct AbilityRNG(pub RNG);
 
 pub fn create_ability_selection_rng(seed: Res<GlobalSeed>, mut commands: Commands) {
     commands.insert_resource(AbilityRNG(RNG::new(seed.0.as_str(), "ability_rng")))
+pub fn create_ability_selection_rng(seed: Res<GlobalSeed>, mut commands: Commands) {
+    commands.insert_resource(AbilityRNG(RNG::new(seed.0.as_str(), "ability_rng")))
 }
 
 #[derive(PartialEq, Eq, Hash, Clone, Copy)]
 pub enum AbilityFrameAnimation {
     Hovered,
+    NonHovered,
     NonHovered,
 }
 
@@ -60,6 +63,10 @@ pub fn ability_frame_update(
                 id: entity,
                 state_id: AbilityFrameAnimation::Hovered,
             });
+            animation_update.send(AnimationStateChangeEvent {
+                id: entity,
+                state_id: AbilityFrameAnimation::Hovered,
+            });
         }
     }
 
@@ -69,11 +76,17 @@ pub fn ability_frame_update(
                 id: entity,
                 state_id: AbilityFrameAnimation::NonHovered,
             });
+            animation_update.send(AnimationStateChangeEvent {
+                id: entity,
+                state_id: AbilityFrameAnimation::NonHovered,
+            });
         }
     }
 }
 
 #[derive(Component)]
+pub struct AbilitySelection {
+    abilities: Vec<Ability>,
 pub struct AbilitySelection {
     abilities: Vec<Ability>,
 }
@@ -92,6 +105,9 @@ pub fn on_select_ability(
             player
                 .abilities
                 .push(selection.abilities[selection_ev.selected_index]);
+            player
+                .abilities
+                .push(selection.abilities[selection_ev.selected_index]);
             commmands.entity(entity).despawn_recursive();
             pause.is_paused = false;
         }
@@ -100,7 +116,10 @@ pub fn on_select_ability(
 
 pub fn start_ability_selection(
     mut q_player: Query<&mut Player>,
+    mut q_player: Query<&mut Player>,
     q_windows: Query<&Window, With<PrimaryWindow>>,
+    mut level_up_ev: EventReader<LevelUpEvent>,
+    textures: Res<AbilityTextures>,
     mut level_up_ev: EventReader<LevelUpEvent>,
     textures: Res<AbilityTextures>,
     frame_animations: Res<AnimationStateStorage<AbilityFrameAnimation>>,
@@ -122,7 +141,7 @@ pub fn start_ability_selection(
     pause.is_paused = true;
 
     let window = q_windows.single();
-    let mut player = q_player.single_mut();
+    let player = q_player.single_mut();
 
     let texture_atlas = TextureAtlas::from_grid(
         textures.frame.clone(),
@@ -146,10 +165,20 @@ pub fn start_ability_selection(
                 x: window.width(),
                 y: 0.,
             },
+    commands
+        .spawn(Grid {
+            size: Vec2 {
+                x: window.width(),
+                y: 0.,
+            },
             grid_size: IVec2 { x: 3, y: 1 },
         })
         .insert(AbilitySelection {
+        })
+        .insert(AbilitySelection {
             abilities: chosen_abilities.iter().map(|a| **a).collect(),
+        })
+        .insert(SelectionGroup {
         })
         .insert(SelectionGroup {
             is_focused: true,
@@ -196,3 +225,4 @@ pub fn start_ability_selection(
             }
         });
 }
+

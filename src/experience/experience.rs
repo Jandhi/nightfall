@@ -7,18 +7,26 @@ pub struct Experience {
     pub level: u32,
     pub threshold: u32,
     pub pick_distance: f32,
+    pub curr_experience: u32,
+    pub level: u32,
+    pub threshold: u32,
+    pub pick_distance: f32,
 }
 
 #[derive(Event)]
 pub struct LevelUpEvent {
+    pub new_level: u32,
     pub new_level: u32,
 }
 
 pub fn experience_update(
     mut q_xp: Query<&mut Experience>,
     mut level_up_ev: EventWriter<LevelUpEvent>,
+    mut q_xp: Query<&mut Experience>,
+    mut level_up_ev: EventWriter<LevelUpEvent>,
 ) {
     let mut xp = q_xp.single_mut();
+
 
     if xp.curr_experience >= xp.threshold {
         xp.curr_experience -= xp.threshold;
@@ -30,3 +38,4 @@ pub fn experience_update(
         });
     }
 }
+

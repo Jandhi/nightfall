@@ -31,6 +31,8 @@ pub struct Projectile {
 pub struct ProjectileHitEvent {
     pub projectile: Entity,
     pub victim: Entity,
+    pub projectile: Entity,
+    pub victim: Entity,
 }
 
 pub fn projectile_collision_check(
@@ -104,6 +106,10 @@ fn handle_projectile_collision(
         }
     }
 
+    ev_hit.send(ProjectileHitEvent {
+        projectile: projectile_entity,
+        victim: hit_entity,
+    });
     ev_hit.send(ProjectileHitEvent {
         projectile: projectile_entity,
         victim: hit_entity,
