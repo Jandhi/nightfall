@@ -1,6 +1,7 @@
 use std::time::Duration;
 
 use bevy::{prelude::*, transform::commands};
+use bevy_debug_text_overlay::screen_print;
 
 use crate::{
     animation::{
@@ -8,11 +9,11 @@ use crate::{
     },
     enemies::enemy::Enemy,
     loading::TextureAssets,
-    player::Player,
+    player::{Player, ability::Ability},
 };
 
 use super::{
-    health::{Health, TookDamageEvent},
+    health::{Health, TookDamageEvent, HealthType},
     projectile::ProjectileHitEvent,
 };
 
@@ -37,8 +38,8 @@ impl Animation<FireAnimation> for FireAnimation {
 
 pub fn fire_update(
     mut q_fire: Query<(&mut Fire, &Parent), Without<Health>>,
-    mut q_health: Query<(Entity, &mut Health, &Children), With<Enemy>>,
-    mut q_player: Query<&Player, (Without<Enemy>, Without<Fire>)>,
+    mut q_health: Query<(Entity, &mut Health), With<Enemy>>,
+    q_player: Query<&Player, (Without<Enemy>, Without<Fire>)>,
     mut took_damage_ev: EventWriter<TookDamageEvent>,
     mut projectile_hit: EventReader<ProjectileHitEvent>,
     animations: Res<AnimationStateStorage<FireAnimation>>,
@@ -47,6 +48,8 @@ pub fn fire_update(
     time: Res<Time>,
     mut commands: Commands,
 ) {
+    let player = q_player.single();
+
     for (mut fire, parent) in q_fire.iter_mut() {
         fire.timer.tick(time.delta());
 
@@ -54,8 +57,12 @@ pub fn fire_update(
             continue;
         }
 
-        if let Ok((_, mut health, _)) = q_health.get_mut(parent.get()) {
-            health.take_damage(parent.get(), &mut took_damage_ev, 2)
+        if let Ok((_, mut health)) = q_health.get_mut(parent.get()) {
+            let base_damage : HealthType = 2;
+            let hotter = player.abilities.iter().filter(|ability| ability == &&Ability::HotterFire).count() as HealthType;
+            let damage = base_damage + hotter * 2;
+
+            health.take_damage(parent.get(), &mut took_damage_ev, damage)
         }
     }
 
@@ -69,18 +76,17 @@ pub fn fire_update(
     );
     let texture_atlas_handle = texture_atlases.add(texture_atlas);
 
-    let player = q_player.single();
-
     if !player
         .abilities
-        .contains(&crate::player::ability::Ability::FlamingBullets)
+        .contains(&Ability::FlamingBullets)
     {
         return;
     }
 
     for proj_hit in projectile_hit.iter() {
-        if let Ok((entity, _, children)) = q_health.get(proj_hit.victim) {
-            if children.iter().any(|child| q_fire.contains(*child)) {
+        if let Ok((entity, _)) = q_health.get(proj_hit.victim) {
+            // don't set fire twice
+            if q_fire.iter().any(|(fire, _)| fire.parent == entity) {
                 continue;
             }
 

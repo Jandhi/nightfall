@@ -117,8 +117,6 @@ pub fn beholder_update(
 
             let direction =
                 player_transform.translation.truncate() - transform.translation.truncate();
-            let direction =
-                player_transform.translation.truncate() - transform.translation.truncate();
             // obtain angle to target with respect to x-axis.
             let angle_to_target = Radian::from(direction.y.atan2(direction.x) - PI / 2.);
             let direction_vec = angle_to_target.unit_vector();
@@ -137,7 +135,7 @@ pub fn beholder_update(
                     dmg: 1,
                     damage_target: DamageTarget::Team(Team::Player),
                     piercing_mode: PiercingMode::None,
-                    entities_hit: 0,
+                    entities_hit: vec![],
                     is_alive: true,
                 })
                 .insert(Velocity {
@@ -158,7 +156,7 @@ pub fn beholder_update(
                         dmg: 1,
                         damage_target: DamageTarget::Team(Team::Player),
                         piercing_mode: PiercingMode::None,
-                        entities_hit: 0,
+                        entities_hit: vec![],
                         is_alive: true,
                     })
                     .insert(Velocity {
@@ -178,7 +176,7 @@ pub fn beholder_update(
                         dmg: 1,
                         damage_target: DamageTarget::Team(Team::Player),
                         piercing_mode: PiercingMode::None,
-                        entities_hit: 0,
+                        entities_hit: vec![],
                         is_alive: true,
                     })
                     .insert(Velocity {
@@ -212,7 +210,6 @@ pub fn spawn_beholder(
             xp: 10,
             enemy_type: EnemyType::Beholder,
         })
-        .insert(MoveAndShootAI::new(20., 3., 200., 6. / 8., 2.))
         .insert(MoveAndShootAI::new(20., 3., 200., 6. / 8., 2.))
         .insert(Velocity::ZERO)
         .insert(Health::new(25))

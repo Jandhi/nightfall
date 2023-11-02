@@ -5,34 +5,53 @@ use crate::{combat::health::HealthType, loading::AbilityTextures};
 #[derive(PartialEq, Eq, Hash, Clone, Copy)]
 pub enum Ability {
     BigBullets,
+    BiggestBullets,
+    BulletsGalore,
     Crossbow,
     DoubleBarrel,
-    TripleBarrel,
+    Faster,
     FlamingBullets,
-    Shells,
-    Sniper,
-    Shotgun,
+    HotterFire,
+    MediumBullets,
     MegaShotgun,
+    Reload,
+    Shells,
+    ShootingSpeed,
+    Shotgun,
+    Sixfold,
+    Sniper,
+    Thorns,
+    TripleBarrel,
 }
 
 impl Ability {
     pub fn all() -> Vec<Ability> {
         vec![
             Self::BigBullets,
+            Self::BiggestBullets,
+            Self::BulletsGalore,
             Self::Crossbow,
             Self::DoubleBarrel,
-            Self::TripleBarrel,
+            Self::Faster,
             Self::FlamingBullets,
-            Self::Shells,
-            Self::Sniper,
-            Self::Shotgun,
+            Self::HotterFire,
+            Self::MediumBullets,
             Self::MegaShotgun,
+            Self::Reload,
+            //Self::Shells, Don't know what to do
+            Self::ShootingSpeed,
+            Self::Shotgun,
+            Self::Sixfold,
+            Self::Sniper,
+            Self::Thorns,
+            Self::TripleBarrel,
         ]
     }
 
     pub fn get_texture(&self, textures: &Res<AbilityTextures>) -> Handle<Image> {
         match self {
             Ability::BigBullets => textures.big_bullets.clone(),
+            Ability::BiggestBullets => textures.biggest_bullets.clone(),
             Ability::Crossbow => textures.crossbow.clone(),
             Ability::DoubleBarrel => textures.double_barrel.clone(),
             Ability::TripleBarrel => textures.triple_barrel.clone(),
@@ -41,26 +60,23 @@ impl Ability {
             Ability::Sniper => textures.sniper.clone(),
             Ability::Shotgun => textures.shotgun.clone(),
             Ability::MegaShotgun => textures.mega_shotgun.clone(),
-        }
-    }
-
-    pub fn get_name(&self) -> &'static str {
-        match self {
-            Ability::BigBullets => "Big Bullets",
-            Ability::Crossbow => "Crossbow",
-            Ability::DoubleBarrel => "Double Barrel",
-            Ability::TripleBarrel => "Triple Barrel",
-            Ability::FlamingBullets => "Flaming Bullets",
-            Ability::Shells => "Shells",
-            Ability::Sniper => "Sniper",
-            Ability::Shotgun => "Shotgun",
-            Ability::MegaShotgun => "Mega Shotgun",
+            Ability::BulletsGalore => textures.bullets_galore.clone(),
+            Ability::Faster => textures.faster.clone(),
+            Ability::HotterFire => textures.hotter_fire.clone(),
+            Ability::MediumBullets => textures.medium_bullets.clone(),
+            Ability::Reload => textures.reload.clone(),
+            Ability::ShootingSpeed => textures.shooting_speed.clone(),
+            Ability::Sixfold => textures.sixfold.clone(),
+            Ability::Thorns => textures.thorns.clone(),
         }
     }
 
     pub fn is_available(&self, player_abilities: &Vec<Ability>) -> bool {
         match self {
-            Ability::BigBullets => !player_abilities.contains(&Ability::BigBullets),
+            Ability::BigBullets => !player_abilities.contains(&Ability::BigBullets)
+                && player_abilities.contains(&Ability::MediumBullets),
+            Ability::BiggestBullets => !player_abilities.contains(&Ability::BiggestBullets)
+                && player_abilities.contains(&Ability::BigBullets),
             Ability::Crossbow => !player_abilities.contains(&Ability::Crossbow),
             Ability::DoubleBarrel => !player_abilities.contains(&Ability::DoubleBarrel),
             Ability::TripleBarrel => {
@@ -78,27 +94,41 @@ impl Ability {
                 !player_abilities.contains(&Ability::MegaShotgun)
                     && player_abilities.contains(&Ability::Shotgun)
             }
+            Ability::BulletsGalore => true,
+            Ability::Faster => true,
+            Ability::HotterFire => player_abilities.contains(&Ability::FlamingBullets),
+            Ability::MediumBullets => !player_abilities.contains(&Ability::MediumBullets),
+            Ability::Reload => true,
+            Ability::ShootingSpeed => true,
+            Ability::Sixfold => !player_abilities.contains(&Ability::Sixfold),
+            Ability::Thorns => !player_abilities.contains(&Ability::Thorns),
         }
     }
 
     pub fn damage_mult(&self) -> f32 {
         match self {
+            Ability::MediumBullets => 2.0,
             Ability::BigBullets => 2.0,
-            _ => 1.,
+            Ability::BiggestBullets => 2.0,
             _ => 1.,
         }
     }
 
     pub fn knockback_mult(&self) -> f32 {
         match self {
-            Ability::BigBullets => 2.0,
-            _ => 1.,
+            Ability::MediumBullets => 1.5,
+            Ability::BigBullets => 1.5,
+            Ability::BiggestBullets => 1.5,
             _ => 1.,
         }
     }
 
     pub fn reload_mult(&self) -> f32 {
         match self {
+            Ability::MediumBullets => 0.8,
+            Ability::BigBullets => 0.8,
+            Ability::BiggestBullets => 0.8,
+            Ability::Reload => 1.6,
             _ => 1.,
         }
     }
@@ -108,15 +138,11 @@ impl Ability {
             Ability::DoubleBarrel => 0.7,
             Ability::TripleBarrel => 0.9,
             Ability::Shotgun => 0.9,
-            Ability::BigBullets => 0.7,
-            _ => 1.,
+            Ability::MediumBullets => 0.8,
+            Ability::BigBullets => 0.8,
+            Ability::BiggestBullets => 0.8,
+            Ability::ShootingSpeed => 1.4,
             _ => 1.,
         }
-    }
-}
-
-impl From<&Ability> for String {
-    fn from(val: &Ability) -> Self {
-        String::from(val.get_name())
     }
 }

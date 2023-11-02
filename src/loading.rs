@@ -34,6 +34,12 @@ pub struct AudioAssets {
     #[asset(path = "audio/flying.ogg")]
     pub flying: Handle<AudioSource>,
 
+    #[asset(path = "audio/levelup.ogg")]
+    pub levelup: Handle<AudioSource>,
+
+    #[asset(path = "audio/coin.ogg")]
+    pub coin: Handle<AudioSource>,
+
     #[asset(path = "audio/gunshot.ogg")]
     pub gunshot: Handle<AudioSource>,
 
@@ -42,6 +48,12 @@ pub struct AudioAssets {
 
     #[asset(path = "audio/grunt.ogg")]
     pub grunt: Handle<AudioSource>,
+    
+    #[asset(path = "audio/reaper_death.ogg")]
+    pub reaper_death: Handle<AudioSource>,
+    
+    #[asset(path = "audio/blade.ogg")]
+    pub blade: Handle<AudioSource>,
 
     #[asset(path = "audio/reload.ogg")]
     pub reload: Handle<AudioSource>,
@@ -112,6 +124,12 @@ pub struct TextureAssets {
     #[asset(path = "textures/enemies/beholder_projectile.png")]
     pub beholder_projectile: Handle<Image>,
 
+    #[asset(path = "textures/enemies/reaper.png")]
+    pub reaper: Handle<Image>,
+
+    #[asset(path = "textures/enemies/reaper_blade.png")]
+    pub reaper_blade: Handle<Image>,
+
     #[asset(path = "textures/healthbar.png")]
     pub healthbar: Handle<Image>,
 
@@ -142,17 +160,44 @@ pub struct AbilityTextures {
     #[asset(path = "textures/abilities/big_bullets.png")]
     pub big_bullets: Handle<Image>,
 
+    #[asset(path = "textures/abilities/biggest_bullets.png")]
+    pub biggest_bullets: Handle<Image>,
+    
+    #[asset(path = "textures/abilities/bullets_galore.png")]
+    pub bullets_galore: Handle<Image>,
+
     #[asset(path = "textures/abilities/crossbow.png")]
     pub crossbow: Handle<Image>,
 
     #[asset(path = "textures/abilities/double_barrel.png")]
     pub double_barrel: Handle<Image>,
 
+    #[asset(path = "textures/abilities/faster.png")]
+    pub faster: Handle<Image>,
+
     #[asset(path = "textures/abilities/triple_barrel.png")]
     pub triple_barrel: Handle<Image>,
 
     #[asset(path = "textures/abilities/flaming_bullets.png")]
     pub flaming_bullets: Handle<Image>,
+
+    #[asset(path = "textures/abilities/hotter_fire.png")]
+    pub hotter_fire: Handle<Image>,
+
+    #[asset(path = "textures/abilities/medium_bullets.png")]
+    pub medium_bullets: Handle<Image>,
+
+    #[asset(path = "textures/abilities/reload.png")]
+    pub reload: Handle<Image>,
+    
+    #[asset(path = "textures/abilities/shooting_speed.png")]
+    pub shooting_speed: Handle<Image>,
+
+    #[asset(path = "textures/abilities/sixfold.png")]
+    pub sixfold: Handle<Image>,
+
+    #[asset(path = "textures/abilities/thorns.png")]
+    pub thorns: Handle<Image>,
 
     #[asset(path = "textures/abilities/shells.png")]
     pub shells: Handle<Image>,

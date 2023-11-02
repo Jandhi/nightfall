@@ -23,7 +23,8 @@ use crate::util::pitch_rng::PitchRNG;
 use crate::util::radians::Radian;
 
 use super::beholder::{spawn_beholder, BeholderAnimation};
-use super::imp::ImpAnimation;
+use super::imp::{ImpAnimation, spawn_imp};
+use super::reaper::{spawn_reaper, ReaperAnimation};
 
 #[derive(Copy, Clone)]
 pub enum EnemyType {
@@ -31,6 +32,7 @@ pub enum EnemyType {
     ImpQueen,
     Beholder,
     BeholderPrince,
+    Reaper,
 }
 
 impl EnemyType {
@@ -40,6 +42,7 @@ impl EnemyType {
             EnemyType::ImpQueen,
             EnemyType::Beholder,
             EnemyType::BeholderPrince,
+            EnemyType::Reaper,
         ]
     }
 
@@ -49,6 +52,7 @@ impl EnemyType {
             EnemyType::ImpQueen => 50.,
             EnemyType::Beholder => 10.,
             EnemyType::BeholderPrince => 100.,
+            EnemyType::Reaper => 120.,
         }
     }
 }
@@ -94,6 +98,7 @@ pub fn death_loop(
                 },
                 EnemyType::Beholder => audio.beholder_death.clone(),
                 EnemyType::BeholderPrince => audio.beholder_prince_death.clone(),
+                EnemyType::Reaper => audio.reaper_death.clone(),
             });
 
             commands.entity(entity).despawn_recursive();
@@ -128,21 +133,22 @@ pub fn spread_enemies(
 }
 
 pub fn initial_spawn(
-    _imp_animations: Res<AnimationStateStorage<ImpAnimation>>,
-    beholder_animations: Res<AnimationStateStorage<BeholderAnimation>>,
+    animations: Res<AnimationStateStorage<ImpAnimation>>,
     mut texture_atlases: ResMut<Assets<TextureAtlas>>,
     mut commands: Commands,
     textures: Res<TextureAssets>,
 ) {
-    spawn_beholder(
-        Vec3 {
-            x: 30.,
-            y: 30.,
-            z: SortingLayers::Action.into(),
-        },
-        &beholder_animations,
-        &textures,
-        &mut texture_atlases,
-        &mut commands,
-    );
+    for i in 0..4 {
+        spawn_imp(
+            Vec3 {
+                x: match i { _ if i % 2 == 0 => {100.}, _ => -100. },
+                y: match i { _ if i > 2 => {100.}, _ => -100. },
+                z: SortingLayers::Action.into(),
+            },
+            &animations,
+            &textures,
+            &mut texture_atlases,
+            &mut commands,
+        );
+    }
 }

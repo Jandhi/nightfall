@@ -60,19 +60,11 @@ pub fn ability_frame_update(
                 id: entity,
                 state_id: AbilityFrameAnimation::Hovered,
             });
-            animation_update.send(AnimationStateChangeEvent {
-                id: entity,
-                state_id: AbilityFrameAnimation::Hovered,
-            });
         }
     }
 
     for unhover_ev in unhover_events.iter() {
         if let Ok((entity, _)) = q_frames.get(unhover_ev.unhovered) {
-            animation_update.send(AnimationStateChangeEvent {
-                id: entity,
-                state_id: AbilityFrameAnimation::NonHovered,
-            });
             animation_update.send(AnimationStateChangeEvent {
                 id: entity,
                 state_id: AbilityFrameAnimation::NonHovered,

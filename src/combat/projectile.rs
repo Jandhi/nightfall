@@ -23,7 +23,7 @@ pub struct Projectile {
     pub damage_target: DamageTarget,
     pub dmg: HealthType,
     pub piercing_mode: PiercingMode,
-    pub entities_hit: usize,
+    pub entities_hit: Vec<Entity>,
     pub is_alive: bool,
 }
 
@@ -89,6 +89,10 @@ fn handle_projectile_collision(
         return; // This projectile should be dead
     }
 
+    if projectile.entities_hit.contains(&hit_entity) {
+        return; // Don't hit twice
+    }
+
     match projectile.damage_target {
         DamageTarget::All => {
             // Will hit
@@ -108,17 +112,13 @@ fn handle_projectile_collision(
         projectile: projectile_entity,
         victim: hit_entity,
     });
-    ev_hit.send(ProjectileHitEvent {
-        projectile: projectile_entity,
-        victim: hit_entity,
-    });
-
-    projectile.entities_hit += 1;
+    
+    projectile.entities_hit.push(hit_entity);
     health.take_damage(hit_entity, ev_dmg, projectile.dmg);
 
     let is_dead = match projectile.piercing_mode {
         PiercingMode::None => true,
-        PiercingMode::Count(count) => projectile.entities_hit >= count,
+        PiercingMode::Count(count) => projectile.entities_hit.len() >= count,
         PiercingMode::All => false,
     };
 

@@ -89,6 +89,7 @@ impl Plugin for PlayerPlugin {
                 update_reload_ui,
                 enemy_collision,
                 update_hit_sprite,
+                update_bullets,
                 hit_immunity
                     .after(projectile_collision_check)
                     .after(enemy_collision),
@@ -155,12 +156,22 @@ pub fn spawn_player(
         .insert(TeamMember { team: Team::Player });
 }
 
+fn update_bullets(
+    mut q_player : Query<&mut Player>,
+) {
+    let mut player = q_player.single_mut();
+    player.max_bullets = 6 + (player.abilities.iter()
+        .filter(|ability| ability == &&Ability::BulletsGalore)
+        .count() * 3) as u32;
+}
+
 fn move_player(
     time: Res<Time>,
     actions: Res<Actions>,
     mut animation_change: EventWriter<AnimationStateChangeEvent<PlayerAnimationState>>,
     mut player_query: Query<(
         Entity,
+        &Player,
         &mut Transform,
         &mut AnimationController<PlayerAnimationState>,
         &mut TextureAtlasSprite,
@@ -171,8 +182,7 @@ fn move_player(
         return;
     }
 
-    let (entity, mut player_transform, mut animation_controller, _) = player_query.single_mut();
-    let (entity, mut player_transform, mut animation_controller, _) = player_query.single_mut();
+    let (entity, player, mut player_transform, mut animation_controller, _) = player_query.single_mut();
 
     if actions.player_movement.is_none() {
         if animation_controller.get_state() != PlayerAnimationState::Idle {
@@ -184,7 +194,8 @@ fn move_player(
 
         return;
     }
-    let speed = 150.;
+    let faster_buffs = player.abilities.iter().filter(|ability| ability == &&Ability::Faster).count();
+    let speed = 150. + 50. * faster_buffs as f32;
     let movement = Vec3::new(
         actions.player_movement.unwrap().x * speed * time.delta_seconds(),
         actions.player_movement.unwrap().y * speed * time.delta_seconds(),

@@ -2,10 +2,11 @@ use std::{f32::consts::PI, time::Duration};
 
 use bevy::{prelude::*, window::PrimaryWindow};
 
+use bevy_debug_text_overlay::screen_print;
 use bevy_kira_audio::AudioControl;
 
 use crate::{
-    audio::{self, FXChannel},
+    audio::FXChannel,
     collision::collider::Collider,
     combat::{
         health::HealthType,
@@ -100,8 +101,11 @@ pub fn shoot(
 
             let dmg = player.damage();
             let knockback = player.knockback();
-            let velocity: f32 = 600.;
-            let velocity: f32 = 600.;
+            let mut velocity: f32 = 500.;
+
+            if player.abilities.contains(&Ability::Sniper) {
+                velocity *= 2.;
+            }
 
             if player.abilities.contains(&Ability::MegaShotgun) {
                 let offset_angle = Radian::from_degrees(7.);
@@ -138,18 +142,6 @@ pub fn shoot(
                 let bullets = 5;
 
                 for i in 0..bullets {
-                    spawn_bullet(
-                        &player,
-                        &mut commands,
-                        bullet_translation,
-                        &textures,
-                        (angle_to_target + offset_angle * ((bullets - 1) as f32 / -2. + i as f32))
-                            .normalize()
-                            .unit_vector(),
-                        velocity,
-                        dmg,
-                        knockback,
-                    );
                     spawn_bullet(
                         &player,
                         &mut commands,
@@ -223,37 +215,7 @@ pub fn shoot(
                     dmg,
                     knockback,
                 );
-                spawn_bullet(
-                    &player,
-                    &mut commands,
-                    bullet_translation + (perp_vec * 5.),
-                    &textures,
-                    direction_vec,
-                    velocity,
-                    dmg,
-                    knockback,
-                );
-                spawn_bullet(
-                    &player,
-                    &mut commands,
-                    bullet_translation - (perp_vec * 5.),
-                    &textures,
-                    direction_vec,
-                    velocity,
-                    dmg,
-                    knockback,
-                );
             } else {
-                spawn_bullet(
-                    &player,
-                    &mut commands,
-                    bullet_translation,
-                    &textures,
-                    direction_vec,
-                    velocity,
-                    dmg,
-                    knockback,
-                );
                 spawn_bullet(
                     &player,
                     &mut commands,
@@ -297,8 +259,11 @@ fn spawn_bullet(
         .insert(Projectile {
             dmg: damage,
             damage_target: DamageTarget::Team(Team::Enemy),
-            piercing_mode: PiercingMode::None,
-            entities_hit: 0,
+            piercing_mode: match player.abilities.contains(&Ability::Crossbow) {
+                true => PiercingMode::All,
+                false => PiercingMode::None,
+            },
+            entities_hit: vec![],
             is_alive: true,
         })
         .insert(Velocity {

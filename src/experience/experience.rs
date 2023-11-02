@@ -1,5 +1,8 @@
 use bevy::prelude::*;
 use bevy_debug_text_overlay::screen_print;
+use bevy_kira_audio::AudioControl;
+
+use crate::{loading::AudioAssets, audio::FXChannel};
 
 #[derive(Component)]
 pub struct Experience {
@@ -17,16 +20,20 @@ pub struct LevelUpEvent {
 pub fn experience_update(
     mut q_xp: Query<&mut Experience>,
     mut level_up_ev: EventWriter<LevelUpEvent>,
+    fx_channel : Res<FXChannel>,
+    audio : Res<AudioAssets>,
 ) {
     let mut xp = q_xp.single_mut();
 
     if xp.curr_experience >= xp.threshold {
         xp.curr_experience -= xp.threshold;
         xp.level += 1;
-        xp.threshold = (xp.threshold as f32 * 1.3) as u32;
+        xp.threshold = (xp.threshold as f32 * 1.5) as u32;
 
         level_up_ev.send(LevelUpEvent {
             new_level: xp.level,
         });
+
+        fx_channel.play(audio.levelup.clone());
     }
 }

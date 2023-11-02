@@ -66,7 +66,7 @@ pub fn spawn_healthbars(
                 texture_atlas: texture_atlas_handle,
                 sprite: TextureAtlasSprite::new(0),
                 transform: Transform {
-                    translation: Vec3::new(0., 0., 1.),
+                    translation: Vec3::new(1000., 1000., 1.),
                     rotation: Quat::IDENTITY,
                     scale: SCALING_VEC3,
                 },
