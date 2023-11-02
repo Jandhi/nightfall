@@ -32,7 +32,6 @@ impl Ability {
     }
 
     pub fn get_texture(&self, textures: &Res<AbilityTextures>) -> Handle<Image> {
-    pub fn get_texture(&self, textures: &Res<AbilityTextures>) -> Handle<Image> {
         match self {
             Ability::BigBullets => textures.big_bullets.clone(),
             Ability::Crossbow => textures.crossbow.clone(),
@@ -61,7 +60,6 @@ impl Ability {
     }
 
     pub fn is_available(&self, player_abilities: &Vec<Ability>) -> bool {
-    pub fn is_available(&self, player_abilities: &Vec<Ability>) -> bool {
         match self {
             Ability::BigBullets => !player_abilities.contains(&Ability::BigBullets),
             Ability::Crossbow => !player_abilities.contains(&Ability::Crossbow),
@@ -70,7 +68,6 @@ impl Ability {
                 !player_abilities.contains(&Ability::TripleBarrel)
                     && player_abilities.contains(&Ability::DoubleBarrel)
             }
-            }
             Ability::FlamingBullets => !player_abilities.contains(&Ability::FlamingBullets),
             Ability::Shells => !player_abilities.contains(&Ability::Shells),
             Ability::Sniper => !player_abilities.contains(&Ability::Sniper),
@@ -78,11 +75,9 @@ impl Ability {
                 !player_abilities.contains(&Ability::Shotgun)
                     && player_abilities.contains(&Ability::TripleBarrel)
             }
-            }
             Ability::MegaShotgun => {
                 !player_abilities.contains(&Ability::MegaShotgun)
                     && player_abilities.contains(&Ability::Shotgun)
-            }
             }
         }
     }

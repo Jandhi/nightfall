@@ -27,30 +27,21 @@ pub struct XPCrystal;
 
 pub fn create_xp_crystal_rng(seed: Res<GlobalSeed>, mut commands: Commands) {
     commands.insert_resource(CrystalRNG(RNG::new(seed.0.as_str(), "crystal_rng")))
-pub fn create_xp_crystal_rng(seed: Res<GlobalSeed>, mut commands: Commands) {
-    commands.insert_resource(CrystalRNG(RNG::new(seed.0.as_str(), "crystal_rng")))
 }
 
 #[derive(Bundle)]
 pub struct XPCrystalBundle {
-    pub spirte_bundle: SpriteBundle,
-    pub crystal: XPCrystal,
-    pub velocity: Velocity,
-    pub spirte_bundle: SpriteBundle,
+    pub sprite_bundle: SpriteBundle,
     pub crystal: XPCrystal,
     pub velocity: Velocity,
     pub friction: Friction,
-    pub magnetic: FakeMagnetic,
     pub magnetic: FakeMagnetic,
 }
 
 pub fn drop_crystals(
     mut enemy_death_event: EventReader<EnemyDeathEvent>,
     mut crystal_rng: ResMut<CrystalRNG>,
-    mut enemy_death_event: EventReader<EnemyDeathEvent>,
-    mut crystal_rng: ResMut<CrystalRNG>,
     textures: Res<TextureAssets>,
-    mut commands: Commands,
     mut commands: Commands,
 ) {
     for death_ev in enemy_death_event.iter() {
@@ -69,16 +60,7 @@ pub fn drop_crystals(
 
             commands
                 .spawn(XPCrystalBundle {
-                    spirte_bundle: SpriteBundle {
-                        transform: Transform {
-                            translation: death_ev.location,
-                            rotation: default(),
-                            scale: SCALING_VEC3,
-                        },
-                        texture: textures.crystal.clone(),
-            commands
-                .spawn(XPCrystalBundle {
-                    spirte_bundle: SpriteBundle {
+                    sprite_bundle: SpriteBundle {
                         transform: Transform {
                             translation: death_ev.location,
                             rotation: default(),
@@ -93,21 +75,11 @@ pub fn drop_crystals(
                     magnetic: FakeMagnetic { force: 1_000_000.0 },
                 })
                 .insert(EdgeTeleports);
-                    },
-                    crystal: XPCrystal,
-                    velocity: (direction.unit_vector() * velocity).into(),
-                    friction: Friction { force: 50.0 },
-                    magnetic: FakeMagnetic { force: 1_000_000.0 },
-                })
-                .insert(EdgeTeleports);
         }
     }
 }
 
 pub fn xp_crystal_update(
-    q_crystals: Query<(Entity, &Transform), (With<XPCrystal>, Without<Player>)>,
-    mut q_player: Query<(&Transform, &mut Experience), (With<Player>, Without<XPCrystal>)>,
-    mut commands: Commands,
     q_crystals: Query<(Entity, &Transform), (With<XPCrystal>, Without<Player>)>,
     mut q_player: Query<(&Transform, &mut Experience), (With<Player>, Without<XPCrystal>)>,
     mut commands: Commands,
@@ -128,4 +100,3 @@ pub fn xp_crystal_update(
         }
     }
 }
-

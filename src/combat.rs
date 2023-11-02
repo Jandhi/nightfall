@@ -8,14 +8,11 @@ use self::{
     healthbar::{spawn_healthbars, update_healthbars},
     knockback::knockback_update,
     projectile::{projectile_collision_check, ProjectileHitEvent},
-    knockback::knockback_update,
-    projectile::{projectile_collision_check, ProjectileHitEvent},
 };
 
 pub mod fire;
 pub mod health;
 pub mod healthbar;
-pub mod knockback;
 pub mod knockback;
 pub mod projectile;
 pub mod teams;

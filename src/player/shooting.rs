@@ -10,22 +10,15 @@ use crate::{
     combat::{
         health::HealthType,
         knockback::Knockback,
-        health::HealthType,
-        knockback::Knockback,
         projectile::{DamageTarget, PiercingMode, Projectile},
-        teams::Team,
         teams::Team,
     },
     constants::{SortingLayers, SCALING_VEC3},
     loading::{AudioAssets, TextureAssets},
     movement::{pause::ActionPauseState, velocity::Velocity},
     util::radians::Radian,
-    loading::{AudioAssets, TextureAssets},
-    movement::{pause::ActionPauseState, velocity::Velocity},
-    util::radians::Radian,
 };
 
-use super::{ability::Ability, reload_ui::ReloadTimer, Player};
 use super::{ability::Ability, reload_ui::ReloadTimer, Player};
 
 #[derive(Resource)]
@@ -40,10 +33,7 @@ pub fn shoot(
     textures: Res<TextureAssets>,
     audio_assets: Res<AudioAssets>,
     fx_channel: Res<FXChannel>,
-    audio_assets: Res<AudioAssets>,
-    fx_channel: Res<FXChannel>,
     time: Res<Time>,
-    pause: Res<ActionPauseState>,
     pause: Res<ActionPauseState>,
     mut commands: Commands,
 ) {
@@ -206,43 +196,10 @@ pub fn shoot(
                     dmg,
                     knockback,
                 );
-
-                spawn_bullet(
-                    &player,
-                    &mut commands,
-                    bullet_translation,
-                    &textures,
-                    (angle_to_target + offset_angle).normalize().unit_vector(),
-                    velocity,
-                    dmg,
-                    knockback,
-                );
-                spawn_bullet(
-                    &player,
-                    &mut commands,
-                    bullet_translation,
-                    &textures,
-                    (angle_to_target).unit_vector(),
-                    velocity,
-                    dmg,
-                    knockback,
-                );
-                spawn_bullet(
-                    &player,
-                    &mut commands,
-                    bullet_translation,
-                    &textures,
-                    (angle_to_target - offset_angle).normalize().unit_vector(),
-                    velocity,
-                    dmg,
-                    knockback,
-                );
             } else if player.abilities.contains(&Ability::DoubleBarrel) {
-                let perp_vec = Vec3 {
                 let perp_vec = Vec3 {
                     x: direction_vec.perp().x,
                     y: direction_vec.perp().y,
-                    z: 0.,
                     z: 0.,
                 };
 
@@ -309,7 +266,6 @@ pub fn shoot(
                 );
             }
 
-
             // Shoot!
         }
     }
@@ -319,14 +275,7 @@ fn spawn_bullet(
     player: &Player,
     commands: &mut Commands,
     translation: Vec3,
-    player: &Player,
-    commands: &mut Commands,
-    translation: Vec3,
     textures: &Res<TextureAssets>,
-    direction_vec: Vec2,
-    velocity: f32,
-    damage: HealthType,
-    knockback: f32,
     direction_vec: Vec2,
     velocity: f32,
     damage: HealthType,
@@ -357,6 +306,4 @@ fn spawn_bullet(
         })
         .insert(Collider::new_circle(5., translation.truncate()))
         .insert(Knockback { force: knockback });
-        .insert(Knockback { force: knockback });
 }
-

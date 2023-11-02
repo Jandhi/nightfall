@@ -23,12 +23,10 @@ pub fn follow_player(
     mut q_enemies: Query<(&Transform, &FollowPlayerAI, &mut Velocity)>,
     q_player: Query<&Transform, (With<Player>, Without<FollowPlayerAI>)>,
     pause: Res<ActionPauseState>,
-    pause: Res<ActionPauseState>,
 ) {
     if pause.is_paused {
         return;
     }
-
 
     let player_transform = q_player.single();
 
@@ -54,12 +52,10 @@ pub enum MoveAndShootAIState {
     Move,
     Slow,
     Charge,
-    Charge,
 }
 
 #[derive(Component)]
 pub struct MoveAndShootAI {
-    state: MoveAndShootAIState,
     state: MoveAndShootAIState,
 
     // The desired speed
@@ -74,25 +70,9 @@ pub struct MoveAndShootAI {
     // Shoot refresh
     pub charge_timer: Timer,
     pub refresh_timer: Timer,
-    pub charge_timer: Timer,
-    pub refresh_timer: Timer,
 }
 
 impl MoveAndShootAI {
-    pub fn new(
-        speed: f32,
-        corrective_force: f32,
-        shoot_distance: f32,
-        charge_time: f32,
-        refresh_time: f32,
-    ) -> MoveAndShootAI {
-        MoveAndShootAI {
-            state: MoveAndShootAIState::Move,
-            speed,
-            corrective_force,
-            shoot_distance,
-            charge_timer: Timer::from_seconds(charge_time, TimerMode::Once),
-            refresh_timer: Timer::from_seconds(refresh_time, TimerMode::Once),
     pub fn new(
         speed: f32,
         corrective_force: f32,
@@ -114,13 +94,10 @@ impl MoveAndShootAI {
 #[derive(Event)]
 pub struct ChargeShootEvent {
     pub entity: Entity,
-    pub entity: Entity,
 }
 
 #[derive(Event)]
 pub struct ShootEvent {
-    pub entity: Entity,
-    pub target: Entity,
     pub entity: Entity,
     pub target: Entity,
 }
@@ -132,26 +109,16 @@ pub fn move_and_shoot_ai(
     mut shoot_ev: EventWriter<ShootEvent>,
     pause: Res<ActionPauseState>,
     time: Res<Time>,
-    mut charge_ev: EventWriter<ChargeShootEvent>,
-    mut shoot_ev: EventWriter<ShootEvent>,
-    pause: Res<ActionPauseState>,
-    time: Res<Time>,
 ) {
     if pause.is_paused {
         return;
     }
-
 
     let (player_entity, player_transform) = q_player.single();
 
     for (entity, transform, mut ai, mut velocity) in q_enemies.iter_mut() {
         ai.charge_timer.tick(time.delta());
         ai.refresh_timer.tick(time.delta());
-
-        if ai.state == MoveAndShootAIState::Move
-            && (player_transform.translation.distance(transform.translation) <= ai.shoot_distance)
-            && ai.refresh_timer.finished()
-        {
 
         if ai.state == MoveAndShootAIState::Move
             && (player_transform.translation.distance(transform.translation) <= ai.shoot_distance)
@@ -200,4 +167,3 @@ pub fn move_and_shoot_ai(
         }
     }
 }
-

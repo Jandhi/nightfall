@@ -31,8 +31,6 @@ pub struct Projectile {
 pub struct ProjectileHitEvent {
     pub projectile: Entity,
     pub victim: Entity,
-    pub projectile: Entity,
-    pub victim: Entity,
 }
 
 pub fn projectile_collision_check(

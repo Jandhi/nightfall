@@ -25,7 +25,6 @@ pub type FXChannel = AudioChannel<FX>;
 pub struct Ambience;
 pub type AmbienceChannel = AudioChannel<Ambience>;
 
-
 #[derive(Resource)]
 pub struct Music;
 pub type MusicChannel = AudioChannel<Ambience>;
@@ -38,4 +37,3 @@ fn start_music(music: Res<MusicChannel>, audio_assets: Res<AudioAssets>) {
         .with_volume(0.8)
         .looped();
 }
-

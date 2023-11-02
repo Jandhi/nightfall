@@ -1,7 +1,6 @@
 use bevy::prelude::*;
 
 use crate::{animation::AppAnimationSetup, GameState};
-use crate::{animation::AppAnimationSetup, GameState};
 
 use self::{
     ai::{follow_player, move_and_shoot_ai, ChargeShootEvent, ShootEvent},
@@ -14,7 +13,6 @@ use self::{
 pub mod ai;
 pub mod beholder;
 pub mod enemy;
-pub mod imp;
 pub mod imp;
 pub mod spawning;
 pub mod zombie;
