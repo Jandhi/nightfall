@@ -1,6 +1,7 @@
 use std::{f32::consts::PI, time::Duration};
 
 use bevy::prelude::*;
+use bevy_kira_audio::AudioControl;
 
 use crate::{
     animation::{
@@ -15,10 +16,10 @@ use crate::{
         projectile::{DamageTarget, PiercingMode, Projectile},
         teams::{Team, TeamMember},
     },
-    loading::TextureAssets,
+    loading::{TextureAssets, AudioAssets},
     movement::velocity::Velocity,
     player::Player,
-    util::radians::Radian,
+    util::radians::Radian, audio::FXChannel,
 };
 
 use super::{
@@ -82,6 +83,8 @@ pub fn beholder_update(
     beholder_projetile_animations: Res<AnimationStateStorage<BeholderProjectileAnimation>>,
     textures: Res<TextureAssets>,
     mut texture_atlases: ResMut<Assets<TextureAtlas>>,
+    fx : Res<FXChannel>,
+    audio : Res<AudioAssets>,
     mut commands: Commands,
 ) {
     let texture_atlas = TextureAtlas::from_grid(
@@ -116,6 +119,8 @@ pub fn beholder_update(
             // obtain angle to target with respect to x-axis.
             let angle_to_target = Radian::from(direction.y.atan2(direction.x) - PI / 2.);
             let direction_vec = angle_to_target.unit_vector();
+
+            fx.play(audio.fireball.clone());
 
             commands
                 .spawn(make_animation_bundle(
