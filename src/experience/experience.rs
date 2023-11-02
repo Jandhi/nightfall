@@ -2,7 +2,7 @@ use bevy::prelude::*;
 use bevy_debug_text_overlay::screen_print;
 use bevy_kira_audio::AudioControl;
 
-use crate::{loading::AudioAssets, audio::FXChannel};
+use crate::{audio::FXChannel, loading::AudioAssets};
 
 #[derive(Component)]
 pub struct Experience {
@@ -20,8 +20,8 @@ pub struct LevelUpEvent {
 pub fn experience_update(
     mut q_xp: Query<&mut Experience>,
     mut level_up_ev: EventWriter<LevelUpEvent>,
-    fx_channel : Res<FXChannel>,
-    audio : Res<AudioAssets>,
+    fx_channel: Res<FXChannel>,
+    audio: Res<AudioAssets>,
 ) {
     let mut xp = q_xp.single_mut();
 

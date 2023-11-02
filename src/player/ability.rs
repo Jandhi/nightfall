@@ -73,10 +73,14 @@ impl Ability {
 
     pub fn is_available(&self, player_abilities: &Vec<Ability>) -> bool {
         match self {
-            Ability::BigBullets => !player_abilities.contains(&Ability::BigBullets)
-                && player_abilities.contains(&Ability::MediumBullets),
-            Ability::BiggestBullets => !player_abilities.contains(&Ability::BiggestBullets)
-                && player_abilities.contains(&Ability::BigBullets),
+            Ability::BigBullets => {
+                !player_abilities.contains(&Ability::BigBullets)
+                    && player_abilities.contains(&Ability::MediumBullets)
+            }
+            Ability::BiggestBullets => {
+                !player_abilities.contains(&Ability::BiggestBullets)
+                    && player_abilities.contains(&Ability::BigBullets)
+            }
             Ability::Crossbow => !player_abilities.contains(&Ability::Crossbow),
             Ability::DoubleBarrel => !player_abilities.contains(&Ability::DoubleBarrel),
             Ability::TripleBarrel => {

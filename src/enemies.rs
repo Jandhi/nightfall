@@ -7,16 +7,17 @@ use self::{
     beholder::{beholder_update, BeholderAnimation, BeholderProjectileAnimation},
     enemy::{death_loop, initial_spawn, spread_enemies, EnemyDeathEvent},
     imp::ImpAnimation,
-    spawning::{spawn_loop, spawn_spawn_rng, SpawnInfo}, reaper::{reaper_update, reaper_blade_update, ReaperAnimation, ReaperBladeAnimation},
+    reaper::{reaper_blade_update, reaper_update, ReaperAnimation, ReaperBladeAnimation},
+    spawning::{spawn_loop, spawn_spawn_rng, SpawnInfo},
 };
 
 pub mod ai;
 pub mod beholder;
 pub mod enemy;
 pub mod imp;
+pub mod reaper;
 pub mod spawning;
 pub mod zombie;
-pub mod reaper;
 
 pub struct EnemiesPlugin;
 
@@ -33,7 +34,7 @@ impl Plugin for EnemiesPlugin {
                     spawn_loop,
                     beholder_update,
                     reaper_update,
-                    reaper_blade_update
+                    reaper_blade_update,
                 )
                     .run_if(in_state(GameState::Playing)),
             )

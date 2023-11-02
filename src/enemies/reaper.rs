@@ -38,16 +38,8 @@ pub enum ReaperAnimation {
 impl Animation<ReaperAnimation> for ReaperAnimation {
     fn get_states() -> Vec<AnimationStateInfo<ReaperAnimation>> {
         AnimationInfoBuilder::new()
-            .add_frames(
-                ReaperAnimation::Flying,
-                4,
-                Duration::from_secs_f32(1. / 8.),
-            )
-            .add_frames(
-                ReaperAnimation::Charge,
-                4,
-                Duration::from_secs_f32(1. / 8.),
-            )
+            .add_frames(ReaperAnimation::Flying, 4, Duration::from_secs_f32(1. / 8.))
+            .add_frames(ReaperAnimation::Charge, 4, Duration::from_secs_f32(1. / 8.))
             .add_single(ReaperAnimation::End)
             .build()
     }
@@ -72,22 +64,25 @@ impl Animation<ReaperBladeAnimation> for ReaperBladeAnimation {
 
 #[derive(Component)]
 pub struct ReaperBlade {
-    pub parent : Entity,
-    pub timer : Timer,
+    pub parent: Entity,
+    pub timer: Timer,
 }
 
 pub fn reaper_blade_update(
-    mut q_blade : Query<(Entity, &mut ReaperBlade)>,
-    mut q_ai : Query<&mut MoveAndShootAI, Without<ReaperBlade>>,
-    time : Res<Time>,
+    mut q_blade: Query<(Entity, &mut ReaperBlade)>,
+    mut q_ai: Query<&mut MoveAndShootAI, Without<ReaperBlade>>,
+    time: Res<Time>,
     mut animate: EventWriter<AnimationStateChangeEvent<ReaperAnimation>>,
-    mut commands:  Commands
+    mut commands: Commands,
 ) {
     for (entity, mut blade) in q_blade.iter_mut() {
         blade.timer.tick(time.delta());
-        
+
         if blade.timer.just_finished() {
-            animate.send(AnimationStateChangeEvent { id: blade.parent, state_id: ReaperAnimation::Flying });
+            animate.send(AnimationStateChangeEvent {
+                id: blade.parent,
+                state_id: ReaperAnimation::Flying,
+            });
             commands.entity(entity).despawn();
 
             if let Ok(mut ai) = q_ai.get_mut(blade.parent) {
@@ -99,7 +94,12 @@ pub fn reaper_blade_update(
 
 pub fn reaper_update(
     mut q_reapers: Query<
-        (Entity, &Transform, &AnimationController<ReaperAnimation>, &mut MoveAndShootAI),
+        (
+            Entity,
+            &Transform,
+            &AnimationController<ReaperAnimation>,
+            &mut MoveAndShootAI,
+        ),
         Without<Player>,
     >,
     q_player: Query<(Entity, &Transform), With<Player>>,
@@ -150,9 +150,12 @@ pub fn reaper_update(
                     &beholder_projetile_animations,
                     texture_atlas_handle.clone(),
                     transform.translation,
-                    1.2
+                    1.2,
                 ))
-                .insert(ReaperBlade{ parent: entity, timer: Timer::from_seconds(0.5, TimerMode::Once) })
+                .insert(ReaperBlade {
+                    parent: entity,
+                    timer: Timer::from_seconds(0.5, TimerMode::Once),
+                })
                 .insert(Projectile {
                     dmg: 1,
                     damage_target: DamageTarget::Team(Team::Player),

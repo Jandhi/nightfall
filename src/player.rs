@@ -156,13 +156,15 @@ pub fn spawn_player(
         .insert(TeamMember { team: Team::Player });
 }
 
-fn update_bullets(
-    mut q_player : Query<&mut Player>,
-) {
+fn update_bullets(mut q_player: Query<&mut Player>) {
     let mut player = q_player.single_mut();
-    player.max_bullets = 6 + (player.abilities.iter()
-        .filter(|ability| ability == &&Ability::BulletsGalore)
-        .count() * 3) as u32;
+    player.max_bullets = 6
+        + (player
+            .abilities
+            .iter()
+            .filter(|ability| ability == &&Ability::BulletsGalore)
+            .count()
+            * 3) as u32;
 }
 
 fn move_player(
@@ -182,7 +184,8 @@ fn move_player(
         return;
     }
 
-    let (entity, player, mut player_transform, mut animation_controller, _) = player_query.single_mut();
+    let (entity, player, mut player_transform, mut animation_controller, _) =
+        player_query.single_mut();
 
     if actions.player_movement.is_none() {
         if animation_controller.get_state() != PlayerAnimationState::Idle {
@@ -194,7 +197,11 @@ fn move_player(
 
         return;
     }
-    let faster_buffs = player.abilities.iter().filter(|ability| ability == &&Ability::Faster).count();
+    let faster_buffs = player
+        .abilities
+        .iter()
+        .filter(|ability| ability == &&Ability::Faster)
+        .count();
     let speed = 150. + 50. * faster_buffs as f32;
     let movement = Vec3::new(
         actions.player_movement.unwrap().x * speed * time.delta_seconds(),

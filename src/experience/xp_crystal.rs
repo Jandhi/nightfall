@@ -4,9 +4,10 @@ use bevy_kira_audio::AudioControl;
 use rand::Rng;
 
 use crate::{
+    audio::FXChannel,
     constants::SCALING_VEC3,
     enemies::enemy::EnemyDeathEvent,
-    loading::{TextureAssets, AudioAssets},
+    loading::{AudioAssets, TextureAssets},
     movement::{
         edge_teleport::EdgeTeleports, fake_magnetic::FakeMagnetic, friction::Friction,
         magnetic::Magnetic, velocity::Velocity,
@@ -15,7 +16,7 @@ use crate::{
     util::{
         radians::Radian,
         rng::{GlobalSeed, RNG},
-    }, audio::FXChannel,
+    },
 };
 
 use super::experience::Experience;
@@ -77,8 +78,8 @@ pub fn drop_crystals(
 pub fn xp_crystal_update(
     q_crystals: Query<(Entity, &Transform), (With<XPCrystal>, Without<Player>)>,
     mut q_player: Query<(&Transform, &mut Experience), (With<Player>, Without<XPCrystal>)>,
-    fx_channel : Res<FXChannel>,
-    audio : Res<AudioAssets>,
+    fx_channel: Res<FXChannel>,
+    audio: Res<AudioAssets>,
     mut commands: Commands,
 ) {
     let (player_transform, mut experience) = q_player.single_mut();

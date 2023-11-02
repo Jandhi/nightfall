@@ -112,7 +112,7 @@ fn handle_projectile_collision(
         projectile: projectile_entity,
         victim: hit_entity,
     });
-    
+
     projectile.entities_hit.push(hit_entity);
     health.take_damage(hit_entity, ev_dmg, projectile.dmg);
 

@@ -23,7 +23,7 @@ use crate::util::pitch_rng::PitchRNG;
 use crate::util::radians::Radian;
 
 use super::beholder::{spawn_beholder, BeholderAnimation};
-use super::imp::{ImpAnimation, spawn_imp};
+use super::imp::{spawn_imp, ImpAnimation};
 use super::reaper::{spawn_reaper, ReaperAnimation};
 
 #[derive(Copy, Clone)]
@@ -88,7 +88,6 @@ pub fn death_loop(
 ) {
     for death_ev in death_event.iter() {
         if let Ok((entity, enemy, transform)) = q_enemies.get_mut(death_ev.entity) {
-
             fx_channel.play(match enemy.enemy_type {
                 EnemyType::Imp | EnemyType::ImpQueen => match pitch_rng.0 .0.gen_range(0..4) {
                     0 => audio.imp_death.clone(),
@@ -141,8 +140,14 @@ pub fn initial_spawn(
     for i in 0..4 {
         spawn_imp(
             Vec3 {
-                x: match i { _ if i % 2 == 0 => {100.}, _ => -100. },
-                y: match i { _ if i > 2 => {100.}, _ => -100. },
+                x: match i {
+                    _ if i % 2 == 0 => 100.,
+                    _ => -100.,
+                },
+                y: match i {
+                    _ if i > 2 => 100.,
+                    _ => -100.,
+                },
                 z: SortingLayers::Action.into(),
             },
             &animations,

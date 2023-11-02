@@ -12,7 +12,8 @@ use crate::{
 use super::{
     beholder::{spawn_beholder, spawn_beholder_prince, BeholderAnimation},
     enemy::EnemyType,
-    imp::{spawn_imp, spawn_imp_queen, ImpAnimation}, reaper::{spawn_reaper, ReaperAnimation},
+    imp::{spawn_imp, spawn_imp_queen, ImpAnimation},
+    reaper::{spawn_reaper, ReaperAnimation},
 };
 
 #[derive(Resource)]
@@ -134,11 +135,11 @@ pub fn spawn_loop(
                             &mut commands,
                         ),
                         EnemyType::Reaper => spawn_reaper(
-                            position, 
-                            &reaper_animations, 
-                            &textures, 
-                            &mut texture_atlases, 
-                            &mut commands
+                            position,
+                            &reaper_animations,
+                            &textures,
+                            &mut texture_atlases,
+                            &mut commands,
                         ),
                     }
                 }

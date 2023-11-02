@@ -48,10 +48,10 @@ pub struct AudioAssets {
 
     #[asset(path = "audio/grunt.ogg")]
     pub grunt: Handle<AudioSource>,
-    
+
     #[asset(path = "audio/reaper_death.ogg")]
     pub reaper_death: Handle<AudioSource>,
-    
+
     #[asset(path = "audio/blade.ogg")]
     pub blade: Handle<AudioSource>,
 
@@ -162,7 +162,7 @@ pub struct AbilityTextures {
 
     #[asset(path = "textures/abilities/biggest_bullets.png")]
     pub biggest_bullets: Handle<Image>,
-    
+
     #[asset(path = "textures/abilities/bullets_galore.png")]
     pub bullets_galore: Handle<Image>,
 
@@ -189,7 +189,7 @@ pub struct AbilityTextures {
 
     #[asset(path = "textures/abilities/reload.png")]
     pub reload: Handle<Image>,
-    
+
     #[asset(path = "textures/abilities/shooting_speed.png")]
     pub shooting_speed: Handle<Image>,
 

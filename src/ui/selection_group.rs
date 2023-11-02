@@ -59,7 +59,10 @@ pub fn update_selection_groups(
                     window.height() / 2. - cursor_position.y,
                 );
 
-                if !cursor_point.x.is_nan() && !cursor_point.y.is_nan() && collider.contains_point(transform.translation.truncate(), cursor_point) {
+                if !cursor_point.x.is_nan()
+                    && !cursor_point.y.is_nan()
+                    && collider.contains_point(transform.translation.truncate(), cursor_point)
+                {
                     if group.hovered_index != element.index {
                         unhover.send(UnhoverEvent {
                             parent: parent_entity,

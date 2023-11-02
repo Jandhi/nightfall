@@ -9,11 +9,11 @@ use crate::{
     },
     enemies::enemy::Enemy,
     loading::TextureAssets,
-    player::{Player, ability::Ability},
+    player::{ability::Ability, Player},
 };
 
 use super::{
-    health::{Health, TookDamageEvent, HealthType},
+    health::{Health, HealthType, TookDamageEvent},
     projectile::ProjectileHitEvent,
 };
 
@@ -58,8 +58,12 @@ pub fn fire_update(
         }
 
         if let Ok((_, mut health)) = q_health.get_mut(parent.get()) {
-            let base_damage : HealthType = 2;
-            let hotter = player.abilities.iter().filter(|ability| ability == &&Ability::HotterFire).count() as HealthType;
+            let base_damage: HealthType = 2;
+            let hotter = player
+                .abilities
+                .iter()
+                .filter(|ability| ability == &&Ability::HotterFire)
+                .count() as HealthType;
             let damage = base_damage + hotter * 2;
 
             health.take_damage(parent.get(), &mut took_damage_ev, damage)
@@ -76,10 +80,7 @@ pub fn fire_update(
     );
     let texture_atlas_handle = texture_atlases.add(texture_atlas);
 
-    if !player
-        .abilities
-        .contains(&Ability::FlamingBullets)
-    {
+    if !player.abilities.contains(&Ability::FlamingBullets) {
         return;
     }
 
