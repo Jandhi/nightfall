@@ -4,7 +4,7 @@ use crate::GameState;
 
 use self::{
     pitch_rng::spawn_pitch_rng,
-    rng::{GlobalSeed, RNG},
+    rng::{GlobalSeed},
 };
 
 pub mod pitch_rng;

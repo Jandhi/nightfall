@@ -1,6 +1,6 @@
 use std::time::Duration;
 
-use bevy::{prelude::*, transform::commands};
+use bevy::{prelude::*};
 
 use crate::{
     animation::{
@@ -38,7 +38,7 @@ impl Animation<FireAnimation> for FireAnimation {
 pub fn fire_update(
     mut q_fire: Query<(&mut Fire, &Parent), Without<Health>>,
     mut q_health: Query<(Entity, &mut Health, &Children), With<Enemy>>,
-    mut q_player: Query<&Player, (Without<Enemy>, Without<Fire>)>,
+    q_player: Query<&Player, (Without<Enemy>, Without<Fire>)>,
     mut took_damage_ev: EventWriter<TookDamageEvent>,
     mut projectile_hit: EventReader<ProjectileHitEvent>,
     animations: Res<AnimationStateStorage<FireAnimation>>,

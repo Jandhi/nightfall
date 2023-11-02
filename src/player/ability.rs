@@ -1,6 +1,6 @@
 use bevy::prelude::*;
 
-use crate::{combat::health::HealthType, loading::AbilityTextures};
+use crate::{loading::AbilityTextures};
 
 #[derive(PartialEq, Eq, Hash, Clone, Copy)]
 pub enum Ability {

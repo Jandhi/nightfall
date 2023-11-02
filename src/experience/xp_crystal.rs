@@ -7,8 +7,7 @@ use crate::{
     enemies::enemy::EnemyDeathEvent,
     loading::TextureAssets,
     movement::{
-        edge_teleport::EdgeTeleports, fake_magnetic::FakeMagnetic, friction::Friction,
-        magnetic::Magnetic, velocity::Velocity,
+        edge_teleport::EdgeTeleports, fake_magnetic::FakeMagnetic, friction::Friction, velocity::Velocity,
     },
     player::Player,
     util::{
@@ -46,11 +45,11 @@ pub fn drop_crystals(
 ) {
     for death_ev in enemy_death_event.iter() {
         for _i in 0..death_ev.enemy.xp {
-            let rng = &mut crystal_rng.0 .0;
+            let _rng = &mut crystal_rng.0 .0;
             let rng = &mut crystal_rng.0 .0;
 
-            let velocity: f32 = rng.gen_range(20.0..50.0);
-            let direction: Radian = Radian {
+            let _velocity: f32 = rng.gen_range(20.0..50.0);
+            let _direction: Radian = Radian {
                 angle: rng.gen_range(Radian::ZERO.angle..Radian::FULL.angle),
             };
             let velocity: f32 = rng.gen_range(20.0..50.0);
@@ -84,11 +83,11 @@ pub fn xp_crystal_update(
     mut q_player: Query<(&Transform, &mut Experience), (With<Player>, Without<XPCrystal>)>,
     mut commands: Commands,
 ) {
-    let (player_transform, mut experience) = q_player.single_mut();
+    let (_player_transform, _experience) = q_player.single_mut();
     let (player_transform, mut experience) = q_player.single_mut();
 
     for (entity, crystal_transform) in q_crystals.iter() {
-        let distance = crystal_transform
+        let _distance = crystal_transform
             .translation
             .distance(player_transform.translation);
         let distance = crystal_transform

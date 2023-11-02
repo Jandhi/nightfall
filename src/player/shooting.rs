@@ -5,7 +5,7 @@ use bevy::{prelude::*, window::PrimaryWindow};
 use bevy_kira_audio::AudioControl;
 
 use crate::{
-    audio::{self, FXChannel},
+    audio::{FXChannel},
     collision::collider::Collider,
     combat::{
         health::HealthType,
@@ -100,7 +100,7 @@ pub fn shoot(
 
             let dmg = player.damage();
             let knockback = player.knockback();
-            let velocity: f32 = 600.;
+            let _velocity: f32 = 600.;
             let velocity: f32 = 600.;
 
             if player.abilities.contains(&Ability::MegaShotgun) {

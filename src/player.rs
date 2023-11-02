@@ -2,7 +2,7 @@ use crate::actions::Actions;
 use crate::animation::controller::AnimationController;
 use crate::animation::{make_animation_bundle, AnimationStateChangeEvent, AppAnimationSetup};
 use crate::audio::FXChannel;
-use crate::collision::collider::{Collider, CollisionStartEvent, IsCollidingEvent};
+use crate::collision::collider::{Collider, IsCollidingEvent};
 use crate::combat::health::{Health, HealthType, TookDamageEvent};
 use crate::combat::projectile::projectile_collision_check;
 use crate::combat::teams::{Team, TeamMember};
@@ -15,7 +15,7 @@ use crate::movement::pause::ActionPauseState;
 use crate::util::pitch_rng::PitchRNG;
 use crate::GameState;
 use bevy::prelude::*;
-use bevy::utils::HashSet;
+
 use bevy_kira_audio::AudioControl;
 use rand::Rng;
 
@@ -171,7 +171,7 @@ fn move_player(
         return;
     }
 
-    let (entity, mut player_transform, mut animation_controller, _) = player_query.single_mut();
+    let (_entity, _player_transform, _animation_controller, _) = player_query.single_mut();
     let (entity, mut player_transform, mut animation_controller, _) = player_query.single_mut();
 
     if actions.player_movement.is_none() {

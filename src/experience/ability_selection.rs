@@ -1,6 +1,6 @@
-use std::iter;
 
-use bevy::{prelude::*, text::FontAtlas, window::PrimaryWindow};
+
+use bevy::{prelude::*, window::PrimaryWindow};
 use rand::seq::IteratorRandom;
 
 use crate::{
@@ -10,8 +10,8 @@ use crate::{
         make_animation_bundle, Animation, AnimationStateChangeEvent, AnimationStateStorage,
     },
     collision::collider::Collider,
-    constants::{SortingLayers, SCALING_VEC3},
-    loading::{AbilityTextures, FontAssets, TextureAssets},
+    constants::{SortingLayers},
+    loading::{AbilityTextures, FontAssets},
     movement::pause::ActionPauseState,
     palette::Palette,
     player::{ability::Ability, Player},
@@ -49,7 +49,7 @@ impl Animation<AbilityFrameAnimation> for AbilityFrameAnimation {
 }
 
 pub fn ability_frame_update(
-    mut q_frames: Query<(Entity, &AnimationController<AbilityFrameAnimation>)>,
+    q_frames: Query<(Entity, &AnimationController<AbilityFrameAnimation>)>,
     mut animation_update: EventWriter<AnimationStateChangeEvent<AbilityFrameAnimation>>,
     mut hover_events: EventReader<HoverEvent>,
     mut unhover_events: EventReader<UnhoverEvent>,
@@ -88,7 +88,7 @@ pub struct AbilitySelection {
 
 pub fn on_select_ability(
     q_menu: Query<(Entity, &AbilitySelection)>,
-    mut q_player: Query<(&mut Player), Without<AbilitySelection>>,
+    mut q_player: Query<&mut Player, Without<AbilitySelection>>,
     mut selection_events: EventReader<SelectionEvent>,
     mut commmands: Commands,
     mut pause: ResMut<ActionPauseState>,
@@ -117,8 +117,8 @@ pub fn start_ability_selection(
     frame_animations: Res<AnimationStateStorage<AbilityFrameAnimation>>,
     mut texture_atlases: ResMut<Assets<TextureAtlas>>,
     mut rng: ResMut<AbilityRNG>,
-    font_assets: Res<FontAssets>,
-    palette: Res<Palette>,
+    _font_assets: Res<FontAssets>,
+    _palette: Res<Palette>,
     mut pause: ResMut<ActionPauseState>,
     mut commands: Commands,
 ) {

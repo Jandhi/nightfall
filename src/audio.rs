@@ -29,7 +29,7 @@ pub type AmbienceChannel = AudioChannel<Ambience>;
 pub struct Music;
 pub type MusicChannel = AudioChannel<Ambience>;
 
-fn start_audio(mut commands: Commands, audio_assets: Res<AudioAssets>, audio: Res<Audio>) {}
+fn start_audio(_commands: Commands, _audio_assets: Res<AudioAssets>, _audio: Res<Audio>) {}
 
 fn start_music(music: Res<MusicChannel>, audio_assets: Res<AudioAssets>) {
     music
