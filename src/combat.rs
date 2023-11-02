@@ -1,20 +1,21 @@
 use bevy::prelude::*;
 
-use crate::{GameState, animation::AppAnimationSetup};
+use crate::{animation::AppAnimationSetup, GameState};
 
 use self::{
+    fire::{fire_update, FireAnimation},
     health::{check_death, DeathEvent, TookDamageEvent},
     healthbar::{spawn_healthbars, update_healthbars},
     knockback::knockback_update,
-    projectile::{projectile_collision_check, ProjectileHitEvent}, fire::{FireAnimation, fire_update},
+    projectile::{projectile_collision_check, ProjectileHitEvent},
 };
 
+pub mod fire;
 pub mod health;
 pub mod healthbar;
 pub mod knockback;
 pub mod projectile;
 pub mod teams;
-pub mod fire;
 
 pub struct CombatPlugin;
 

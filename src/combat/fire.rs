@@ -2,19 +2,29 @@ use std::time::Duration;
 
 use bevy::{prelude::*, transform::commands};
 
-use crate::{animation::{Animation, info::AnimationInfoBuilder, make_animation_bundle, AnimationStateStorage}, enemies::enemy::Enemy, loading::TextureAssets, player::Player};
+use crate::{
+    animation::{
+        info::AnimationInfoBuilder, make_animation_bundle, Animation, AnimationStateStorage,
+    },
+    enemies::enemy::Enemy,
+    loading::TextureAssets,
+    player::Player,
+};
 
-use super::{health::{Health, TookDamageEvent}, projectile::ProjectileHitEvent};
+use super::{
+    health::{Health, TookDamageEvent},
+    projectile::ProjectileHitEvent,
+};
 
 #[derive(Component)]
 pub struct Fire {
-    pub parent : Entity,
-    pub timer : Timer
+    pub parent: Entity,
+    pub timer: Timer,
 }
 
 #[derive(PartialEq, Eq, Hash, Clone, Copy)]
 pub enum FireAnimation {
-    Fire
+    Fire,
 }
 
 impl Animation<FireAnimation> for FireAnimation {
@@ -26,16 +36,16 @@ impl Animation<FireAnimation> for FireAnimation {
 }
 
 pub fn fire_update(
-    mut q_fire : Query<(&mut Fire, &Parent), Without<Health>>,
-    mut q_health : Query<(Entity, &mut Health, &Children), With<Enemy>>,
-    mut q_player : Query<&Player, (Without<Enemy>, Without<Fire>)>,
-    mut took_damage_ev : EventWriter<TookDamageEvent>,
-    mut projectile_hit : EventReader<ProjectileHitEvent>,
-    animations : Res<AnimationStateStorage<FireAnimation>>,
+    mut q_fire: Query<(&mut Fire, &Parent), Without<Health>>,
+    mut q_health: Query<(Entity, &mut Health, &Children), With<Enemy>>,
+    mut q_player: Query<&Player, (Without<Enemy>, Without<Fire>)>,
+    mut took_damage_ev: EventWriter<TookDamageEvent>,
+    mut projectile_hit: EventReader<ProjectileHitEvent>,
+    animations: Res<AnimationStateStorage<FireAnimation>>,
     textures: Res<TextureAssets>,
     mut texture_atlases: ResMut<Assets<TextureAtlas>>,
-    time : Res<Time>,
-    mut commands : Commands,
+    time: Res<Time>,
+    mut commands: Commands,
 ) {
     for (mut fire, parent) in q_fire.iter_mut() {
         fire.timer.tick(time.delta());
@@ -59,37 +69,38 @@ pub fn fire_update(
     );
     let texture_atlas_handle = texture_atlases.add(texture_atlas);
 
-
     let player = q_player.single();
 
-    if !player.abilities.contains(&crate::player::ability::Ability::FlamingBullets) {
+    if !player
+        .abilities
+        .contains(&crate::player::ability::Ability::FlamingBullets)
+    {
         return;
     }
 
     for proj_hit in projectile_hit.iter() {
-        if let Ok((entity, _, children)) = q_health.get(proj_hit.victim) {    
-            if children
-                .iter()
-                .any(|child| q_fire.contains(*child)) {
+        if let Ok((entity, _, children)) = q_health.get(proj_hit.victim) {
+            if children.iter().any(|child| q_fire.contains(*child)) {
                 continue;
             }
 
-            commands.spawn(make_animation_bundle(
-                FireAnimation::Fire, 
-                &animations, 
-                texture_atlas_handle.clone(),
-                 Vec3::ZERO,
-                  0.5,
-            ))
-            .insert(Fire{ parent: entity, timer: Timer::from_seconds(2.0, TimerMode::Repeating) })
-            .add(|id, world : &mut World| {
-                if let Some(fire) = world.entity(id).get::<Fire>() {
-                    world.entity_mut(fire.parent)
-                        .add_child(id);
-                }
-            });
-            
-            
+            commands
+                .spawn(make_animation_bundle(
+                    FireAnimation::Fire,
+                    &animations,
+                    texture_atlas_handle.clone(),
+                    Vec3::ZERO,
+                    0.5,
+                ))
+                .insert(Fire {
+                    parent: entity,
+                    timer: Timer::from_seconds(2.0, TimerMode::Repeating),
+                })
+                .add(|id, world: &mut World| {
+                    if let Some(fire) = world.entity(id).get::<Fire>() {
+                        world.entity_mut(fire.parent).add_child(id);
+                    }
+                });
         }
     }
 }

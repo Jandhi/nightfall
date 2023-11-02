@@ -9,6 +9,7 @@ use crate::{
         info::{AnimationInfoBuilder, AnimationStateInfo},
         make_animation_bundle, Animation, AnimationStateChangeEvent, AnimationStateStorage,
     },
+    audio::FXChannel,
     collision::collider::Collider,
     combat::{
         health::Health,
@@ -16,10 +17,10 @@ use crate::{
         projectile::{DamageTarget, PiercingMode, Projectile},
         teams::{Team, TeamMember},
     },
-    loading::{TextureAssets, AudioAssets},
+    loading::{AudioAssets, TextureAssets},
     movement::velocity::Velocity,
     player::Player,
-    util::radians::Radian, audio::FXChannel,
+    util::radians::Radian,
 };
 
 use super::{
@@ -83,8 +84,8 @@ pub fn beholder_update(
     beholder_projetile_animations: Res<AnimationStateStorage<BeholderProjectileAnimation>>,
     textures: Res<TextureAssets>,
     mut texture_atlases: ResMut<Assets<TextureAtlas>>,
-    fx : Res<FXChannel>,
-    audio : Res<AudioAssets>,
+    fx: Res<FXChannel>,
+    audio: Res<AudioAssets>,
     mut commands: Commands,
 ) {
     let texture_atlas = TextureAtlas::from_grid(
