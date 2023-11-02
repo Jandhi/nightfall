@@ -8,7 +8,7 @@ use crate::{
     util::radians::Radian,
 };
 
-use super::enemy;
+
 
 #[derive(Component)]
 pub struct FollowPlayerAI {

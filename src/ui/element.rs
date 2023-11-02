@@ -1,4 +1,4 @@
-use bevy::{prelude::*, utils::HashMap};
+use bevy::{prelude::*};
 
 pub struct Layout(HorizontalLayout, VerticalLayout);
 pub enum HorizontalLayout {
@@ -19,7 +19,7 @@ pub struct UIElement {
     layout: Layout,
 }
 
-pub fn ui_layout_update(mut q_elements: Query<(Entity, &UIElement, &mut Transform)>) {
+pub fn ui_layout_update(q_elements: Query<(Entity, &UIElement, &mut Transform)>) {
     let mut orphans = vec![];
 
     for (entity, element, _) in q_elements.iter() {
@@ -30,8 +30,8 @@ pub fn ui_layout_update(mut q_elements: Query<(Entity, &UIElement, &mut Transfor
     }
 
     for entity in orphans.iter() {
-        let (entity, ui_element, transform) = q_elements.get(*entity).unwrap();
+        let (_entity, _ui_element, _transform) = q_elements.get(*entity).unwrap();
     }
 }
 
-pub fn layout_element(mut q_elements: &mut Query<(Entity, &UIElement, &mut Transform)>) {}
+pub fn layout_element(_q_elements: &mut Query<(Entity, &UIElement, &mut Transform)>) {}

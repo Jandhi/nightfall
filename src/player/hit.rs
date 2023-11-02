@@ -18,7 +18,7 @@ pub fn update_hit_sprite(
     time: Res<Time>,
 ) {
     let (player, p_health, p_transform) = q_player.single();
-    let (entity, mut hit, mut visibility, mut transform) = q_hit.single_mut();
+    let (_entity, mut hit, mut visibility, mut transform) = q_hit.single_mut();
 
     if !p_health.is_invincible {
         *visibility = Visibility::Hidden;

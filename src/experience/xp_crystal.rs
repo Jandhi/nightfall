@@ -9,8 +9,7 @@ use crate::{
     enemies::enemy::EnemyDeathEvent,
     loading::{AudioAssets, TextureAssets},
     movement::{
-        edge_teleport::EdgeTeleports, fake_magnetic::FakeMagnetic, friction::Friction,
-        magnetic::Magnetic, velocity::Velocity,
+        edge_teleport::EdgeTeleports, fake_magnetic::FakeMagnetic, friction::Friction, velocity::Velocity,
     },
     player::Player,
     util::{
@@ -85,7 +84,7 @@ pub fn xp_crystal_update(
     let (player_transform, mut experience) = q_player.single_mut();
 
     for (entity, crystal_transform) in q_crystals.iter() {
-        let distance = crystal_transform
+        let _distance = crystal_transform
             .translation
             .distance(player_transform.translation);
         let distance = crystal_transform

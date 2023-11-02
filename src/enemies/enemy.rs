@@ -1,26 +1,24 @@
 use bevy::prelude::*;
-use bevy_debug_text_overlay::screen_print;
+
 use bevy_kira_audio::AudioControl;
 use rand::Rng;
 
-use crate::animation::info::AnimationStateInfo;
-use crate::animation::{make_animation_bundle, Animation, AnimationStateStorage};
+
+use crate::animation::{AnimationStateStorage};
 use crate::audio::FXChannel;
-use crate::collision::collider::{Collider, IsCollidingEvent};
+use crate::collision::collider::{IsCollidingEvent};
 
 use crate::combat::{
-    health::{DeathEvent, Health},
-    healthbar::NeedsHealthBar,
-    teams::{Team, TeamMember},
+    health::{DeathEvent},
 };
-use crate::constants::{SortingLayers, DISTANCE_SCALING};
+use crate::constants::{SortingLayers};
 use crate::loading::{AudioAssets, TextureAssets};
-use crate::movement::friction::Friction;
-use crate::movement::pause::ActionPauseState;
-use crate::movement::velocity::Velocity;
-use crate::player::Player;
+
+
+
+
 use crate::util::pitch_rng::PitchRNG;
-use crate::util::radians::Radian;
+
 
 use super::beholder::{spawn_beholder, BeholderAnimation};
 use super::imp::{spawn_imp, ImpAnimation};
@@ -81,7 +79,7 @@ pub fn death_loop(
     mut ememy_death_event: EventWriter<EnemyDeathEvent>,
     mut death_event: EventReader<DeathEvent>,
     mut q_enemies: Query<(Entity, &Enemy, &Transform)>,
-    mut fx_channel: Res<FXChannel>,
+    fx_channel: Res<FXChannel>,
     audio: Res<AudioAssets>,
     mut pitch_rng: ResMut<PitchRNG>,
     mut commands: Commands,

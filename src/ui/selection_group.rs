@@ -1,7 +1,7 @@
-use std::marker::PhantomData;
+
 
 use bevy::{prelude::*, window::PrimaryWindow};
-use bevy_debug_text_overlay::screen_print;
+
 
 use crate::collision::collider::Collider;
 
@@ -38,7 +38,7 @@ pub struct SelectionEvent {
 
 pub fn update_selection_groups(
     mut selection_groups: Query<(Entity, &mut SelectionGroup, &Children)>,
-    mut selection_elements: Query<
+    selection_elements: Query<
         (Entity, &Transform, &Parent, &Collider, &SelectionElement),
         Without<SelectionGroup>,
     >,
