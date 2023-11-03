@@ -1,4 +1,4 @@
-use bevy::{prelude::*, window::PrimaryWindow, time::Stopwatch};
+use bevy::{prelude::*, time::Stopwatch, window::PrimaryWindow};
 use rand::{seq::IteratorRandom, Rng};
 
 use crate::{
@@ -19,7 +19,7 @@ use super::{
 #[derive(Resource)]
 pub struct SpawnInfo {
     pub timer: Timer,
-    pub game : Stopwatch,
+    pub game: Stopwatch,
     pub count: u32,
 }
 

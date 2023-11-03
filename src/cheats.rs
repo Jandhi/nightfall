@@ -1,9 +1,10 @@
 use bevy::prelude::*;
 
 use crate::{
+    combat::health::DeathEvent,
     experience::experience::{Experience, LevelUpEvent},
     player::Player,
-    GameState, combat::health::DeathEvent,
+    GameState,
 };
 
 pub struct CheatsPlugin;
@@ -18,7 +19,7 @@ fn cheats(
     q_player: Query<(Entity, &Player, &Experience)>,
     keyboard_input: Res<Input<KeyCode>>,
     mut levelup: EventWriter<LevelUpEvent>,
-    mut death_ev : EventWriter<DeathEvent>,
+    mut death_ev: EventWriter<DeathEvent>,
 ) {
     let (player_entity, _player, xp) = q_player.single();
 
@@ -29,6 +30,8 @@ fn cheats(
     }
 
     if keyboard_input.just_pressed(KeyCode::K) {
-        death_ev.send(DeathEvent { entity: player_entity });
+        death_ev.send(DeathEvent {
+            entity: player_entity,
+        });
     }
 }

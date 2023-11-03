@@ -1,8 +1,6 @@
 use crate::actions::Actions;
 use crate::animation::controller::AnimationController;
-use crate::animation::{
-    make_animation_bundle, AnimationStateChangeEvent, AppAnimationSetup,
-};
+use crate::animation::{make_animation_bundle, AnimationStateChangeEvent, AppAnimationSetup};
 use crate::audio::FXChannel;
 use crate::collision::collider::{Collider, IsCollidingEvent};
 use crate::combat::fire::Fire;
@@ -305,7 +303,7 @@ pub fn game_over(
     mut pause: ResMut<ActionPauseState>,
     palette: Res<Palette>,
     font_assets: Res<FontAssets>,
-    spawn_info : Res<SpawnInfo>,
+    spawn_info: Res<SpawnInfo>,
     mut commands: Commands,
 ) {
     let player = q_player.single();
@@ -318,76 +316,85 @@ pub fn game_over(
 
             pause.is_paused = true;
 
-            commands.spawn(NodeBundle{
-                style: Style {
-                    display: Display::Grid,
-                    width: Val::Percent(100.),
-                    align_items: AlignItems::Center,
-                    justify_content: JustifyContent::Center,
-                    grid_auto_flow: GridAutoFlow::Row,
-                    ..Default::default()
-                },
-                ..Default::default()
-            }).with_children(|parent| {
-                parent.spawn(TextBundle::from_section(
-                    "You did not survive",
-                    TextStyle {
-                        font: font_assets.gothic_pxl.clone(),
-                        font_size: 100.0,
-                        color: palette.orange,
-                    },
-                ).with_style(Style { 
-                    margin: UiRect::all(Val::Auto),
-                    justify_content: JustifyContent::Center,
-                    align_items: AlignItems::Center,
-                    ..default() 
-                }));
-
-                parent.spawn(TextBundle::from_section(
-                    format!("Thou lasted {}:{}{}", (spawn_info.game.elapsed().as_secs() / 60) as u32, 
-                        match spawn_info.game.elapsed().as_secs() % 60 < 10 {
-                            true => "0",
-                            false => "",
-                        }, 
-                        spawn_info.game.elapsed().as_secs() % 60
-                    ),
-
-                    TextStyle {
-                        font: font_assets.gothic.clone(),
-                        font_size: 40.0,
-                        color: palette.white,
-                    },
-                ).with_style(Style { 
-                    margin: UiRect::all(Val::Auto),
-                    justify_content: JustifyContent::Center,
-                    align_items: AlignItems::Center,
-                    ..default() 
-                }));
-
-                parent.spawn(ButtonBundle {
+            commands
+                .spawn(NodeBundle {
                     style: Style {
-                        width: Val::Px(250.0),
-                        height: Val::Px(50.0),
-                        margin: UiRect::all(Val::Auto),
-                        justify_content: JustifyContent::Center,
+                        display: Display::Grid,
+                        width: Val::Percent(100.),
                         align_items: AlignItems::Center,
+                        justify_content: JustifyContent::Center,
+                        grid_auto_flow: GridAutoFlow::Row,
                         ..Default::default()
                     },
-                    background_color: palette.dark.into(),
                     ..Default::default()
                 })
                 .with_children(|parent| {
-                    parent.spawn(TextBundle::from_section(
-                        "Play Again",
-                        TextStyle {
-                            font: font_assets.gothic.clone(),
-                            font_size: 40.0,
-                            color: palette.white,
-                        },
-                    ));
+                    parent.spawn(
+                        TextBundle::from_section(
+                            "You did not survive",
+                            TextStyle {
+                                font: font_assets.gothic_pxl.clone(),
+                                font_size: 100.0,
+                                color: palette.orange,
+                            },
+                        )
+                        .with_style(Style {
+                            margin: UiRect::all(Val::Auto),
+                            justify_content: JustifyContent::Center,
+                            align_items: AlignItems::Center,
+                            ..default()
+                        }),
+                    );
+
+                    parent.spawn(
+                        TextBundle::from_section(
+                            format!(
+                                "Thou lasted {}:{}{}",
+                                (spawn_info.game.elapsed().as_secs() / 60) as u32,
+                                match spawn_info.game.elapsed().as_secs() % 60 < 10 {
+                                    true => "0",
+                                    false => "",
+                                },
+                                spawn_info.game.elapsed().as_secs() % 60
+                            ),
+                            TextStyle {
+                                font: font_assets.gothic.clone(),
+                                font_size: 40.0,
+                                color: palette.white,
+                            },
+                        )
+                        .with_style(Style {
+                            margin: UiRect::all(Val::Auto),
+                            justify_content: JustifyContent::Center,
+                            align_items: AlignItems::Center,
+                            ..default()
+                        }),
+                    );
+
+                    parent
+                        .spawn(ButtonBundle {
+                            style: Style {
+                                width: Val::Px(250.0),
+                                height: Val::Px(50.0),
+                                margin: UiRect::all(Val::Auto),
+                                justify_content: JustifyContent::Center,
+                                align_items: AlignItems::Center,
+                                ..Default::default()
+                            },
+                            background_color: palette.dark.into(),
+                            ..Default::default()
+                        })
+                        .with_children(|parent| {
+                            parent.spawn(TextBundle::from_section(
+                                "Play Again",
+                                TextStyle {
+                                    font: font_assets.gothic.clone(),
+                                    font_size: 40.0,
+                                    color: palette.white,
+                                },
+                            ));
+                        });
                 });
-            });
-                
         }
     }
 }

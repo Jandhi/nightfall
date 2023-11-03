@@ -17,68 +17,77 @@ impl Plugin for MenuPlugin {
 
 fn setup_menu(mut commands: Commands, font_assets: Res<FontAssets>, palette: Res<Palette>) {
     commands.spawn(Camera2dBundle::default());
-    commands.spawn(NodeBundle{
-        style: Style {
-            display: Display::Grid,
-            width: Val::Percent(100.),
-            align_items: AlignItems::Center,
-            justify_content: JustifyContent::Center,
-            grid_auto_flow: GridAutoFlow::Row,
-            ..Default::default()
-        },
-        ..Default::default()
-    }).with_children(|parent| {
-        parent.spawn(TextBundle::from_section(
-            "Nightfall",
-            TextStyle {
-                font: font_assets.gothic_pxl.clone(),
-                font_size: 150.0,
-                color: palette.orange,
-            },
-        ).with_style(Style { 
-            margin: UiRect::all(Val::Auto),
-            justify_content: JustifyContent::Center,
-            align_items: AlignItems::Center,
-            ..default() 
-        }));
-
-        parent.spawn(TextBundle::from_section(
-            "By Jan Dohring",
-            TextStyle {
-                font: font_assets.gothic.clone(),
-                font_size: 40.0,
-                color: palette.white,
-            },
-        ).with_style(Style { 
-            margin: UiRect::all(Val::Auto),
-            justify_content: JustifyContent::Center,
-            align_items: AlignItems::Center,
-            ..default() 
-        }));
-
-        parent.spawn(ButtonBundle {
+    commands
+        .spawn(NodeBundle {
             style: Style {
-                width: Val::Px(250.0),
-                height: Val::Px(50.0),
-                margin: UiRect::all(Val::Auto),
-                justify_content: JustifyContent::Center,
+                display: Display::Grid,
+                width: Val::Percent(100.),
                 align_items: AlignItems::Center,
+                justify_content: JustifyContent::Center,
+                grid_auto_flow: GridAutoFlow::Row,
                 ..Default::default()
             },
-            background_color: palette.dark.into(),
             ..Default::default()
         })
         .with_children(|parent| {
-            parent.spawn(TextBundle::from_section(
-                "Play",
-                TextStyle {
-                    font: font_assets.gothic.clone(),
-                    font_size: 40.0,
-                    color: palette.white,
-                },
-            ));
+            parent.spawn(
+                TextBundle::from_section(
+                    "Nightfall",
+                    TextStyle {
+                        font: font_assets.gothic_pxl.clone(),
+                        font_size: 150.0,
+                        color: palette.orange,
+                    },
+                )
+                .with_style(Style {
+                    margin: UiRect::all(Val::Auto),
+                    justify_content: JustifyContent::Center,
+                    align_items: AlignItems::Center,
+                    ..default()
+                }),
+            );
+
+            parent.spawn(
+                TextBundle::from_section(
+                    "By Jan Dohring",
+                    TextStyle {
+                        font: font_assets.gothic.clone(),
+                        font_size: 40.0,
+                        color: palette.white,
+                    },
+                )
+                .with_style(Style {
+                    margin: UiRect::all(Val::Auto),
+                    justify_content: JustifyContent::Center,
+                    align_items: AlignItems::Center,
+                    ..default()
+                }),
+            );
+
+            parent
+                .spawn(ButtonBundle {
+                    style: Style {
+                        width: Val::Px(250.0),
+                        height: Val::Px(50.0),
+                        margin: UiRect::all(Val::Auto),
+                        justify_content: JustifyContent::Center,
+                        align_items: AlignItems::Center,
+                        ..Default::default()
+                    },
+                    background_color: palette.dark.into(),
+                    ..Default::default()
+                })
+                .with_children(|parent| {
+                    parent.spawn(TextBundle::from_section(
+                        "Play",
+                        TextStyle {
+                            font: font_assets.gothic.clone(),
+                            font_size: 40.0,
+                            color: palette.white,
+                        },
+                    ));
+                });
         });
-    });
 }
 
 fn click_play_button(
