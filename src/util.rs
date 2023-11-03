@@ -1,5 +1,5 @@
-use bevy::{prelude::*, app::AppLabel};
-use rand::{rngs::OsRng, Rng, seq::SliceRandom};
+use bevy::{prelude::*};
+use rand::{rngs::OsRng, seq::SliceRandom};
 
 use crate::GameState;
 

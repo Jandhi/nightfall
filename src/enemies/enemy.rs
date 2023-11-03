@@ -13,9 +13,9 @@ use crate::loading::{AudioAssets, TextureAssets};
 
 use crate::util::pitch_rng::PitchRNG;
 
-use super::beholder::{spawn_beholder, BeholderAnimation};
+
 use super::imp::{spawn_imp, ImpAnimation};
-use super::reaper::{spawn_reaper, ReaperAnimation};
+
 
 #[derive(Copy, Clone)]
 pub enum EnemyType {
