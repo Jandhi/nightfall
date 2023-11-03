@@ -15,7 +15,7 @@ pub fn spawn_game_timer(
             TextBundle::from_section(
                 "0:00",
                 TextStyle {
-                    font: font_assets.fira_sans.clone(),
+                    font: font_assets.gothic.clone(),
                     font_size: 40.0,
                     color: palette.white,
                 },

@@ -40,7 +40,7 @@ impl Ability {
             Self::MediumBullets,
             Self::MegaShotgun,
             Self::Reload,
-            //Self::Shells, Don't know what to do
+            Self::Shells,
             Self::ShootingSpeed,
             Self::Shotgun,
             Self::Sixfold,
@@ -122,6 +122,7 @@ impl Ability {
             Ability::MediumBullets => 2.0,
             Ability::BigBullets => 2.0,
             Ability::BiggestBullets => 2.0,
+            Ability::Shells => 1.8,
             _ => 1.,
         }
     }

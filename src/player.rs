@@ -264,8 +264,8 @@ pub fn hit_immunity(
 }
 
 pub fn enemy_collision(
-    mut q_player: Query<(Entity, &mut Health), With<Player>>,
-    q_enemies: Query<Entity, With<Enemy>>,
+    mut q_player: Query<(Entity, &Player, &mut Health), Without<Enemy>>,
+    mut q_enemies: Query<(Entity, &mut Health), With<Enemy>>,
     mut collisions: EventReader<IsCollidingEvent>,
     mut ev_dmg: EventWriter<TookDamageEvent>,
     pause: Res<ActionPauseState>,
@@ -274,19 +274,27 @@ pub fn enemy_collision(
         return;
     }
 
-    let (player, mut health) = q_player.single_mut();
+    let (player, player_stats, mut health) = q_player.single_mut();
     let mut is_hit = false;
 
     for ev in collisions.iter() {
-        if let Ok(_) = q_enemies.get(ev.collision.entity_a) {
+        if let Ok((entity, mut enemy_health)) = q_enemies.get_mut(ev.collision.entity_a) {
             if player == ev.collision.entity_b {
                 is_hit = true;
+                if player_stats.abilities.contains(&Ability::Thorns) {
+                    enemy_health.take_damage(entity, &mut ev_dmg, 1_000_000);
+                }
+
                 break;
             }
         }
-        if let Ok(_) = q_enemies.get(ev.collision.entity_b) {
+        if let Ok((entity, mut enemy_health)) = q_enemies.get_mut(ev.collision.entity_a) {
             if player == ev.collision.entity_a {
                 is_hit = true;
+                if player_stats.abilities.contains(&Ability::Thorns) {
+                    enemy_health.take_damage(entity, &mut ev_dmg, 1_000_000);
+                }
+
                 break;
             }
         }
