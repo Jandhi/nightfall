@@ -1,7 +1,7 @@
 use crate::actions::Actions;
 use crate::animation::controller::AnimationController;
 use crate::animation::{
-    make_animation_bundle, AnimationStateChangeEvent, AnimationStateStorage, AppAnimationSetup,
+    make_animation_bundle, AnimationStateChangeEvent, AppAnimationSetup,
 };
 use crate::audio::FXChannel;
 use crate::collision::collider::{Collider, IsCollidingEvent};
@@ -10,8 +10,7 @@ use crate::combat::health::{DeathEvent, Health, HealthType, TookDamageEvent};
 use crate::combat::projectile::{projectile_collision_check, Projectile};
 use crate::combat::teams::{Team, TeamMember};
 use crate::constants::SortingLayers;
-use crate::enemies::enemy::{initial_spawn, Enemy};
-use crate::enemies::imp::ImpAnimation;
+use crate::enemies::enemy::Enemy;
 use crate::enemies::spawning::SpawnInfo;
 use crate::experience::experience::Experience;
 use crate::experience::xp_crystal::XPCrystal;
@@ -19,6 +18,7 @@ use crate::loading::{AudioAssets, FontAssets, TextureAssets};
 use crate::movement::edge_teleport::EdgeTeleports;
 use crate::movement::pause::ActionPauseState;
 use crate::palette::Palette;
+use crate::ui::game_timer::GameTimer;
 use crate::util::pitch_rng::PitchRNG;
 use crate::GameState;
 use bevy::prelude::*;
@@ -305,6 +305,7 @@ pub fn game_over(
     mut pause: ResMut<ActionPauseState>,
     palette: Res<Palette>,
     font_assets: Res<FontAssets>,
+    spawn_info : Res<SpawnInfo>,
     mut commands: Commands,
 ) {
     let player = q_player.single();
@@ -317,10 +318,55 @@ pub fn game_over(
 
             pause.is_paused = true;
 
-            commands
-                .spawn(ButtonBundle {
+            commands.spawn(NodeBundle{
+                style: Style {
+                    display: Display::Grid,
+                    width: Val::Percent(100.),
+                    align_items: AlignItems::Center,
+                    justify_content: JustifyContent::Center,
+                    grid_auto_flow: GridAutoFlow::Row,
+                    ..Default::default()
+                },
+                ..Default::default()
+            }).with_children(|parent| {
+                parent.spawn(TextBundle::from_section(
+                    "You did not survive",
+                    TextStyle {
+                        font: font_assets.gothic_pxl.clone(),
+                        font_size: 100.0,
+                        color: palette.orange,
+                    },
+                ).with_style(Style { 
+                    margin: UiRect::all(Val::Auto),
+                    justify_content: JustifyContent::Center,
+                    align_items: AlignItems::Center,
+                    ..default() 
+                }));
+
+                parent.spawn(TextBundle::from_section(
+                    format!("Thou lasted {}:{}{}", (spawn_info.game.elapsed().as_secs() / 60) as u32, 
+                        match spawn_info.game.elapsed().as_secs() % 60 < 10 {
+                            true => "0",
+                            false => "",
+                        }, 
+                        spawn_info.game.elapsed().as_secs() % 60
+                    ),
+
+                    TextStyle {
+                        font: font_assets.gothic.clone(),
+                        font_size: 40.0,
+                        color: palette.white,
+                    },
+                ).with_style(Style { 
+                    margin: UiRect::all(Val::Auto),
+                    justify_content: JustifyContent::Center,
+                    align_items: AlignItems::Center,
+                    ..default() 
+                }));
+
+                parent.spawn(ButtonBundle {
                     style: Style {
-                        width: Val::Px(150.0),
+                        width: Val::Px(250.0),
                         height: Val::Px(50.0),
                         margin: UiRect::all(Val::Auto),
                         justify_content: JustifyContent::Center,
@@ -334,12 +380,14 @@ pub fn game_over(
                     parent.spawn(TextBundle::from_section(
                         "Play Again",
                         TextStyle {
-                            font: font_assets.fira_sans.clone(),
+                            font: font_assets.gothic.clone(),
                             font_size: 40.0,
                             color: palette.white,
                         },
                     ));
                 });
+            });
+                
         }
     }
 }
@@ -385,6 +433,19 @@ fn click_play_again_button(
             Without<Enemy>,
         ),
     >,
+    q_node: Query<
+        Entity,
+        (
+            With<Node>,
+            Without<GameTimer>,
+            Without<XPCrystal>,
+            Without<Fire>,
+            Without<Projectile>,
+            Without<Button>,
+            Without<Player>,
+            Without<Enemy>,
+        ),
+    >,
     mut pause: ResMut<ActionPauseState>,
     mut spawning: ResMut<SpawnInfo>,
     mut commands: Commands,
@@ -417,9 +478,14 @@ fn click_play_again_button(
                     commands.entity(xp).despawn();
                 }
 
+                for text in q_node.iter() {
+                    commands.entity(text).despawn();
+                }
+
                 commands.entity(button_entity).despawn();
                 spawning.count = 0;
                 spawning.timer.reset();
+                spawning.game.reset();
 
                 pause.is_paused = false;
             }

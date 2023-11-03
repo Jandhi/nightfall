@@ -1,4 +1,4 @@
-use bevy::prelude::*;
+use bevy::{prelude::*, time::Stopwatch};
 
 use crate::{animation::AppAnimationSetup, GameState};
 
@@ -51,6 +51,7 @@ impl Plugin for EnemiesPlugin {
             .add_event::<ChargeShootEvent>()
             .insert_resource(SpawnInfo {
                 timer: Timer::from_seconds(3., TimerMode::Repeating),
+                game: Stopwatch::new(),
                 count: 0,
             });
     }

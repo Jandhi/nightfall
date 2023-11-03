@@ -17,10 +17,48 @@ impl Plugin for MenuPlugin {
 
 fn setup_menu(mut commands: Commands, font_assets: Res<FontAssets>, palette: Res<Palette>) {
     commands.spawn(Camera2dBundle::default());
-    commands
-        .spawn(ButtonBundle {
+    commands.spawn(NodeBundle{
+        style: Style {
+            display: Display::Grid,
+            width: Val::Percent(100.),
+            align_items: AlignItems::Center,
+            justify_content: JustifyContent::Center,
+            grid_auto_flow: GridAutoFlow::Row,
+            ..Default::default()
+        },
+        ..Default::default()
+    }).with_children(|parent| {
+        parent.spawn(TextBundle::from_section(
+            "Nightfall",
+            TextStyle {
+                font: font_assets.gothic_pxl.clone(),
+                font_size: 150.0,
+                color: palette.orange,
+            },
+        ).with_style(Style { 
+            margin: UiRect::all(Val::Auto),
+            justify_content: JustifyContent::Center,
+            align_items: AlignItems::Center,
+            ..default() 
+        }));
+
+        parent.spawn(TextBundle::from_section(
+            "By Jan Dohring",
+            TextStyle {
+                font: font_assets.gothic.clone(),
+                font_size: 40.0,
+                color: palette.white,
+            },
+        ).with_style(Style { 
+            margin: UiRect::all(Val::Auto),
+            justify_content: JustifyContent::Center,
+            align_items: AlignItems::Center,
+            ..default() 
+        }));
+
+        parent.spawn(ButtonBundle {
             style: Style {
-                width: Val::Px(120.0),
+                width: Val::Px(250.0),
                 height: Val::Px(50.0),
                 margin: UiRect::all(Val::Auto),
                 justify_content: JustifyContent::Center,
@@ -34,12 +72,13 @@ fn setup_menu(mut commands: Commands, font_assets: Res<FontAssets>, palette: Res
             parent.spawn(TextBundle::from_section(
                 "Play",
                 TextStyle {
-                    font: font_assets.fira_sans.clone(),
+                    font: font_assets.gothic.clone(),
                     font_size: 40.0,
                     color: palette.white,
                 },
             ));
         });
+    });
 }
 
 fn click_play_button(
@@ -65,6 +104,8 @@ fn click_play_button(
     }
 }
 
-fn cleanup_menu(mut commands: Commands, button: Query<Entity, With<Button>>) {
-    commands.entity(button.single()).despawn_recursive();
+fn cleanup_menu(mut commands: Commands, ui: Query<Entity, With<Node>>) {
+    for entity in ui.iter() {
+        commands.entity(entity).despawn_recursive();
+    }
 }

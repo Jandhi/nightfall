@@ -1,4 +1,4 @@
-use bevy::{prelude::*, window::PrimaryWindow};
+use bevy::{prelude::*, window::PrimaryWindow, time::Stopwatch};
 use rand::{seq::IteratorRandom, Rng};
 
 use crate::{
@@ -19,6 +19,7 @@ use super::{
 #[derive(Resource)]
 pub struct SpawnInfo {
     pub timer: Timer,
+    pub game : Stopwatch,
     pub count: u32,
 }
 
@@ -48,6 +49,7 @@ pub fn spawn_loop(
 
     let window = q_window.single();
     spawn_info.timer.tick(time.delta());
+    spawn_info.game.tick(time.delta());
 
     let scaling_factor: f32 = 1.01;
     let needed_difficulty =

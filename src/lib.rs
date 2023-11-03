@@ -7,7 +7,6 @@ mod cheats;
 mod collision;
 mod combat;
 mod constants;
-mod cooldown;
 mod enemies;
 mod experience;
 mod loading;
@@ -20,7 +19,6 @@ mod util;
 
 use crate::actions::ActionsPlugin;
 use crate::audio::InternalAudioPlugin;
-use crate::cooldown::CooldownPlugin;
 use crate::enemies::EnemiesPlugin;
 use crate::loading::LoadingPlugin;
 use crate::menu::MenuPlugin;
@@ -65,7 +63,6 @@ impl Plugin for GamePlugin {
             InternalAudioPlugin,
             PlayerPlugin,
             CombatPlugin,
-            CooldownPlugin,
             EnemiesPlugin,
             CollisionPlugin,
             ExperiencePlugin,
