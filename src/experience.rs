@@ -15,7 +15,7 @@ use self::{
 pub mod ability_selection;
 pub mod experience;
 pub mod xp_bar;
-mod xp_crystal;
+pub mod xp_crystal;
 
 pub struct ExperiencePlugin;
 

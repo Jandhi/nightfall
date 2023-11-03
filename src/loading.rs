@@ -172,6 +172,12 @@ pub struct AbilityTextures {
     #[asset(path = "textures/abilities/double_barrel.png")]
     pub double_barrel: Handle<Image>,
 
+    #[asset(path = "textures/abilities/potion.png")]
+    pub potion: Handle<Image>,
+
+    #[asset(path = "textures/abilities/max_hp.png")]
+    pub max_hp: Handle<Image>,
+
     #[asset(path = "textures/abilities/faster.png")]
     pub faster: Handle<Image>,
 

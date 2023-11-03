@@ -21,7 +21,7 @@ use crate::{
             HoverEvent, SelectionElement, SelectionEvent, SelectionGroup, UnhoverEvent,
         },
     },
-    util::rng::{GlobalSeed, RNG},
+    util::rng::{GlobalSeed, RNG}, combat::health::Health,
 };
 
 use super::experience::LevelUpEvent;
@@ -80,21 +80,28 @@ pub struct AbilitySelection {
 
 pub fn on_select_ability(
     q_menu: Query<(Entity, &AbilitySelection)>,
-    mut q_player: Query<&mut Player, Without<AbilitySelection>>,
+    mut q_player: Query<(&mut Player, &mut Health), Without<AbilitySelection>>,
     mut selection_events: EventReader<SelectionEvent>,
     mut commmands: Commands,
     mut pause: ResMut<ActionPauseState>,
 ) {
-    let mut player = q_player.single_mut();
+    let (mut player, mut health) = q_player.single_mut();
 
     for selection_ev in selection_events.iter() {
         if let Ok((entity, selection)) = q_menu.get(selection_ev.parent) {
             player
                 .abilities
                 .push(selection.abilities[selection_ev.selected_index]);
-            player
-                .abilities
-                .push(selection.abilities[selection_ev.selected_index]);
+
+            if selection.abilities[selection_ev.selected_index] == Ability::MaxHp {
+                health.max += 1;
+                health.value += 1;
+            }
+
+            if selection.abilities[selection_ev.selected_index] == Ability::Potion {
+                health.value += 2;
+            }
+
             commmands.entity(entity).despawn_recursive();
             pause.is_paused = false;
         }

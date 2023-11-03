@@ -12,6 +12,7 @@ pub enum Ability {
     Faster,
     FlamingBullets,
     HotterFire,
+    MaxHp,
     MediumBullets,
     MegaShotgun,
     Reload,
@@ -22,6 +23,7 @@ pub enum Ability {
     Sniper,
     Thorns,
     TripleBarrel,
+    Potion,
 }
 
 impl Ability {
@@ -45,6 +47,8 @@ impl Ability {
             Self::Sniper,
             Self::Thorns,
             Self::TripleBarrel,
+            Self::MaxHp,
+            Self::Potion,
         ]
     }
 
@@ -68,6 +72,8 @@ impl Ability {
             Ability::ShootingSpeed => textures.shooting_speed.clone(),
             Ability::Sixfold => textures.sixfold.clone(),
             Ability::Thorns => textures.thorns.clone(),
+            Ability::MaxHp => textures.max_hp.clone(),
+            Ability::Potion => textures.potion.clone(),
         }
     }
 
@@ -106,6 +112,8 @@ impl Ability {
             Ability::ShootingSpeed => true,
             Ability::Sixfold => !player_abilities.contains(&Ability::Sixfold),
             Ability::Thorns => !player_abilities.contains(&Ability::Thorns),
+            Ability::MaxHp => true,
+            Ability::Potion => true,
         }
     }
 

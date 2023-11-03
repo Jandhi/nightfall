@@ -139,11 +139,11 @@ pub fn initial_spawn(
         spawn_imp(
             Vec3 {
                 x: match i {
-                    _ if i % 2 == 0 => 100.,
+                    1 | 2 => 100.,
                     _ => -100.,
                 },
                 y: match i {
-                    _ if i > 2 => 100.,
+                    1 | 3 => 100.,
                     _ => -100.,
                 },
                 z: SortingLayers::Action.into(),

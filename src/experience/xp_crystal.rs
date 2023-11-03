@@ -46,7 +46,7 @@ pub fn drop_crystals(
     mut commands: Commands,
 ) {
     for death_ev in enemy_death_event.iter() {
-        for _i in 0..death_ev.enemy.xp {
+        for _ in 0..death_ev.enemy.xp {
             let rng = &mut crystal_rng.0 .0;
             let velocity: f32 = rng.gen_range(20.0..50.0);
             let direction: Radian = Radian {

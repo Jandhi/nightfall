@@ -82,6 +82,22 @@ pub fn shoot(
                 } * 10.
                 + Vec3::Z * 5.;
 
+            let dmg = player.damage();
+            let knockback = player.knockback();
+            let mut velocity: f32 = 500.;
+
+            if player.abilities.contains(&Ability::Sniper) {
+                velocity *= 2.;
+            }
+
+            if player.abilities.contains(&Ability::BigBullets) {
+                velocity *= 0.8;
+            }
+
+            if player.abilities.contains(&Ability::BiggestBullets) {
+                velocity *= 0.8;
+            }
+
             player.curr_bullets -= 1;
             if player.curr_bullets == 0 {
                 player.is_reloading = true;
@@ -91,6 +107,23 @@ pub fn shoot(
                 reload_timer.0.reset();
 
                 fx_channel.play(audio_assets.reload.clone());
+
+                if player.abilities.contains(&Ability::Sixfold) {
+                    for i in 0..6 {
+                        spawn_bullet(
+                            &player,
+                            &mut commands,
+                            bullet_translation,
+                            &textures,
+                            (Radian::FULL / 6. * i as f32)
+                                .normalize()
+                                .unit_vector(),
+                            velocity,
+                            dmg,
+                            knockback,
+                        );
+                    }
+                }
             }
 
             // Play audio
@@ -99,13 +132,9 @@ pub fn shoot(
                 false => audio_assets.gunshot.clone(),
             });
 
-            let dmg = player.damage();
-            let knockback = player.knockback();
-            let mut velocity: f32 = 500.;
+            
 
-            if player.abilities.contains(&Ability::Sniper) {
-                velocity *= 2.;
-            }
+            
 
             if player.abilities.contains(&Ability::MegaShotgun) {
                 let offset_angle = Radian::from_degrees(7.);

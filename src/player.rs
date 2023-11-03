@@ -1,17 +1,22 @@
 use crate::actions::Actions;
 use crate::animation::controller::AnimationController;
-use crate::animation::{make_animation_bundle, AnimationStateChangeEvent, AppAnimationSetup};
+use crate::animation::{make_animation_bundle, AnimationStateChangeEvent, AppAnimationSetup, AnimationStateStorage};
 use crate::audio::FXChannel;
 use crate::collision::collider::{Collider, IsCollidingEvent};
-use crate::combat::health::{Health, HealthType, TookDamageEvent};
-use crate::combat::projectile::projectile_collision_check;
+use crate::combat::fire::Fire;
+use crate::combat::health::{Health, HealthType, TookDamageEvent, DeathEvent};
+use crate::combat::projectile::{projectile_collision_check, Projectile};
 use crate::combat::teams::{Team, TeamMember};
 use crate::constants::SortingLayers;
-use crate::enemies::enemy::Enemy;
+use crate::enemies::enemy::{Enemy, initial_spawn};
+use crate::enemies::imp::ImpAnimation;
+use crate::enemies::spawning::SpawnInfo;
 use crate::experience::experience::Experience;
-use crate::loading::{AudioAssets, TextureAssets};
+use crate::experience::xp_crystal::XPCrystal;
+use crate::loading::{AudioAssets, TextureAssets, FontAssets};
 use crate::movement::edge_teleport::EdgeTeleports;
 use crate::movement::pause::ActionPauseState;
+use crate::palette::Palette;
 use crate::util::pitch_rng::PitchRNG;
 use crate::GameState;
 use bevy::prelude::*;
@@ -87,6 +92,8 @@ impl Plugin for PlayerPlugin {
                 manage_bullet_ui_sprites,
                 manage_health_ui_sprites,
                 update_reload_ui,
+                game_over,
+                click_play_again_button,
                 enemy_collision,
                 update_hit_sprite,
                 update_bullets,
@@ -261,7 +268,12 @@ pub fn enemy_collision(
     q_enemies: Query<Entity, With<Enemy>>,
     mut collisions: EventReader<IsCollidingEvent>,
     mut ev_dmg: EventWriter<TookDamageEvent>,
+    pause : Res<ActionPauseState>,
 ) {
+    if pause.is_paused {
+        return;
+    }
+
     let (player, mut health) = q_player.single_mut();
     let mut is_hit = false;
 
@@ -282,5 +294,109 @@ pub fn enemy_collision(
 
     if is_hit {
         health.take_damage(player, &mut ev_dmg, 1);
+    }
+}
+
+pub fn game_over(
+    q_player : Query<Entity, With<Player>>,
+    mut death_evs : EventReader<DeathEvent>,
+    mut pause : ResMut<ActionPauseState>,
+    palette : Res<Palette>,
+    font_assets : Res<FontAssets>,
+    mut commands : Commands,
+) {
+    let player = q_player.single();
+
+    for death_ev in death_evs.iter() {
+        if death_ev.entity == player {
+            if pause.is_paused {
+                return;
+            }
+
+            pause.is_paused = true;
+
+            commands
+                .spawn(ButtonBundle {
+                    style: Style {
+                        width: Val::Px(150.0),
+                        height: Val::Px(50.0),
+                        margin: UiRect::all(Val::Auto),
+                        justify_content: JustifyContent::Center,
+                        align_items: AlignItems::Center,
+                        ..Default::default()
+                    },
+                    background_color: palette.dark.into(),
+                    ..Default::default()
+                })
+                .with_children(|parent| {
+                    parent.spawn(TextBundle::from_section(
+                        "Play Again",
+                        TextStyle {
+                            font: font_assets.fira_sans.clone(),
+                            font_size: 40.0,
+                            color: palette.white,
+                        },
+                    ));
+                });
+        }
+    }
+}
+
+fn click_play_again_button(
+    palette: Res<Palette>,
+    mut interaction_query: Query<
+        (Entity, &Interaction, &mut BackgroundColor),
+        (Changed<Interaction>, With<Button>),
+    >,
+    mut q_player : Query<(&mut Player, &mut Transform, &mut Health, &mut Experience), Without<Button>>,
+    q_enemies : Query<Entity, (With<Enemy>, Without<Button>, Without<Player>)>,
+    q_projectile : Query<Entity, (With<Projectile>, Without<Button>, Without<Player>, Without<Enemy>)>,
+    q_fire : Query<Entity, (With<Fire>, Without<Projectile>, Without<Button>, Without<Player>, Without<Enemy>)>,
+    q_xp : Query<Entity, (With<XPCrystal>, Without<Fire>, Without<Projectile>, Without<Button>, Without<Player>, Without<Enemy>)>,
+    mut pause : ResMut<ActionPauseState>,
+    mut spawning : ResMut<SpawnInfo>,
+    mut commands: Commands,
+) {
+    for (button_entity, interaction, mut color) in &mut interaction_query {
+        match *interaction {
+            Interaction::Pressed => {
+                let (mut player, mut transform, mut health, mut experience) = q_player.single_mut();
+                player.abilities = vec![];
+                transform.translation.x = 0.;
+                transform.translation.y = 0.;
+                health.max = 3;
+                health.value = 3;
+                experience.curr_experience = 0;
+                experience.threshold = 20;
+
+                for enemy in q_enemies.iter() {
+                    commands.entity(enemy).despawn();
+                }
+
+                for projectile in q_projectile.iter() {
+                    commands.entity(projectile).despawn();
+                }
+
+                for fire in q_fire.iter() {
+                    commands.entity(fire).despawn();
+                }
+
+                for xp in q_xp.iter() {
+                    commands.entity(xp).despawn();
+                }
+
+                commands.entity(button_entity).despawn();
+                spawning.count = 0;
+                spawning.timer.reset();
+
+                pause.is_paused = false;
+            }
+            Interaction::Hovered => {
+                *color = palette.orange.into();
+            }
+            Interaction::None => {
+                *color = palette.red.into();
+            }
+        }
     }
 }

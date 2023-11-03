@@ -115,7 +115,7 @@ pub fn beholder_update(
             });
             let (_player_entity, player_transform) = q_player.single();
 
-            let _direction =
+            let direction =
                 player_transform.translation.truncate() - transform.translation.truncate();
             // obtain angle to target with respect to x-axis.
             let angle_to_target = Radian::from(direction.y.atan2(direction.x) - PI / 2.);
