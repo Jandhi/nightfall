@@ -8,8 +8,6 @@ use crate::{
     util::radians::Radian,
 };
 
-
-
 #[derive(Component)]
 pub struct FollowPlayerAI {
     // The desired speed

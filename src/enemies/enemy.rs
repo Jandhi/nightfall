@@ -3,22 +3,15 @@ use bevy::prelude::*;
 use bevy_kira_audio::AudioControl;
 use rand::Rng;
 
-
-use crate::animation::{AnimationStateStorage};
+use crate::animation::AnimationStateStorage;
 use crate::audio::FXChannel;
-use crate::collision::collider::{IsCollidingEvent};
+use crate::collision::collider::IsCollidingEvent;
 
-use crate::combat::{
-    health::{DeathEvent},
-};
-use crate::constants::{SortingLayers};
+use crate::combat::health::DeathEvent;
+use crate::constants::SortingLayers;
 use crate::loading::{AudioAssets, TextureAssets};
 
-
-
-
 use crate::util::pitch_rng::PitchRNG;
-
 
 use super::beholder::{spawn_beholder, BeholderAnimation};
 use super::imp::{spawn_imp, ImpAnimation};

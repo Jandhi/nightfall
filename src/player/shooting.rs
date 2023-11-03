@@ -115,9 +115,7 @@ pub fn shoot(
                             &mut commands,
                             bullet_translation,
                             &textures,
-                            (Radian::FULL / 6. * i as f32)
-                                .normalize()
-                                .unit_vector(),
+                            (Radian::FULL / 6. * i as f32).normalize().unit_vector(),
                             velocity,
                             dmg,
                             knockback,
@@ -131,10 +129,6 @@ pub fn shoot(
                 true => audio_assets.gunshot2.clone(),
                 false => audio_assets.gunshot.clone(),
             });
-
-            
-
-            
 
             if player.abilities.contains(&Ability::MegaShotgun) {
                 let offset_angle = Radian::from_degrees(7.);

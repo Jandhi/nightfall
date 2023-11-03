@@ -1,7 +1,4 @@
-
-
 use bevy::{prelude::*, window::PrimaryWindow};
-
 
 use crate::collision::collider::Collider;
 

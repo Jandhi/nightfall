@@ -1,8 +1,7 @@
 use bevy::prelude::*;
 
-use crate::collision::collider::{CollisionStartEvent};
+use crate::collision::collider::CollisionStartEvent;
 use crate::combat::health::HealthType;
-
 
 use super::health::{Dead, Health, TookDamageEvent};
 use super::teams::{Team, TeamMember};

@@ -1,19 +1,21 @@
 use crate::actions::Actions;
 use crate::animation::controller::AnimationController;
-use crate::animation::{make_animation_bundle, AnimationStateChangeEvent, AppAnimationSetup, AnimationStateStorage};
+use crate::animation::{
+    make_animation_bundle, AnimationStateChangeEvent, AnimationStateStorage, AppAnimationSetup,
+};
 use crate::audio::FXChannel;
 use crate::collision::collider::{Collider, IsCollidingEvent};
 use crate::combat::fire::Fire;
-use crate::combat::health::{Health, HealthType, TookDamageEvent, DeathEvent};
+use crate::combat::health::{DeathEvent, Health, HealthType, TookDamageEvent};
 use crate::combat::projectile::{projectile_collision_check, Projectile};
 use crate::combat::teams::{Team, TeamMember};
 use crate::constants::SortingLayers;
-use crate::enemies::enemy::{Enemy, initial_spawn};
+use crate::enemies::enemy::{initial_spawn, Enemy};
 use crate::enemies::imp::ImpAnimation;
 use crate::enemies::spawning::SpawnInfo;
 use crate::experience::experience::Experience;
 use crate::experience::xp_crystal::XPCrystal;
-use crate::loading::{AudioAssets, TextureAssets, FontAssets};
+use crate::loading::{AudioAssets, FontAssets, TextureAssets};
 use crate::movement::edge_teleport::EdgeTeleports;
 use crate::movement::pause::ActionPauseState;
 use crate::palette::Palette;
@@ -268,7 +270,7 @@ pub fn enemy_collision(
     q_enemies: Query<Entity, With<Enemy>>,
     mut collisions: EventReader<IsCollidingEvent>,
     mut ev_dmg: EventWriter<TookDamageEvent>,
-    pause : Res<ActionPauseState>,
+    pause: Res<ActionPauseState>,
 ) {
     if pause.is_paused {
         return;
@@ -298,12 +300,12 @@ pub fn enemy_collision(
 }
 
 pub fn game_over(
-    q_player : Query<Entity, With<Player>>,
-    mut death_evs : EventReader<DeathEvent>,
-    mut pause : ResMut<ActionPauseState>,
-    palette : Res<Palette>,
-    font_assets : Res<FontAssets>,
-    mut commands : Commands,
+    q_player: Query<Entity, With<Player>>,
+    mut death_evs: EventReader<DeathEvent>,
+    mut pause: ResMut<ActionPauseState>,
+    palette: Res<Palette>,
+    font_assets: Res<FontAssets>,
+    mut commands: Commands,
 ) {
     let player = q_player.single();
 
@@ -348,13 +350,43 @@ fn click_play_again_button(
         (Entity, &Interaction, &mut BackgroundColor),
         (Changed<Interaction>, With<Button>),
     >,
-    mut q_player : Query<(&mut Player, &mut Transform, &mut Health, &mut Experience), Without<Button>>,
-    q_enemies : Query<Entity, (With<Enemy>, Without<Button>, Without<Player>)>,
-    q_projectile : Query<Entity, (With<Projectile>, Without<Button>, Without<Player>, Without<Enemy>)>,
-    q_fire : Query<Entity, (With<Fire>, Without<Projectile>, Without<Button>, Without<Player>, Without<Enemy>)>,
-    q_xp : Query<Entity, (With<XPCrystal>, Without<Fire>, Without<Projectile>, Without<Button>, Without<Player>, Without<Enemy>)>,
-    mut pause : ResMut<ActionPauseState>,
-    mut spawning : ResMut<SpawnInfo>,
+    mut q_player: Query<
+        (&mut Player, &mut Transform, &mut Health, &mut Experience),
+        Without<Button>,
+    >,
+    q_enemies: Query<Entity, (With<Enemy>, Without<Button>, Without<Player>)>,
+    q_projectile: Query<
+        Entity,
+        (
+            With<Projectile>,
+            Without<Button>,
+            Without<Player>,
+            Without<Enemy>,
+        ),
+    >,
+    q_fire: Query<
+        Entity,
+        (
+            With<Fire>,
+            Without<Projectile>,
+            Without<Button>,
+            Without<Player>,
+            Without<Enemy>,
+        ),
+    >,
+    q_xp: Query<
+        Entity,
+        (
+            With<XPCrystal>,
+            Without<Fire>,
+            Without<Projectile>,
+            Without<Button>,
+            Without<Player>,
+            Without<Enemy>,
+        ),
+    >,
+    mut pause: ResMut<ActionPauseState>,
+    mut spawning: ResMut<SpawnInfo>,
     mut commands: Commands,
 ) {
     for (button_entity, interaction, mut color) in &mut interaction_query {

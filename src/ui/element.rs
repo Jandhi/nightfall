@@ -1,4 +1,4 @@
-use bevy::{prelude::*};
+use bevy::prelude::*;
 
 pub struct Layout(HorizontalLayout, VerticalLayout);
 pub enum HorizontalLayout {

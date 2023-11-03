@@ -9,7 +9,8 @@ use crate::{
     enemies::enemy::EnemyDeathEvent,
     loading::{AudioAssets, TextureAssets},
     movement::{
-        edge_teleport::EdgeTeleports, fake_magnetic::FakeMagnetic, friction::Friction, velocity::Velocity,
+        edge_teleport::EdgeTeleports, fake_magnetic::FakeMagnetic, friction::Friction,
+        velocity::Velocity,
     },
     player::Player,
     util::{

@@ -1,5 +1,3 @@
-
-
 use bevy::{prelude::*, window::PrimaryWindow};
 use rand::seq::IteratorRandom;
 
@@ -10,7 +8,8 @@ use crate::{
         make_animation_bundle, Animation, AnimationStateChangeEvent, AnimationStateStorage,
     },
     collision::collider::Collider,
-    constants::{SortingLayers},
+    combat::health::Health,
+    constants::SortingLayers,
     loading::{AbilityTextures, FontAssets},
     movement::pause::ActionPauseState,
     palette::Palette,
@@ -21,7 +20,7 @@ use crate::{
             HoverEvent, SelectionElement, SelectionEvent, SelectionGroup, UnhoverEvent,
         },
     },
-    util::rng::{GlobalSeed, RNG}, combat::health::Health,
+    util::rng::{GlobalSeed, RNG},
 };
 
 use super::experience::LevelUpEvent;
