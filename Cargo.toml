@@ -63,3 +63,9 @@ bevy_easings = "0.11.1"
 
 [build-dependencies]
 embed-resource = "1.4"
+
+[target.wasm32-unknown-unknown]
+runner = "wasm-server-runner"
+
+[lib]
+crate-type = ["cdylib", "rlib"]

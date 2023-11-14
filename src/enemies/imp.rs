@@ -10,15 +10,15 @@ use crate::{
     combat::{
         health::Health,
         healthbar::NeedsHealthBar,
-        teams::{Team, TeamMember},
+        teams::{Team, TeamMember}, z_sort::ZSort,
     },
     loading::TextureAssets,
-    movement::velocity::Velocity,
+    movement::velocity::Velocity, constants::SortingLayers,
 };
 
 use super::{
     ai::FollowPlayerAI,
-    enemy::{Enemy, EnemyType},
+    enemy::{Enemy, EnemyType, EnemyBundle},
 };
 
 #[derive(PartialEq, Eq, Hash, Clone, Copy)]
@@ -55,10 +55,21 @@ pub fn spawn_imp(
     let texture_atlas_handle = texture_atlases.add(texture_atlas);
 
     commands
-        .spawn(Enemy {
-            xp: 5,
-            enemy_type: EnemyType::Imp,
-        })
+        .spawn(EnemyBundle{
+            enemy: Enemy {
+                xp: 5,
+                enemy_type: EnemyType::Imp,
+            },
+            z_sort: ZSort{ layer: SortingLayers::Action.into() },
+            velocity: Velocity::ZERO,
+            health: Health::new(15),
+            collider: Collider::new_circle(10., position.truncate()),
+            team: TeamMember { team: Team::Enemy },
+            needs_health_bar: NeedsHealthBar::default(),
+        }
+            
+            
+        )
         .insert(FollowPlayerAI {
             speed: 15.,
             corrective_force: 1.0,
@@ -67,18 +78,13 @@ pub fn spawn_imp(
             speed: 15.,
             corrective_force: 1.0,
         })
-        .insert(Velocity::ZERO)
-        .insert(Health::new(15))
-        .insert(Collider::new_circle(10., position.truncate()))
         .insert(make_animation_bundle(
             ImpAnimation::Flying,
             imp_animations,
             texture_atlas_handle.clone(),
             position,
             1.,
-        ))
-        .insert(TeamMember { team: Team::Enemy })
-        .insert(NeedsHealthBar::default());
+        ));;
 }
 
 #[derive(Component)]

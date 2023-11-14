@@ -9,7 +9,7 @@ use crate::{
     },
     enemies::enemy::Enemy,
     loading::TextureAssets,
-    player::{ability::Ability, Player},
+    player::{ability::Ability, Player}, movement::pause::ActionPauseState,
 };
 
 use super::{
@@ -44,10 +44,15 @@ pub fn fire_update(
     mut projectile_hit: EventReader<ProjectileHitEvent>,
     animations: Res<AnimationStateStorage<FireAnimation>>,
     textures: Res<TextureAssets>,
+    pause : Res<ActionPauseState>,
     mut texture_atlases: ResMut<Assets<TextureAtlas>>,
     time: Res<Time>,
     mut commands: Commands,
 ) {
+    if pause.is_paused {
+        return;
+    }
+
     let player = q_player.single();
 
     for (mut fire, parent) in q_fire.iter_mut() {

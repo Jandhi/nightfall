@@ -7,7 +7,7 @@ use self::{
     health::{check_death, DeathEvent, TookDamageEvent},
     healthbar::{spawn_healthbars, update_healthbars},
     knockback::knockback_update,
-    projectile::{projectile_collision_check, ProjectileHitEvent},
+    projectile::{projectile_collision_check, ProjectileHitEvent}, z_sort::update_z_sort,
 };
 
 pub mod fire;
@@ -16,6 +16,7 @@ pub mod healthbar;
 pub mod knockback;
 pub mod projectile;
 pub mod teams;
+pub mod z_sort;
 
 pub struct CombatPlugin;
 
@@ -29,6 +30,7 @@ impl Plugin for CombatPlugin {
                 check_death,
                 spawn_healthbars,
                 fire_update,
+                update_z_sort,
                 knockback_update.after(projectile_collision_check),
             )
                 .run_if(in_state(GameState::Playing)),

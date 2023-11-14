@@ -5,12 +5,16 @@ use rand::Rng;
 
 use crate::animation::AnimationStateStorage;
 use crate::audio::FXChannel;
-use crate::collision::collider::IsCollidingEvent;
+use crate::collision::collider::{IsCollidingEvent, Collider};
 
-use crate::combat::health::DeathEvent;
+use crate::combat::health::{DeathEvent, Health};
+use crate::combat::healthbar::NeedsHealthBar;
+use crate::combat::teams::TeamMember;
+use crate::combat::z_sort::ZSort;
 use crate::constants::SortingLayers;
 use crate::loading::{AudioAssets, TextureAssets};
 
+use crate::movement::velocity::Velocity;
 use crate::util::pitch_rng::PitchRNG;
 
 use super::beholder::{spawn_beholder, BeholderAnimation};
@@ -46,6 +50,17 @@ impl EnemyType {
             EnemyType::Reaper => 120.,
         }
     }
+}
+
+#[derive(Bundle)]
+pub struct EnemyBundle {
+    pub enemy : Enemy,
+    pub z_sort : ZSort,
+    pub health : Health,
+    pub velocity : Velocity,
+    pub collider : Collider,
+    pub team : TeamMember,
+    pub needs_health_bar : NeedsHealthBar,
 }
 
 #[derive(Component, Clone)]

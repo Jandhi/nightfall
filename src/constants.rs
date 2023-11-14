@@ -15,6 +15,7 @@ pub enum SortingLayers {
     Front,
     Player,
     Action,
+    BehindAction,
 }
 
 impl From<SortingLayers> for f32 {
@@ -25,6 +26,7 @@ impl From<SortingLayers> for f32 {
             SortingLayers::Front => 6.,
             SortingLayers::Player => 5.,
             SortingLayers::Action => 3.,
+            SortingLayers::BehindAction => 2.,
         }
     }
 }
