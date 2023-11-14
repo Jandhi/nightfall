@@ -1,4 +1,4 @@
-use std::{f32::consts::PI, time::Duration};
+use std::{time::Duration};
 
 use bevy::prelude::*;
 use bevy_kira_audio::AudioControl;
@@ -20,11 +20,10 @@ use crate::{
     loading::{AudioAssets, TextureAssets},
     movement::velocity::Velocity,
     player::Player,
-    util::radians::Radian,
 };
 
 use super::{
-    ai::{ChargeShootEvent, FollowPlayerAI, MoveAndShootAI, ShootEvent},
+    ai::{ChargeShootEvent, MoveAndShootAI, ShootEvent},
     enemy::{Enemy, EnemyType},
 };
 
@@ -138,7 +137,7 @@ pub fn reaper_update(
                 id: entity,
                 state_id: ReaperAnimation::End,
             });
-            let (player_entity, player_transform) = q_player.single();
+            let (_player_entity, _player_transform) = q_player.single();
 
             fx.play(audio.blade.clone());
 

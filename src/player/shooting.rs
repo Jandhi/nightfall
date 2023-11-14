@@ -2,7 +2,7 @@ use std::{f32::consts::PI, time::Duration};
 
 use bevy::{prelude::*, window::PrimaryWindow};
 
-use bevy_debug_text_overlay::screen_print;
+
 use bevy_kira_audio::AudioControl;
 
 use crate::{
