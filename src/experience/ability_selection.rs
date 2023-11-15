@@ -25,7 +25,7 @@ use crate::{
     util::rng::{GlobalSeed, RNG},
 };
 
-use super::experience::LevelUpEvent;
+use super::{experience::LevelUpEvent, taken_abilities::spawn_taken};
 
 #[derive(Component)]
 pub struct AbilitySelectionMenuItem;
@@ -84,26 +84,32 @@ pub struct AbilitySelection {
 
 pub fn on_select_ability(
     q_menu: Query<(Entity, &AbilitySelection)>,
+    q_windows: Query<&Window, With<PrimaryWindow>>,
     mut q_player: Query<(&mut Player, &mut Health), Without<AbilitySelection>>,
-    mut q_selection_items : Query<(Entity), (With<AbilitySelectionMenuItem>, Without<AbilitySelection>, Without<Player>)>,
+    q_selection_items : Query<Entity, (With<AbilitySelectionMenuItem>, Without<AbilitySelection>, Without<Player>)>,
     mut selection_events: EventReader<SelectionEvent>,
-    mut commands: Commands,
     mut pause: ResMut<ActionPauseState>,
+    textures: Res<AbilityTextures>,
+    mut commands: Commands,
 ) {
     let (mut player, mut health) = q_player.single_mut();
+    let window = q_windows.single();
 
     for selection_ev in selection_events.iter() {
         if let Ok((entity, selection)) = q_menu.get(selection_ev.parent) {
+            let ability = selection.abilities[selection_ev.selected_index];
             player
                 .abilities
-                .push(selection.abilities[selection_ev.selected_index]);
+                .push(ability);
 
-            if selection.abilities[selection_ev.selected_index] == Ability::MaxHp {
+            spawn_taken(ability, player.abilities.len() - 1, &window, &textures, &mut commands);
+
+            if ability == Ability::MaxHp {
                 health.max += 1;
                 health.value += 1;
             }
 
-            if selection.abilities[selection_ev.selected_index] == Ability::Potion {
+            if ability == Ability::Potion {
                 health.value += 2;
             }
 

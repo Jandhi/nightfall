@@ -9,13 +9,14 @@ use self::{
     },
     experience::{experience_update, LevelUpEvent},
     xp_bar::{manage_xp_bar_sprites, spawn_xp_bar, XPBarAnimation},
-    xp_crystal::{create_xp_crystal_rng, drop_crystals, xp_crystal_update},
+    xp_crystal::{create_xp_crystal_rng, drop_crystals, xp_crystal_update}, taken_abilities::{update_taken_positions, update_description},
 };
 
 pub mod ability_selection;
 pub mod experience;
 pub mod xp_bar;
 pub mod xp_crystal;
+pub mod taken_abilities;
 
 pub struct ExperiencePlugin;
 
@@ -38,7 +39,9 @@ impl Plugin for ExperiencePlugin {
                 experience_update,
                 start_ability_selection,
                 ability_frame_update,
+                update_taken_positions,
                 on_select_ability,
+                update_description,
             )
                 .run_if(in_state(GameState::Playing)),
         )
