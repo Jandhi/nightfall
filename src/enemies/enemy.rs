@@ -5,7 +5,7 @@ use rand::Rng;
 
 use crate::animation::AnimationStateStorage;
 use crate::audio::FXChannel;
-use crate::collision::collider::{IsCollidingEvent, Collider};
+use crate::collision::collider::{Collider, IsCollidingEvent};
 
 use crate::combat::health::{DeathEvent, Health};
 use crate::combat::teams::TeamMember;
@@ -16,9 +16,7 @@ use crate::loading::{AudioAssets, TextureAssets};
 use crate::movement::velocity::Velocity;
 use crate::util::pitch_rng::PitchRNG;
 
-
 use super::imp::{spawn_imp, ImpAnimation};
-
 
 #[derive(Copy, Clone)]
 pub enum EnemyType {
@@ -53,12 +51,12 @@ impl EnemyType {
 
 #[derive(Bundle)]
 pub struct EnemyBundle {
-    pub enemy : Enemy,
-    pub z_sort : ZSort,
-    pub health : Health,
-    pub velocity : Velocity,
-    pub collider : Collider,
-    pub team : TeamMember
+    pub enemy: Enemy,
+    pub z_sort: ZSort,
+    pub health: Health,
+    pub velocity: Velocity,
+    pub collider: Collider,
+    pub team: TeamMember,
 }
 
 #[derive(Component, Clone)]

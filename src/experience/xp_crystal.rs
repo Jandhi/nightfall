@@ -5,7 +5,7 @@ use rand::Rng;
 
 use crate::{
     audio::FXChannel,
-    constants::{SCALING_VEC3, SortingLayers},
+    constants::{SortingLayers, SCALING_VEC3},
     enemies::enemy::EnemyDeathEvent,
     loading::{AudioAssets, TextureAssets},
     movement::{
@@ -58,10 +58,10 @@ pub fn drop_crystals(
                 .spawn(XPCrystalBundle {
                     sprite_bundle: SpriteBundle {
                         transform: Transform {
-                            translation: Vec3 { 
-                                x: death_ev.location.x, 
-                                y: death_ev.location.y, 
-                                z: SortingLayers::BehindAction.into() 
+                            translation: Vec3 {
+                                x: death_ev.location.x,
+                                y: death_ev.location.y,
+                                z: SortingLayers::BehindAction.into(),
                             },
                             rotation: default(),
                             scale: SCALING_VEC3,

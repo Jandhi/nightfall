@@ -1,7 +1,6 @@
 use std::time::Duration;
 
-use bevy::{prelude::*};
-
+use bevy::prelude::*;
 
 use crate::{
     animation::{
@@ -9,7 +8,8 @@ use crate::{
     },
     enemies::enemy::Enemy,
     loading::TextureAssets,
-    player::{ability::Ability, Player}, movement::pause::ActionPauseState,
+    movement::pause::ActionPauseState,
+    player::{ability::Ability, Player},
 };
 
 use super::{
@@ -44,7 +44,7 @@ pub fn fire_update(
     mut projectile_hit: EventReader<ProjectileHitEvent>,
     animations: Res<AnimationStateStorage<FireAnimation>>,
     textures: Res<TextureAssets>,
-    pause : Res<ActionPauseState>,
+    pause: Res<ActionPauseState>,
     mut texture_atlases: ResMut<Assets<TextureAtlas>>,
     time: Res<Time>,
     mut commands: Commands,
@@ -101,7 +101,11 @@ pub fn fire_update(
                     FireAnimation::Fire,
                     &animations,
                     texture_atlas_handle.clone(),
-                    Vec3 { x: 0., y: 0., z: 0.5},
+                    Vec3 {
+                        x: 0.,
+                        y: 0.,
+                        z: 0.5,
+                    },
                     0.5,
                 ))
                 .insert(Fire {

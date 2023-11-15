@@ -1,5 +1,4 @@
-use bevy::{prelude::*, math::bool};
-
+use bevy::{math::bool, prelude::*};
 
 use crate::{loading::FontAssets, palette::Palette};
 
@@ -14,15 +13,14 @@ pub struct PauseMenuComponent;
 #[derive(Event)]
 pub struct TogglePauseMenu;
 
-
 #[derive(Resource)]
 pub struct PauseMenuState(pub bool);
 
 pub fn pause_keypress(
-    mut enter_ev : EventWriter<TogglePauseMenu>,
-    keyboard_input : Res<Input<KeyCode>>,
-    pause_menu_state : Res<PauseMenuState>,
-    pause : Res<ActionPauseState>,
+    mut enter_ev: EventWriter<TogglePauseMenu>,
+    keyboard_input: Res<Input<KeyCode>>,
+    pause_menu_state: Res<PauseMenuState>,
+    pause: Res<ActionPauseState>,
 ) {
     if !pause_menu_state.0 && pause.is_paused {
         return;
@@ -34,10 +32,10 @@ pub fn pause_keypress(
 }
 
 pub fn update_pause_menu(
-    menu_items : Query<Entity, With<PauseMenuComponent>>,
-    mut enter_ev : EventReader<TogglePauseMenu>,
-    mut pause_menu_state : ResMut<PauseMenuState>,
-    mut pause : ResMut<ActionPauseState>,
+    menu_items: Query<Entity, With<PauseMenuComponent>>,
+    mut enter_ev: EventReader<TogglePauseMenu>,
+    mut pause_menu_state: ResMut<PauseMenuState>,
+    mut pause: ResMut<ActionPauseState>,
     font_assets: Res<FontAssets>,
     palette: Res<Palette>,
     mut commands: Commands,
@@ -57,7 +55,7 @@ pub fn update_pause_menu(
         for e in menu_items.iter() {
             commands.entity(e).despawn();
         }
-        
+
         return;
     }
 
@@ -79,24 +77,28 @@ pub fn update_pause_menu(
         })
         .insert(PauseMenuComponent)
         .with_children(|parent| {
-            parent.spawn(TextBundle::from_section(
-                "Unpause",
-                TextStyle {
-                    font: font_assets.gothic.clone(),
-                    font_size: 40.0,
-                    color: palette.white,
-                },
-            )).insert(PauseMenuComponent);
+            parent
+                .spawn(TextBundle::from_section(
+                    "Unpause",
+                    TextStyle {
+                        font: font_assets.gothic.clone(),
+                        font_size: 40.0,
+                        color: palette.white,
+                    },
+                ))
+                .insert(PauseMenuComponent);
         });
-
 }
 
 pub fn click_unpause(
     palette: Res<Palette>,
-    mut ev_toggle : EventWriter<TogglePauseMenu>,
+    mut ev_toggle: EventWriter<TogglePauseMenu>,
     mut interaction_query: Query<
         (&Interaction, &mut BackgroundColor),
-        (Changed<Interaction>, (With<Button>, With<PauseMenuComponent>)),
+        (
+            Changed<Interaction>,
+            (With<Button>, With<PauseMenuComponent>),
+        ),
     >,
 ) {
     for (interaction, mut color) in &mut interaction_query {

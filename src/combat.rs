@@ -7,7 +7,8 @@ use self::{
     health::{check_death, DeathEvent, TookDamageEvent},
     healthbar::update_healthbars,
     knockback::knockback_update,
-    projectile::{projectile_collision_check, ProjectileHitEvent}, z_sort::update_z_sort,
+    projectile::{projectile_collision_check, ProjectileHitEvent},
+    z_sort::update_z_sort,
 };
 
 pub mod fire;

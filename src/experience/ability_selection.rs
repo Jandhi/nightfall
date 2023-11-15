@@ -1,6 +1,4 @@
-
-
-use bevy::{prelude::*, window::PrimaryWindow, text::{Text2dBounds}, sprite::Anchor};
+use bevy::{prelude::*, sprite::Anchor, text::Text2dBounds, window::PrimaryWindow};
 use rand::seq::IteratorRandom;
 
 use crate::{
@@ -86,7 +84,14 @@ pub fn on_select_ability(
     q_menu: Query<(Entity, &AbilitySelection)>,
     q_windows: Query<&Window, With<PrimaryWindow>>,
     mut q_player: Query<(&mut Player, &mut Health), Without<AbilitySelection>>,
-    q_selection_items : Query<Entity, (With<AbilitySelectionMenuItem>, Without<AbilitySelection>, Without<Player>)>,
+    q_selection_items: Query<
+        Entity,
+        (
+            With<AbilitySelectionMenuItem>,
+            Without<AbilitySelection>,
+            Without<Player>,
+        ),
+    >,
     mut selection_events: EventReader<SelectionEvent>,
     mut pause: ResMut<ActionPauseState>,
     textures: Res<AbilityTextures>,
@@ -98,11 +103,15 @@ pub fn on_select_ability(
     for selection_ev in selection_events.iter() {
         if let Ok((entity, selection)) = q_menu.get(selection_ev.parent) {
             let ability = selection.abilities[selection_ev.selected_index];
-            player
-                .abilities
-                .push(ability);
+            player.abilities.push(ability);
 
-            spawn_taken(ability, player.abilities.len() - 1, window, &textures, &mut commands);
+            spawn_taken(
+                ability,
+                player.abilities.len() - 1,
+                window,
+                &textures,
+                &mut commands,
+            );
 
             if ability == Ability::MaxHp {
                 health.max += 1;
@@ -219,32 +228,58 @@ pub fn start_ability_selection(
                         });
 
                         parent.spawn(Text2dBundle {
-                            text : Text::from_section(ability.get_name(), TextStyle 
-                            { 
-                                font: font_assets.gothic_pxl.clone(), font_size: 48., color: palette.orange,
-                            }).with_alignment(TextAlignment::Center),
-                            transform: Transform { 
-                                translation: Vec3 { x: 0., y: -40., z: SortingLayers::UI.into() },
-                                rotation: default(), 
-                                scale: Vec3 { x: 0.5, y: 0.5, z: 1. },
+                            text: Text::from_section(
+                                ability.get_name(),
+                                TextStyle {
+                                    font: font_assets.gothic_pxl.clone(),
+                                    font_size: 48.,
+                                    color: palette.orange,
+                                },
+                            )
+                            .with_alignment(TextAlignment::Center),
+                            transform: Transform {
+                                translation: Vec3 {
+                                    x: 0.,
+                                    y: -40.,
+                                    z: SortingLayers::UI.into(),
+                                },
+                                rotation: default(),
+                                scale: Vec3 {
+                                    x: 0.5,
+                                    y: 0.5,
+                                    z: 1.,
+                                },
                             },
-                            text_2d_bounds : Text2dBounds {
+                            text_2d_bounds: Text2dBounds {
                                 size: Vec2 { x: 300., y: 50. },
                             },
                             ..Default::default()
                         });
 
                         parent.spawn(Text2dBundle {
-                            text : Text::from_section(ability.get_description(), TextStyle 
-                            { 
-                                font: font_assets.garamond.clone(), font_size: 24., color: palette.white,
-                            }).with_alignment(TextAlignment::Center),
-                            transform: Transform { 
-                                translation: Vec3 { x: 0., y: -55., z: SortingLayers::UI.into() }, 
-                                rotation: default(), 
-                                scale: Vec3 { x: 0.5, y: 0.5, z: 1. }, 
+                            text: Text::from_section(
+                                ability.get_description(),
+                                TextStyle {
+                                    font: font_assets.garamond.clone(),
+                                    font_size: 24.,
+                                    color: palette.white,
+                                },
+                            )
+                            .with_alignment(TextAlignment::Center),
+                            transform: Transform {
+                                translation: Vec3 {
+                                    x: 0.,
+                                    y: -55.,
+                                    z: SortingLayers::UI.into(),
+                                },
+                                rotation: default(),
+                                scale: Vec3 {
+                                    x: 0.5,
+                                    y: 0.5,
+                                    z: 1.,
+                                },
                             },
-                            text_2d_bounds : Text2dBounds {
+                            text_2d_bounds: Text2dBounds {
                                 size: Vec2 { x: 200., y: 500. },
                             },
                             text_anchor: Anchor::TopCenter,
@@ -255,5 +290,4 @@ pub fn start_ability_selection(
                     .insert(Collider::new_rect(Vec2 { x: 64., y: 64. }, Vec2::ZERO));
             }
         });
-
 }

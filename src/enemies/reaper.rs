@@ -1,4 +1,4 @@
-use std::{time::Duration};
+use std::time::Duration;
 
 use bevy::prelude::*;
 use bevy_kira_audio::AudioControl;
@@ -13,17 +13,20 @@ use crate::{
     collision::collider::Collider,
     combat::{
         health::Health,
+        healthbar::{HealthBar, HEALTH_BAR_SEGMENTS},
         projectile::{DamageTarget, PiercingMode, Projectile},
-        teams::{Team, TeamMember}, z_sort::ZSort, healthbar::{HealthBar, HEALTH_BAR_SEGMENTS},
+        teams::{Team, TeamMember},
+        z_sort::ZSort,
     },
+    constants::SortingLayers,
     loading::{AudioAssets, TextureAssets},
     movement::velocity::Velocity,
-    player::Player, constants::SortingLayers,
+    player::Player,
 };
 
 use super::{
     ai::{ChargeShootEvent, MoveAndShootAI, ShootEvent},
-    enemy::{Enemy, EnemyType, EnemyBundle},
+    enemy::{Enemy, EnemyBundle, EnemyType},
 };
 
 #[derive(PartialEq, Eq, Hash, Clone, Copy)]
@@ -193,12 +196,15 @@ pub fn spawn_reaper(
     );
     let health_atlas_handle = texture_atlases.add(health_atlas);
 
-    commands.spawn(EnemyBundle{
+    commands
+        .spawn(EnemyBundle {
             enemy: Enemy {
                 xp: 150,
                 enemy_type: EnemyType::Reaper,
             },
-            z_sort: ZSort{ layer: SortingLayers::Action.into() },
+            z_sort: ZSort {
+                layer: SortingLayers::Action.into(),
+            },
             velocity: Velocity::ZERO,
             health: Health::new(300),
             collider: Collider::new_circle(20., position.truncate()),
@@ -211,16 +217,22 @@ pub fn spawn_reaper(
             texture_atlas_handle.clone(),
             position,
             1.,
-        )).with_children(|parent| {
-            parent.spawn(SpriteSheetBundle {
-                texture_atlas: health_atlas_handle,
-                sprite: TextureAtlasSprite::new(0),
-                transform: Transform::from_translation(Vec3 { x: 0., y: 0., z: 0.01 }),
-                ..Default::default()
-            })
-            .insert(ZSort{
-                layer: SortingLayers::Action.into()
-            })
-            .insert(HealthBar);
-        });;
-    }
+        ))
+        .with_children(|parent| {
+            parent
+                .spawn(SpriteSheetBundle {
+                    texture_atlas: health_atlas_handle,
+                    sprite: TextureAtlasSprite::new(0),
+                    transform: Transform::from_translation(Vec3 {
+                        x: 0.,
+                        y: 0.,
+                        z: 0.01,
+                    }),
+                    ..Default::default()
+                })
+                .insert(ZSort {
+                    layer: SortingLayers::Action.into(),
+                })
+                .insert(HealthBar);
+        });
+}

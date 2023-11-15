@@ -240,7 +240,7 @@ pub fn hit_immunity(
     mut timer: ResMut<InvincibilityTimer>,
     mut ev_dmg: EventReader<TookDamageEvent>,
     time: Res<Time>,
-    pause : Res<ActionPauseState>,
+    pause: Res<ActionPauseState>,
     audio_assets: Res<AudioAssets>,
     fx_channel: Res<FXChannel>,
     mut pitch_rng: ResMut<PitchRNG>,
@@ -416,7 +416,11 @@ fn click_play_again_button(
     palette: Res<Palette>,
     mut interaction_query: Query<
         (Entity, &Interaction, &mut BackgroundColor),
-        (Changed<Interaction>, With<Button>, Without<PauseMenuComponent>),
+        (
+            Changed<Interaction>,
+            With<Button>,
+            Without<PauseMenuComponent>,
+        ),
     >,
     mut q_player: Query<
         (&mut Player, &mut Transform, &mut Health, &mut Experience),

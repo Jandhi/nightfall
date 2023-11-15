@@ -9,16 +9,18 @@ use crate::{
     collision::collider::Collider,
     combat::{
         health::Health,
-        healthbar::{HEALTH_BAR_SEGMENTS, HealthBar},
-        teams::{Team, TeamMember}, z_sort::ZSort,
+        healthbar::{HealthBar, HEALTH_BAR_SEGMENTS},
+        teams::{Team, TeamMember},
+        z_sort::ZSort,
     },
+    constants::SortingLayers,
     loading::TextureAssets,
-    movement::velocity::Velocity, constants::SortingLayers,
+    movement::velocity::Velocity,
 };
 
 use super::{
     ai::FollowPlayerAI,
-    enemy::{Enemy, EnemyType, EnemyBundle},
+    enemy::{Enemy, EnemyBundle, EnemyType},
 };
 
 #[derive(PartialEq, Eq, Hash, Clone, Copy)]
@@ -65,16 +67,18 @@ pub fn spawn_imp(
     let health_atlas_handle = texture_atlases.add(health_atlas);
 
     commands
-        .spawn(EnemyBundle{
+        .spawn(EnemyBundle {
             enemy: Enemy {
                 xp: 5,
                 enemy_type: EnemyType::Imp,
             },
-            z_sort: ZSort{ layer: SortingLayers::Action.into() },
+            z_sort: ZSort {
+                layer: SortingLayers::Action.into(),
+            },
             velocity: Velocity::ZERO,
             health: Health::new(15),
             collider: Collider::new_circle(10., position.truncate()),
-            team: TeamMember { team: Team::Enemy }
+            team: TeamMember { team: Team::Enemy },
         })
         .insert(FollowPlayerAI {
             speed: 15.,
@@ -88,16 +92,21 @@ pub fn spawn_imp(
             1.,
         ))
         .with_children(|parent| {
-            parent.spawn(SpriteSheetBundle {
-                texture_atlas: health_atlas_handle,
-                sprite: TextureAtlasSprite::new(0),
-                transform: Transform::from_translation(Vec3 { x: 0., y: 0., z: 0.01 }),
-                ..Default::default()
-            })
-            .insert(ZSort{
-                layer: SortingLayers::Action.into()
-            })
-            .insert(HealthBar);
+            parent
+                .spawn(SpriteSheetBundle {
+                    texture_atlas: health_atlas_handle,
+                    sprite: TextureAtlasSprite::new(0),
+                    transform: Transform::from_translation(Vec3 {
+                        x: 0.,
+                        y: 0.,
+                        z: 0.01,
+                    }),
+                    ..Default::default()
+                })
+                .insert(ZSort {
+                    layer: SortingLayers::Action.into(),
+                })
+                .insert(HealthBar);
         });
 }
 
@@ -132,12 +141,14 @@ pub fn spawn_imp_queen(
     let health_atlas_handle = texture_atlases.add(health_atlas);
 
     commands
-        .spawn(EnemyBundle{
+        .spawn(EnemyBundle {
             enemy: Enemy {
                 xp: 50,
                 enemy_type: EnemyType::ImpQueen,
             },
-            z_sort: ZSort{ layer: SortingLayers::Action.into() },
+            z_sort: ZSort {
+                layer: SortingLayers::Action.into(),
+            },
             velocity: Velocity::ZERO,
             health: Health::new(150),
             collider: Collider::new_circle(15., position.truncate()),
@@ -154,16 +165,22 @@ pub fn spawn_imp_queen(
             texture_atlas_handle.clone(),
             position,
             1.,
-        )).with_children(|parent| {
-            parent.spawn(SpriteSheetBundle {
-                texture_atlas: health_atlas_handle,
-                sprite: TextureAtlasSprite::new(0),
-                transform: Transform::from_translation(Vec3 { x: 0., y: 0., z: 0.01 }),
-                ..Default::default()
-            })
-            .insert(ZSort{
-                layer: SortingLayers::Action.into()
-            })
-            .insert(HealthBar);
-        });;
+        ))
+        .with_children(|parent| {
+            parent
+                .spawn(SpriteSheetBundle {
+                    texture_atlas: health_atlas_handle,
+                    sprite: TextureAtlasSprite::new(0),
+                    transform: Transform::from_translation(Vec3 {
+                        x: 0.,
+                        y: 0.,
+                        z: 0.01,
+                    }),
+                    ..Default::default()
+                })
+                .insert(ZSort {
+                    layer: SortingLayers::Action.into(),
+                })
+                .insert(HealthBar);
+        });
 }

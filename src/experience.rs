@@ -8,15 +8,16 @@ use self::{
         start_ability_selection, AbilityFrameAnimation,
     },
     experience::{experience_update, LevelUpEvent},
+    taken_abilities::{update_description, update_taken_positions},
     xp_bar::{manage_xp_bar_sprites, spawn_xp_bar, XPBarAnimation},
-    xp_crystal::{create_xp_crystal_rng, drop_crystals, xp_crystal_update}, taken_abilities::{update_taken_positions, update_description},
+    xp_crystal::{create_xp_crystal_rng, drop_crystals, xp_crystal_update},
 };
 
 pub mod ability_selection;
 pub mod experience;
+pub mod taken_abilities;
 pub mod xp_bar;
 pub mod xp_crystal;
-pub mod taken_abilities;
 
 pub struct ExperiencePlugin;
 

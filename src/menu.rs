@@ -96,7 +96,11 @@ fn click_play_button(
     mut state: ResMut<NextState<GameState>>,
     mut interaction_query: Query<
         (&Interaction, &mut BackgroundColor),
-        (Changed<Interaction>, With<Button>, Without<PauseMenuComponent>),
+        (
+            Changed<Interaction>,
+            With<Button>,
+            Without<PauseMenuComponent>,
+        ),
     >,
 ) {
     for (interaction, mut color) in &mut interaction_query {

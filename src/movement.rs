@@ -1,8 +1,15 @@
 use bevy::prelude::*;
 
 use self::{
-    edge_teleport::edge_teleporting, fake_magnetic::fake_magnet_update, friction::friction_update,
-    magnetic::magnet_update, pause::{ActionPauseState, update_pause_menu, pause_keypress, TogglePauseMenu, PauseMenuState, click_unpause}, velocity::velocity_update,
+    edge_teleport::edge_teleporting,
+    fake_magnetic::fake_magnet_update,
+    friction::friction_update,
+    magnetic::magnet_update,
+    pause::{
+        click_unpause, pause_keypress, update_pause_menu, ActionPauseState, PauseMenuState,
+        TogglePauseMenu,
+    },
+    velocity::velocity_update,
 };
 use crate::GameState;
 

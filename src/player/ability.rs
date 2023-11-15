@@ -99,7 +99,8 @@ impl Ability {
             Ability::Thorns => "Thorns",
             Ability::TripleBarrel => "Triple Barrel",
             Ability::Potion => "Potion",
-        }.to_string()
+        }
+        .to_string()
     }
 
     pub fn get_description(&self) -> String {

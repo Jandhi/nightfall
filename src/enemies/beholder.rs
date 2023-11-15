@@ -15,17 +15,19 @@ use crate::{
         health::Health,
         healthbar::{HealthBar, HEALTH_BAR_SEGMENTS},
         projectile::{DamageTarget, PiercingMode, Projectile},
-        teams::{Team, TeamMember}, z_sort::ZSort,
+        teams::{Team, TeamMember},
+        z_sort::ZSort,
     },
+    constants::SortingLayers,
     loading::{AudioAssets, TextureAssets},
     movement::velocity::Velocity,
     player::Player,
-    util::radians::Radian, constants::SortingLayers,
+    util::radians::Radian,
 };
 
 use super::{
     ai::{ChargeShootEvent, MoveAndShootAI, ShootEvent},
-    enemy::{Enemy, EnemyType, EnemyBundle},
+    enemy::{Enemy, EnemyBundle, EnemyType},
 };
 
 #[derive(PartialEq, Eq, Hash, Clone, Copy)]
@@ -215,16 +217,19 @@ pub fn spawn_beholder(
     );
     let health_atlas_handle = texture_atlases.add(health_atlas);
 
-    commands.spawn(EnemyBundle{
+    commands
+        .spawn(EnemyBundle {
             enemy: Enemy {
                 xp: 10,
                 enemy_type: EnemyType::Beholder,
             },
-            z_sort: ZSort{ layer: SortingLayers::Action.into() },
+            z_sort: ZSort {
+                layer: SortingLayers::Action.into(),
+            },
             velocity: Velocity::ZERO,
             health: Health::new(25),
             collider: Collider::new_circle(12., position.truncate()),
-            team: TeamMember { team: Team::Enemy }
+            team: TeamMember { team: Team::Enemy },
         })
         .insert(MoveAndShootAI::new(20., 3., 200., 6. / 8., 2.))
         .insert(make_animation_bundle(
@@ -233,18 +238,24 @@ pub fn spawn_beholder(
             texture_atlas_handle.clone(),
             position,
             1.,
-        )).with_children(|parent| {
-            parent.spawn(SpriteSheetBundle {
-                texture_atlas: health_atlas_handle,
-                sprite: TextureAtlasSprite::new(0),
-                transform: Transform::from_translation(Vec3 { x: 0., y: 0., z: 0.01 }),
-                ..Default::default()
-            })
-            .insert(ZSort{
-                layer: SortingLayers::Action.into()
-            })
-            .insert(HealthBar);
-        });;
+        ))
+        .with_children(|parent| {
+            parent
+                .spawn(SpriteSheetBundle {
+                    texture_atlas: health_atlas_handle,
+                    sprite: TextureAtlasSprite::new(0),
+                    transform: Transform::from_translation(Vec3 {
+                        x: 0.,
+                        y: 0.,
+                        z: 0.01,
+                    }),
+                    ..Default::default()
+                })
+                .insert(ZSort {
+                    layer: SortingLayers::Action.into(),
+                })
+                .insert(HealthBar);
+        });
 }
 
 pub fn spawn_beholder_prince(
@@ -274,12 +285,15 @@ pub fn spawn_beholder_prince(
     );
     let health_handle = texture_atlases.add(health_atlas);
 
-    commands.spawn(EnemyBundle{
+    commands
+        .spawn(EnemyBundle {
             enemy: Enemy {
                 xp: 100,
                 enemy_type: EnemyType::BeholderPrince,
             },
-            z_sort: ZSort{ layer: SortingLayers::Action.into() },
+            z_sort: ZSort {
+                layer: SortingLayers::Action.into(),
+            },
             velocity: Velocity::ZERO,
             health: Health::new(200),
             collider: Collider::new_circle(12., position.truncate()),
@@ -293,16 +307,22 @@ pub fn spawn_beholder_prince(
             texture_atlas_handle.clone(),
             position,
             1.,
-        )).with_children(|parent| {
-            parent.spawn(SpriteSheetBundle {
-                texture_atlas: health_handle,
-                sprite: TextureAtlasSprite::new(0),
-                transform: Transform::from_translation(Vec3 { x: 0., y: 0., z: 0.01 }),
-                ..Default::default()
-            })
-            .insert(ZSort{
-                layer: SortingLayers::Action.into()
-            })
-            .insert(HealthBar);
-        });;
+        ))
+        .with_children(|parent| {
+            parent
+                .spawn(SpriteSheetBundle {
+                    texture_atlas: health_handle,
+                    sprite: TextureAtlasSprite::new(0),
+                    transform: Transform::from_translation(Vec3 {
+                        x: 0.,
+                        y: 0.,
+                        z: 0.01,
+                    }),
+                    ..Default::default()
+                })
+                .insert(ZSort {
+                    layer: SortingLayers::Action.into(),
+                })
+                .insert(HealthBar);
+        });
 }
