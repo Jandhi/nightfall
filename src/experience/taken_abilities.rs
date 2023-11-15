@@ -1,6 +1,6 @@
 use bevy::{prelude::*, window::{WindowResized, PrimaryWindow}, text::Text2dBounds, sprite::Anchor};
 
-use crate::{player::ability::Ability, loading::{AbilityTextures, FontAssets}, constants::SortingLayers, collision::collider::{Collider, ColliderShape}, palette::Palette, movement::pause::ActionPauseState};
+use crate::{player::ability::Ability, loading::{AbilityTextures, FontAssets}, constants::SortingLayers, collision::collider::{Collider}, palette::Palette};
 
 #[derive(Component)]
 pub struct TakenAbility {
@@ -42,7 +42,7 @@ pub struct TakenDescription;
 
 pub fn update_description(
     q_windows: Query<&Window, With<PrimaryWindow>>,
-    mut q_takens : Query<(&Transform, &TakenAbility, &Collider), Without<Window>>,
+    q_takens : Query<(&Transform, &TakenAbility, &Collider), Without<Window>>,
     mut q_taken_title : Query<(Entity, &mut Text), (With<TakenTitle>, Without<Window>, Without<TakenAbility>)>,
     mut q_taken_description : Query<(Entity, &mut Text), (With<TakenDescription>, Without<Window>, Without<TakenAbility>, Without<TakenTitle>)>,
     font_assets: Res<FontAssets>,

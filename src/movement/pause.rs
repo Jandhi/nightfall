@@ -1,7 +1,7 @@
-use bevy::{prelude::*, math::bool, input::keyboard::KeyboardInput, a11y::accesskit::Action};
-use bevy_debug_text_overlay::screen_print;
+use bevy::{prelude::*, math::bool};
 
-use crate::{loading::FontAssets, palette::Palette, menu};
+
+use crate::{loading::FontAssets, palette::Palette};
 
 #[derive(Resource)]
 pub struct ActionPauseState {
@@ -46,7 +46,7 @@ pub fn update_pause_menu(
         return;
     }
 
-    for ev in enter_ev.iter() {
+    for _ev in enter_ev.iter() {
         // let ev be marked as read
     }
 

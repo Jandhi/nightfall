@@ -1,6 +1,6 @@
-use std::slice::Windows;
 
-use bevy::{prelude::*, window::PrimaryWindow, text::{Text2dBounds, TextLayoutInfo}, sprite::Anchor};
+
+use bevy::{prelude::*, window::PrimaryWindow, text::{Text2dBounds}, sprite::Anchor};
 use rand::seq::IteratorRandom;
 
 use crate::{
@@ -102,7 +102,7 @@ pub fn on_select_ability(
                 .abilities
                 .push(ability);
 
-            spawn_taken(ability, player.abilities.len() - 1, &window, &textures, &mut commands);
+            spawn_taken(ability, player.abilities.len() - 1, window, &textures, &mut commands);
 
             if ability == Ability::MaxHp {
                 health.max += 1;

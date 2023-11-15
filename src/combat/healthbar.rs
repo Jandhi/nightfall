@@ -1,8 +1,8 @@
 use bevy::prelude::*;
 
-use crate::{constants::{SCALING_VEC3, SortingLayers}, loading::TextureAssets};
 
-use super::{health::Health, z_sort::ZSort};
+
+use super::{health::Health};
 
 pub const HEALTH_BAR_SEGMENTS: usize = 15;
 
@@ -16,10 +16,10 @@ pub fn update_healthbars(
         &Parent,
         &mut TextureAtlasSprite,
     )>,
-    q_entities: Query<(&Health), Without<HealthBar>>,
-    mut commands: Commands,
+    q_entities: Query<&Health, Without<HealthBar>>,
+    _commands: Commands,
 ) {
-    for (healthbar_entity, healthbar, parent, mut atlas) in q_healthbars.iter_mut() {
+    for (_healthbar_entity, _healthbar, parent, mut atlas) in q_healthbars.iter_mut() {
         if let Ok(health) = q_entities.get(parent.get()) {
             let index = match health.value {
                 _ if health.value == health.max => 0,
