@@ -1,4 +1,6 @@
-use bevy::{prelude::*, window::PrimaryWindow};
+use std::slice::Windows;
+
+use bevy::{prelude::*, window::PrimaryWindow, text::{Text2dBounds, TextLayoutInfo}, sprite::Anchor};
 use rand::seq::IteratorRandom;
 
 use crate::{
@@ -24,6 +26,9 @@ use crate::{
 };
 
 use super::experience::LevelUpEvent;
+
+#[derive(Component)]
+pub struct AbilitySelectionMenuItem;
 
 #[derive(Resource)]
 pub struct AbilityRNG(pub RNG);
@@ -80,8 +85,9 @@ pub struct AbilitySelection {
 pub fn on_select_ability(
     q_menu: Query<(Entity, &AbilitySelection)>,
     mut q_player: Query<(&mut Player, &mut Health), Without<AbilitySelection>>,
+    mut q_selection_items : Query<(Entity), (With<AbilitySelectionMenuItem>, Without<AbilitySelection>, Without<Player>)>,
     mut selection_events: EventReader<SelectionEvent>,
-    mut commmands: Commands,
+    mut commands: Commands,
     mut pause: ResMut<ActionPauseState>,
 ) {
     let (mut player, mut health) = q_player.single_mut();
@@ -101,8 +107,12 @@ pub fn on_select_ability(
                 health.value += 2;
             }
 
-            commmands.entity(entity).despawn_recursive();
+            commands.entity(entity).despawn_recursive();
             pause.is_paused = false;
+
+            for e in q_selection_items.iter() {
+                commands.entity(e).despawn();
+            }
         }
     }
 }
@@ -115,8 +125,8 @@ pub fn start_ability_selection(
     frame_animations: Res<AnimationStateStorage<AbilityFrameAnimation>>,
     mut texture_atlases: ResMut<Assets<TextureAtlas>>,
     mut rng: ResMut<AbilityRNG>,
-    _font_assets: Res<FontAssets>,
-    _palette: Res<Palette>,
+    font_assets: Res<FontAssets>,
+    palette: Res<Palette>,
     mut pause: ResMut<ActionPauseState>,
     mut commands: Commands,
 ) {
@@ -190,8 +200,10 @@ pub fn start_ability_selection(
                         index: IVec2 { x: i, y: 0 },
                     })
                     .with_children(|parent| {
+                        let ability = chosen_abilities[i as usize];
+
                         parent.spawn(SpriteBundle {
-                            texture: chosen_abilities[i as usize].get_texture(&textures),
+                            texture: ability.get_texture(&textures),
                             transform: Transform::from_translation(Vec3 {
                                 x: 0.,
                                 y: 0.,
@@ -199,9 +211,43 @@ pub fn start_ability_selection(
                             }),
                             ..Default::default()
                         });
+
+                        parent.spawn(Text2dBundle {
+                            text : Text::from_section(ability.get_name(), TextStyle 
+                            { 
+                                font: font_assets.gothic_pxl.clone(), font_size: 48., color: palette.orange,
+                            }).with_alignment(TextAlignment::Center),
+                            transform: Transform { 
+                                translation: Vec3 { x: 0., y: -40., z: SortingLayers::UI.into() },
+                                rotation: default(), 
+                                scale: Vec3 { x: 0.5, y: 0.5, z: 1. },
+                            },
+                            text_2d_bounds : Text2dBounds {
+                                size: Vec2 { x: 300., y: 50. },
+                            },
+                            ..Default::default()
+                        });
+
+                        parent.spawn(Text2dBundle {
+                            text : Text::from_section(ability.get_description(), TextStyle 
+                            { 
+                                font: font_assets.garamond.clone(), font_size: 24., color: palette.white,
+                            }).with_alignment(TextAlignment::Center),
+                            transform: Transform { 
+                                translation: Vec3 { x: 0., y: -55., z: SortingLayers::UI.into() }, 
+                                rotation: default(), 
+                                scale: Vec3 { x: 0.5, y: 0.5, z: 1. }, 
+                            },
+                            text_2d_bounds : Text2dBounds {
+                                size: Vec2 { x: 200., y: 500. },
+                            },
+                            text_anchor: Anchor::TopCenter,
+                            ..Default::default()
+                        });
                     })
                     .insert(SelectionElement { index: i as usize })
                     .insert(Collider::new_rect(Vec2 { x: 64., y: 64. }, Vec2::ZERO));
             }
         });
+
 }

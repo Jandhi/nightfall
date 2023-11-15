@@ -2,7 +2,7 @@ use bevy::prelude::*;
 
 use self::{
     edge_teleport::edge_teleporting, fake_magnetic::fake_magnet_update, friction::friction_update,
-    magnetic::magnet_update, pause::ActionPauseState, velocity::velocity_update,
+    magnetic::magnet_update, pause::{ActionPauseState, update_pause_menu, pause_keypress, TogglePauseMenu, PauseMenuState, click_unpause}, velocity::velocity_update,
 };
 use crate::GameState;
 
@@ -25,9 +25,14 @@ impl Plugin for MovementPlugin {
                 fake_magnet_update,
                 friction_update,
                 edge_teleporting,
+                pause_keypress,
+                update_pause_menu,
+                click_unpause,
             )
                 .run_if(in_state(GameState::Playing)),
         )
+        .add_event::<TogglePauseMenu>()
+        .insert_resource(PauseMenuState(false))
         .insert_resource(ActionPauseState { is_paused: false });
     }
 }

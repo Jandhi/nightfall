@@ -8,7 +8,6 @@ use crate::audio::FXChannel;
 use crate::collision::collider::{IsCollidingEvent, Collider};
 
 use crate::combat::health::{DeathEvent, Health};
-use crate::combat::healthbar::NeedsHealthBar;
 use crate::combat::teams::TeamMember;
 use crate::combat::z_sort::ZSort;
 use crate::constants::SortingLayers;
@@ -59,8 +58,7 @@ pub struct EnemyBundle {
     pub health : Health,
     pub velocity : Velocity,
     pub collider : Collider,
-    pub team : TeamMember,
-    pub needs_health_bar : NeedsHealthBar,
+    pub team : TeamMember
 }
 
 #[derive(Component, Clone)]

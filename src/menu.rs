@@ -1,4 +1,5 @@
 use crate::loading::FontAssets;
+use crate::movement::pause::PauseMenuComponent;
 use crate::palette::Palette;
 use crate::GameState;
 use bevy::prelude::*;
@@ -95,7 +96,7 @@ fn click_play_button(
     mut state: ResMut<NextState<GameState>>,
     mut interaction_query: Query<
         (&Interaction, &mut BackgroundColor),
-        (Changed<Interaction>, With<Button>),
+        (Changed<Interaction>, With<Button>, Without<PauseMenuComponent>),
     >,
 ) {
     for (interaction, mut color) in &mut interaction_query {

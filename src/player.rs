@@ -14,7 +14,7 @@ use crate::experience::experience::Experience;
 use crate::experience::xp_crystal::XPCrystal;
 use crate::loading::{AudioAssets, FontAssets, TextureAssets};
 use crate::movement::edge_teleport::EdgeTeleports;
-use crate::movement::pause::ActionPauseState;
+use crate::movement::pause::{ActionPauseState, PauseMenuComponent};
 use crate::palette::Palette;
 use crate::ui::game_timer::GameTimer;
 use crate::util::pitch_rng::PitchRNG;
@@ -240,10 +240,15 @@ pub fn hit_immunity(
     mut timer: ResMut<InvincibilityTimer>,
     mut ev_dmg: EventReader<TookDamageEvent>,
     time: Res<Time>,
+    pause : Res<ActionPauseState>,
     audio_assets: Res<AudioAssets>,
     fx_channel: Res<FXChannel>,
     mut pitch_rng: ResMut<PitchRNG>,
 ) {
+    if pause.is_paused {
+        return;
+    }
+
     timer.0.tick(time.delta());
     let (player_entity, mut player_health) = q_player.single_mut();
 
@@ -411,7 +416,7 @@ fn click_play_again_button(
     palette: Res<Palette>,
     mut interaction_query: Query<
         (Entity, &Interaction, &mut BackgroundColor),
-        (Changed<Interaction>, With<Button>),
+        (Changed<Interaction>, With<Button>, Without<PauseMenuComponent>),
     >,
     mut q_player: Query<
         (&mut Player, &mut Transform, &mut Health, &mut Experience),
@@ -478,23 +483,23 @@ fn click_play_again_button(
                 experience.threshold = 20;
 
                 for enemy in q_enemies.iter() {
-                    commands.entity(enemy).despawn();
+                    commands.entity(enemy).despawn_recursive();
                 }
 
                 for projectile in q_projectile.iter() {
-                    commands.entity(projectile).despawn();
+                    commands.entity(projectile).despawn_recursive();
                 }
 
                 for fire in q_fire.iter() {
-                    commands.entity(fire).despawn();
+                    commands.entity(fire).despawn_recursive();
                 }
 
                 for xp in q_xp.iter() {
-                    commands.entity(xp).despawn();
+                    commands.entity(xp).despawn_recursive();
                 }
 
                 for text in q_node.iter() {
-                    commands.entity(text).despawn();
+                    commands.entity(text).despawn_recursive();
                 }
 
                 commands.entity(button_entity).despawn();

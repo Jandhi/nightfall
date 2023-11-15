@@ -13,18 +13,17 @@ use crate::{
     collision::collider::Collider,
     combat::{
         health::Health,
-        healthbar::NeedsHealthBar,
         projectile::{DamageTarget, PiercingMode, Projectile},
-        teams::{Team, TeamMember},
+        teams::{Team, TeamMember}, z_sort::ZSort, healthbar::{HealthBar, HEALTH_BAR_SEGMENTS},
     },
     loading::{AudioAssets, TextureAssets},
     movement::velocity::Velocity,
-    player::Player,
+    player::Player, constants::SortingLayers,
 };
 
 use super::{
     ai::{ChargeShootEvent, MoveAndShootAI, ShootEvent},
-    enemy::{Enemy, EnemyType},
+    enemy::{Enemy, EnemyType, EnemyBundle},
 };
 
 #[derive(PartialEq, Eq, Hash, Clone, Copy)]
@@ -184,22 +183,44 @@ pub fn spawn_reaper(
     );
     let texture_atlas_handle = texture_atlases.add(texture_atlas);
 
-    commands
-        .spawn(Enemy {
-            xp: 150,
-            enemy_type: EnemyType::Reaper,
+    let health_atlas = TextureAtlas::from_grid(
+        textures.healthbar.clone(),
+        Vec2 { x: 32., y: 32. },
+        HEALTH_BAR_SEGMENTS,
+        1,
+        None,
+        None,
+    );
+    let health_atlas_handle = texture_atlases.add(health_atlas);
+
+    commands.spawn(EnemyBundle{
+            enemy: Enemy {
+                xp: 150,
+                enemy_type: EnemyType::Reaper,
+            },
+            z_sort: ZSort{ layer: SortingLayers::Action.into() },
+            velocity: Velocity::ZERO,
+            health: Health::new(300),
+            collider: Collider::new_circle(12., position.truncate()),
+            team: TeamMember { team: Team::Enemy },
         })
         .insert(MoveAndShootAI::new(40., 10., 50., 1. / 2., 2.))
-        .insert(Velocity::ZERO)
-        .insert(Health::new(300))
-        .insert(Collider::new_circle(12., Vec2 { x: 70., y: 70. }))
         .insert(make_animation_bundle(
             ReaperAnimation::Flying,
             animations,
             texture_atlas_handle.clone(),
             position,
             1.,
-        ))
-        .insert(TeamMember { team: Team::Enemy })
-        .insert(NeedsHealthBar::default());
-}
+        )).with_children(|parent| {
+            parent.spawn(SpriteSheetBundle {
+                texture_atlas: health_atlas_handle,
+                sprite: TextureAtlasSprite::new(0),
+                transform: Transform::from_translation(Vec3 { x: 0., y: 0., z: 0.01 }),
+                ..Default::default()
+            })
+            .insert(ZSort{
+                layer: SortingLayers::Action.into()
+            })
+            .insert(HealthBar);
+        });;
+    }

@@ -9,7 +9,7 @@ use crate::{
     collision::collider::Collider,
     combat::{
         health::Health,
-        healthbar::NeedsHealthBar,
+        healthbar::{HEALTH_BAR_SEGMENTS, HealthBar},
         teams::{Team, TeamMember}, z_sort::ZSort,
     },
     loading::TextureAssets,
@@ -54,6 +54,16 @@ pub fn spawn_imp(
     );
     let texture_atlas_handle = texture_atlases.add(texture_atlas);
 
+    let health_atlas = TextureAtlas::from_grid(
+        textures.healthbar.clone(),
+        Vec2 { x: 32., y: 32. },
+        HEALTH_BAR_SEGMENTS,
+        1,
+        None,
+        None,
+    );
+    let health_atlas_handle = texture_atlases.add(health_atlas);
+
     commands
         .spawn(EnemyBundle{
             enemy: Enemy {
@@ -64,15 +74,7 @@ pub fn spawn_imp(
             velocity: Velocity::ZERO,
             health: Health::new(15),
             collider: Collider::new_circle(10., position.truncate()),
-            team: TeamMember { team: Team::Enemy },
-            needs_health_bar: NeedsHealthBar::default(),
-        }
-            
-            
-        )
-        .insert(FollowPlayerAI {
-            speed: 15.,
-            corrective_force: 1.0,
+            team: TeamMember { team: Team::Enemy }
         })
         .insert(FollowPlayerAI {
             speed: 15.,
@@ -84,7 +86,19 @@ pub fn spawn_imp(
             texture_atlas_handle.clone(),
             position,
             1.,
-        ));;
+        ))
+        .with_children(|parent| {
+            parent.spawn(SpriteSheetBundle {
+                texture_atlas: health_atlas_handle,
+                sprite: TextureAtlasSprite::new(0),
+                transform: Transform::from_translation(Vec3 { x: 0., y: 0., z: 0.01 }),
+                ..Default::default()
+            })
+            .insert(ZSort{
+                layer: SortingLayers::Action.into()
+            })
+            .insert(HealthBar);
+        });
 }
 
 #[derive(Component)]
@@ -107,26 +121,49 @@ pub fn spawn_imp_queen(
     );
     let texture_atlas_handle = texture_atlases.add(texture_atlas);
 
+    let health_atlas = TextureAtlas::from_grid(
+        textures.healthbar.clone(),
+        Vec2 { x: 32., y: 32. },
+        HEALTH_BAR_SEGMENTS,
+        1,
+        None,
+        None,
+    );
+    let health_atlas_handle = texture_atlases.add(health_atlas);
+
     commands
-        .spawn(Enemy {
-            xp: 50,
-            enemy_type: EnemyType::Imp,
+        .spawn(EnemyBundle{
+            enemy: Enemy {
+                xp: 50,
+                enemy_type: EnemyType::ImpQueen,
+            },
+            z_sort: ZSort{ layer: SortingLayers::Action.into() },
+            velocity: Velocity::ZERO,
+            health: Health::new(150),
+            collider: Collider::new_circle(15., position.truncate()),
+            team: TeamMember { team: Team::Enemy },
         })
         .insert(ImpQueen)
         .insert(FollowPlayerAI {
             speed: 12.,
             corrective_force: 3.0,
         })
-        .insert(Velocity::ZERO)
-        .insert(Health::new(150))
-        .insert(Collider::new_circle(15., position.truncate()))
         .insert(make_animation_bundle(
             ImpAnimation::Flying,
-            &imp_animations,
+            imp_animations,
             texture_atlas_handle.clone(),
             position,
             1.,
-        ))
-        .insert(TeamMember { team: Team::Enemy })
-        .insert(NeedsHealthBar::default());
+        )).with_children(|parent| {
+            parent.spawn(SpriteSheetBundle {
+                texture_atlas: health_atlas_handle,
+                sprite: TextureAtlasSprite::new(0),
+                transform: Transform::from_translation(Vec3 { x: 0., y: 0., z: 0.01 }),
+                ..Default::default()
+            })
+            .insert(ZSort{
+                layer: SortingLayers::Action.into()
+            })
+            .insert(HealthBar);
+        });;
 }

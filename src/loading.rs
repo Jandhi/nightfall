@@ -33,6 +33,9 @@ pub struct FontAssets {
 
     #[asset(path = "fonts/gothic-pixel-font.ttf")]
     pub gothic_pxl: Handle<Font>,
+
+    #[asset(path = "fonts/EBGaramond-MediumItalic.TTF")]
+    pub garamond: Handle<Font>,
 }
 
 #[derive(AssetCollection, Resource)]

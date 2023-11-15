@@ -5,7 +5,7 @@ use crate::{animation::AppAnimationSetup, GameState};
 use self::{
     fire::{fire_update, FireAnimation},
     health::{check_death, DeathEvent, TookDamageEvent},
-    healthbar::{spawn_healthbars, update_healthbars},
+    healthbar::update_healthbars,
     knockback::knockback_update,
     projectile::{projectile_collision_check, ProjectileHitEvent}, z_sort::update_z_sort,
 };
@@ -28,7 +28,6 @@ impl Plugin for CombatPlugin {
                 projectile_collision_check,
                 update_healthbars,
                 check_death,
-                spawn_healthbars,
                 fire_update,
                 update_z_sort,
                 knockback_update.after(projectile_collision_check),

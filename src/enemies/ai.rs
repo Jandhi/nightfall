@@ -135,7 +135,7 @@ pub fn move_and_shoot_ai(
             ai.state = MoveAndShootAIState::Move;
             ai.refresh_timer.reset();
             shoot_ev.send(ShootEvent {
-                entity: entity,
+                entity,
                 target: player_entity,
             })
         }
