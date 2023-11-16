@@ -149,7 +149,7 @@ pub fn update_description(
                             },
                         },
                         text_2d_bounds: Text2dBounds {
-                            size: Vec2 { x: 200., y: 500. },
+                            size: Vec2 { x: 400., y: 500. },
                         },
                         text_anchor: Anchor::TopCenter,
                         ..Default::default()

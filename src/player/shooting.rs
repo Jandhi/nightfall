@@ -283,7 +283,10 @@ fn spawn_bullet(
             damage_target: DamageTarget::Team(Team::Enemy),
             piercing_mode: match player.abilities.contains(&Ability::Crossbow) {
                 true => PiercingMode::All,
-                false => PiercingMode::None,
+                false => match player.abilities.contains(&Ability::Piercing) {
+                    true => PiercingMode::Count(3),
+                    false => PiercingMode::None,
+                },
             },
             entities_hit: vec![],
             is_alive: true,

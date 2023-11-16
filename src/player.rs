@@ -11,6 +11,7 @@ use crate::constants::SortingLayers;
 use crate::enemies::enemy::Enemy;
 use crate::enemies::spawning::SpawnInfo;
 use crate::experience::experience::Experience;
+use crate::experience::taken_abilities::TakenAbility;
 use crate::experience::xp_crystal::XPCrystal;
 use crate::loading::{AudioAssets, FontAssets, TextureAssets};
 use crate::movement::edge_teleport::EdgeTeleports;
@@ -31,6 +32,7 @@ use self::health_ui::{manage_health_ui_sprites, HealthUIAnimationState, HealthUI
 use self::hit::{spawn_hit_sprite, update_hit_sprite};
 use self::reload_ui::{spawn_reload_ui, update_reload_ui, ReloadTimer};
 use self::shooting::{shoot, ShootingCooldown};
+use self::thorns::{ThornsAnimation, ThornsTimer, thorns_update};
 
 pub mod ability;
 mod animations;
@@ -39,6 +41,7 @@ mod health_ui;
 mod hit;
 mod reload_ui;
 mod shooting;
+mod thorns;
 
 pub struct PlayerPlugin;
 
@@ -95,6 +98,7 @@ impl Plugin for PlayerPlugin {
                 game_over,
                 click_play_again_button,
                 enemy_collision,
+                thorns_update,
                 update_hit_sprite,
                 update_bullets,
                 hit_immunity
@@ -105,6 +109,7 @@ impl Plugin for PlayerPlugin {
         )
         .insert_resource(ReloadTimer(Timer::from_seconds(0., TimerMode::Once)))
         .insert_resource(BulletUICount(0))
+        .insert_resource(ThornsTimer(Timer::from_seconds(0., TimerMode::Once)))
         .insert_resource(HealthUICount(0))
         .insert_resource(InvincibilityTimer(Timer::from_seconds(
             3.0,
@@ -113,7 +118,8 @@ impl Plugin for PlayerPlugin {
         .insert_resource(ShootingCooldown(Timer::from_seconds(1.0, TimerMode::Once)))
         .add_animation::<PlayerAnimationState>()
         .add_animation::<BulletUIAnimation>()
-        .add_animation::<HealthUIAnimationState>();
+        .add_animation::<HealthUIAnimationState>()
+        .add_animation::<ThornsAnimation>();
     }
 }
 
@@ -286,9 +292,6 @@ pub fn enemy_collision(
         if let Ok((entity, mut enemy_health)) = q_enemies.get_mut(ev.collision.entity_a) {
             if player == ev.collision.entity_b {
                 is_hit = true;
-                if player_stats.abilities.contains(&Ability::Thorns) {
-                    enemy_health.take_damage(entity, &mut ev_dmg, 1_000_000);
-                }
 
                 break;
             }
@@ -296,9 +299,6 @@ pub fn enemy_collision(
         if let Ok((entity, mut enemy_health)) = q_enemies.get_mut(ev.collision.entity_a) {
             if player == ev.collision.entity_a {
                 is_hit = true;
-                if player_stats.abilities.contains(&Ability::Thorns) {
-                    enemy_health.take_damage(entity, &mut ev_dmg, 1_000_000);
-                }
 
                 break;
             }
@@ -470,6 +470,20 @@ fn click_play_again_button(
             Without<Enemy>,
         ),
     >,
+    q_taken: Query<
+        Entity,
+        (
+            With<TakenAbility>,
+            Without<Node>,
+            Without<GameTimer>,
+            Without<XPCrystal>,
+            Without<Fire>,
+            Without<Projectile>,
+            Without<Button>,
+            Without<Player>,
+            Without<Enemy>,
+        ),
+    >,
     mut pause: ResMut<ActionPauseState>,
     mut spawning: ResMut<SpawnInfo>,
     mut commands: Commands,
@@ -504,6 +518,10 @@ fn click_play_again_button(
 
                 for text in q_node.iter() {
                     commands.entity(text).despawn_recursive();
+                }
+
+                for taken in q_taken.iter() {
+                    commands.entity(taken).despawn_recursive();
                 }
 
                 commands.entity(button_entity).despawn();

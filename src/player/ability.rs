@@ -15,6 +15,7 @@ pub enum Ability {
     MaxHp,
     MediumBullets,
     MegaShotgun,
+    Piercing,
     Reload,
     Shells,
     ShootingSpeed,
@@ -49,6 +50,7 @@ impl Ability {
             Self::TripleBarrel,
             Self::MaxHp,
             Self::Potion,
+            Self::Piercing,
         ]
     }
 
@@ -74,6 +76,7 @@ impl Ability {
             Ability::Thorns => textures.thorns.clone(),
             Ability::MaxHp => textures.max_hp.clone(),
             Ability::Potion => textures.potion.clone(),
+            Ability::Piercing => textures.piercing.clone(),
         }
     }
 
@@ -99,6 +102,7 @@ impl Ability {
             Ability::Thorns => "Thorns",
             Ability::TripleBarrel => "Triple Barrel",
             Ability::Potion => "Potion",
+            Ability::Piercing => "Piercing",
         }
         .to_string()
     }
@@ -108,7 +112,7 @@ impl Ability {
             Ability::BigBullets => "x2 Damage\n +50% Knockback\n -20% Shoot Speed\n -20% Reload Speed\n -20% Bullet Speed",
             Ability::BiggestBullets => "x2 Damage\n +50% Knockback\n -20% Shoot Speed\n -20% Reload Speed\n -20% Bullet Speed",
             Ability::BulletsGalore => "+3 Max Ammo",
-            Ability::Crossbow => "Piercing Bullets",
+            Ability::Crossbow => "Bullets pierce all enemies",
             Ability::DoubleBarrel => "2 Bullets\n-30% Shoot Speed",
             Ability::Faster => "+50 Move Speed",
             Ability::FlamingBullets => "2 damage every 2 seconds",
@@ -125,6 +129,7 @@ impl Ability {
             Ability::Thorns => "Kills Enemy that you touch",
             Ability::TripleBarrel => "3 Bullets\n-10% Shoot Speed",
             Ability::Potion => "Heal 2 hearts",
+            Ability::Piercing => "Bullets pierce 3 enemies",
         }.to_string()
     }
 
@@ -138,7 +143,8 @@ impl Ability {
                 !player_abilities.contains(&Ability::BiggestBullets)
                     && player_abilities.contains(&Ability::BigBullets)
             }
-            Ability::Crossbow => !player_abilities.contains(&Ability::Crossbow),
+            Ability::Crossbow => !player_abilities.contains(&Ability::Crossbow)
+                && player_abilities.contains(&Ability::Piercing),
             Ability::DoubleBarrel => !player_abilities.contains(&Ability::DoubleBarrel),
             Ability::TripleBarrel => {
                 !player_abilities.contains(&Ability::TripleBarrel)
@@ -165,6 +171,7 @@ impl Ability {
             Ability::Thorns => !player_abilities.contains(&Ability::Thorns),
             Ability::MaxHp => true,
             Ability::Potion => true,
+            Ability::Piercing => !player_abilities.contains(&Ability::Piercing),
         }
     }
 

@@ -1,4 +1,5 @@
 use bevy::{prelude::*, utils::HashSet};
+use bevy_debug_text_overlay::screen_print;
 use std::collections::HashMap;
 
 type SpatialCoord = (i32, i32);
@@ -249,6 +250,8 @@ pub fn collision_tick(
             }
         }
     }
+
+    
 
     // Collision Ending
     for collision in &prev_collisions.collisions {

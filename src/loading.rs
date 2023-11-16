@@ -46,6 +46,9 @@ pub struct AudioAssets {
     #[asset(path = "audio/levelup.ogg")]
     pub levelup: Handle<AudioSource>,
 
+    #[asset(path = "audio/big_crystal.ogg")]
+    pub big_crystal: Handle<AudioSource>,
+
     #[asset(path = "audio/coin.ogg")]
     pub coin: Handle<AudioSource>,
 
@@ -103,6 +106,9 @@ pub struct TextureAssets {
     #[asset(path = "textures/Flame.png")]
     pub flame: Handle<Image>,
 
+    #[asset(path = "textures/thorns.png")]
+    pub thorns: Handle<Image>,
+
     #[asset(path = "textures/fire.png")]
     pub fire: Handle<Image>,
 
@@ -159,6 +165,9 @@ pub struct TextureAssets {
 
     #[asset(path = "textures/crystal.png")]
     pub crystal: Handle<Image>,
+
+    #[asset(path = "textures/big_crystal.png")]
+    pub big_crystal: Handle<Image>,
 }
 
 #[derive(AssetCollection, Resource)]
@@ -183,6 +192,9 @@ pub struct AbilityTextures {
 
     #[asset(path = "textures/abilities/potion.png")]
     pub potion: Handle<Image>,
+    
+    #[asset(path = "textures/abilities/piercing.png")]
+    pub piercing: Handle<Image>,
 
     #[asset(path = "textures/abilities/max_hp.png")]
     pub max_hp: Handle<Image>,
