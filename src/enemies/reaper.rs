@@ -84,7 +84,7 @@ pub fn reaper_blade_update(
                 id: blade.parent,
                 state_id: ReaperAnimation::Flying,
             });
-            commands.entity(entity).despawn();
+            commands.entity(entity).despawn_recursive();
 
             if let Ok(mut ai) = q_ai.get_mut(blade.parent) {
                 ai.speed = 40.;

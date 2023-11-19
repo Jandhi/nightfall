@@ -10,6 +10,7 @@ pub const SCALING_VEC3: Vec3 = Vec3 {
 pub const IS_DEBUG: bool = true;
 
 pub enum SortingLayers {
+    DebugFront,
     UI,
     UIBack,
     Front,
@@ -21,6 +22,7 @@ pub enum SortingLayers {
 impl From<SortingLayers> for f32 {
     fn from(val: SortingLayers) -> Self {
         match val {
+            SortingLayers::DebugFront => 20.,
             SortingLayers::UI => 10.,
             SortingLayers::UIBack => 8.,
             SortingLayers::Front => 6.,

@@ -115,7 +115,7 @@ pub fn xp_crystal_update(
             .translation
             .distance(player_transform.translation);
         if distance < experience.pick_distance {
-            commands.entity(entity).despawn();
+            commands.entity(entity).despawn_recursive();
             experience.curr_experience += crystal.contained_xp;
             fx_channel.play(match crystal.contained_xp {
                 BIG_XP_AMT => audio.big_crystal.clone(),

@@ -16,7 +16,8 @@ impl Plugin for LoadingPlugin {
         .add_collection_to_loading_state::<_, FontAssets>(GameState::Loading)
         .add_collection_to_loading_state::<_, AudioAssets>(GameState::Loading)
         .add_collection_to_loading_state::<_, TextureAssets>(GameState::Loading)
-        .add_collection_to_loading_state::<_, AbilityTextures>(GameState::Loading);
+        .add_collection_to_loading_state::<_, AbilityTextures>(GameState::Loading)
+        .add_collection_to_loading_state::<_, DebugTextureAssets>(GameState::Loading);
     }
 }
 
@@ -237,4 +238,14 @@ pub struct AbilityTextures {
 
     #[asset(path = "textures/abilities/mega_shotgun.png")]
     pub mega_shotgun: Handle<Image>,
+}
+
+#[derive(AssetCollection, Resource, Debug)]
+pub struct DebugTextureAssets {
+
+    #[asset(path = "textures/debug/circle_128.png")]
+    pub circle: Handle<Image>,
+
+    #[asset(path = "textures/debug/rect_128.png")]
+    pub rect: Handle<Image>,
 }

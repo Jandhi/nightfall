@@ -1,6 +1,7 @@
 // disable console on windows for release builds
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
+use bevy::ecs::schedule::ScheduleLabel;
 use bevy::prelude::*;
 use bevy::window::PrimaryWindow;
 use bevy::winit::WinitWindows;
@@ -12,6 +13,7 @@ use winit::window::Icon;
 
 mod palette;
 use palette::DARK_HEX;
+
 
 fn main() {
     App::new()
@@ -44,6 +46,7 @@ fn main() {
         .add_systems(Startup, set_window_icon)
         .run();
 }
+
 
 // Sets the icon on windows and X11
 fn set_window_icon(

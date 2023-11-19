@@ -53,7 +53,7 @@ pub fn update_pause_menu(
         pause_menu_state.0 = false;
 
         for e in menu_items.iter() {
-            commands.entity(e).despawn();
+            commands.entity(e).despawn_recursive();
         }
 
         return;

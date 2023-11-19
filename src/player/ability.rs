@@ -126,7 +126,7 @@ impl Ability {
             Ability::Shotgun => "5 Bullets\n-10% Shoot Speed",
             Ability::Sixfold => "Shoot 6 bullets on reload",
             Ability::Sniper => "x2 Bullet Speed",
-            Ability::Thorns => "Kills Enemy that you touch",
+            Ability::Thorns => "Deadly thorns surround you every 20 seconds",
             Ability::TripleBarrel => "3 Bullets\n-10% Shoot Speed",
             Ability::Potion => "Heal 2 hearts",
             Ability::Piercing => "Bullets pierce 3 enemies",

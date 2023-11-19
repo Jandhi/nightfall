@@ -4,13 +4,19 @@ use std::collections::HashMap;
 
 type SpatialCoord = (i32, i32);
 
-#[derive(Component, Clone)]
+#[derive(Component, Clone, Debug)]
 pub struct Collider {
     shape: ColliderShape,
     spatial_coord: SpatialCoord,
 }
 
-#[derive(Clone)]
+impl Collider {
+    pub fn shape(&self) -> ColliderShape {
+        self.shape
+    }
+}
+
+#[derive(Clone, Copy, Debug)]
 pub enum ColliderShape {
     Rect(Vec2),
     Circle(f32),

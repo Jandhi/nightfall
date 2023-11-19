@@ -122,7 +122,7 @@ fn handle_projectile_collision(
     };
 
     if is_dead {
-        commands.entity(projectile_entity).despawn();
+        commands.entity(projectile_entity).despawn_recursive();
         projectile.is_alive = false;
     }
 }

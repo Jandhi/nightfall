@@ -17,7 +17,7 @@ impl Animation<ThornsAnimation> for ThornsAnimation {
     fn get_states() -> Vec<AnimationStateInfo<ThornsAnimation>> {
         AnimationInfoBuilder::new()
             .add_frames(ThornsAnimation::Spawning, 4, Duration::from_secs_f32(1. / 4.))
-            .add_single(ThornsAnimation::Present)
+            .add_frames(ThornsAnimation::Present, 2, Duration::from_secs_f32(1. / 4.))
             .add_frames(ThornsAnimation::Despawning, 4, Duration::from_secs_f32(1. / 4.))
             .build()
     }
@@ -27,6 +27,7 @@ impl Animation<ThornsAnimation> for ThornsAnimation {
 pub struct ThornsTimer(pub Timer);
 
 pub const THORNS_DURATION : f32 = 3.;
+pub const THORNS_COOLDOWN : f32 = 15.;
 
 pub fn thorns_update(
     q_player : Query<(Entity, &Player, &Transform)>,
@@ -52,19 +53,19 @@ pub fn thorns_update(
         return;
     }
     
+    timer.0.tick(time.delta());
     let thorns = q_thorns.get_single_mut();
 
     // No thorns
     if thorns.is_err() {
-        for hit_event in hit_ev.iter() {
-            if hit_event.entity == player_entity {
-                timer.0.set_duration(Duration::from_secs_f32(1.));
+        if timer.0.just_finished() {
+            timer.0.set_duration(Duration::from_secs_f32(1.));
                 timer.0.reset();
 
                 let texture_atlas = TextureAtlas::from_grid(
                     textures.thorns.clone(),
                     Vec2 { x: 64., y: 64. },
-                    9,
+                    10,
                     1,
                     None,
                     None,
@@ -78,21 +79,16 @@ pub fn thorns_update(
                     Vec3 { x: 0., y: 0., z: SortingLayers::Front.into() }, 
                     1.,
                 ))
-                .insert(Collider::new_circle(50., player_pos.translation.truncate()))
+                .insert(Collider::new_circle(55., player_pos.translation.truncate()))
                 .insert(Projectile{ 
                     damage_target: DamageTarget::Team(Team::Enemy), 
-                    dmg: 1000, 
+                    dmg: 50, 
                     piercing_mode: PiercingMode::All, 
                     entities_hit: vec![], 
                     is_alive: true
                 });
-
-                return;
-            }
         }
     } else {
-        timer.0.tick(time.delta());
-
         let (thorns_entity, mut thorns_transform, thorns_controller) = thorns.unwrap();
 
         thorns_transform.translation = Vec3 {
@@ -121,6 +117,9 @@ pub fn thorns_update(
             ThornsAnimation::Despawning => {
                 if timer.0.just_finished() {
                     commands.entity(thorns_entity).despawn();
+
+                    timer.0.set_duration(Duration::from_secs_f32(THORNS_COOLDOWN));
+                    timer.0.reset();
                 }
             },
         }

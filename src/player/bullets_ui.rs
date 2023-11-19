@@ -67,7 +67,7 @@ pub fn manage_bullet_ui_sprites(
 
     for (entity, bullet, atlas, mut transform) in q_bullets.iter_mut() {
         if bullet.index >= player.max_bullets {
-            commands.entity(entity).despawn();
+            commands.entity(entity).despawn_recursive();
             continue;
         }
 

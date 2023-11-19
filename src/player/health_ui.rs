@@ -68,7 +68,7 @@ pub fn manage_health_ui_sprites(
 
     for (entity, heart, atlas, mut transform) in q_hearts.iter_mut() {
         if heart.index >= health.max {
-            commands.entity(entity).despawn();
+            commands.entity(entity).despawn_recursive();
             continue;
         }
 

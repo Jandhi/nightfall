@@ -163,8 +163,8 @@ pub fn update_description(
         if let (Ok((title, _)), Ok((desc, _))) =
             (q_taken_title.get_single(), q_taken_description.get_single())
         {
-            commands.entity(title).despawn();
-            commands.entity(desc).despawn();
+            commands.entity(title).despawn_recursive();
+            commands.entity(desc).despawn_recursive();
         }
     }
 }

@@ -126,7 +126,7 @@ pub fn on_select_ability(
             pause.is_paused = false;
 
             for e in q_selection_items.iter() {
-                commands.entity(e).despawn();
+                commands.entity(e).despawn_recursive();
             }
         }
     }
