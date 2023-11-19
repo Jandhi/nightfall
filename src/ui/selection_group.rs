@@ -2,6 +2,8 @@ use bevy::{prelude::*, window::PrimaryWindow};
 
 use crate::collision::collider::Collider;
 
+use super::hoverable::{UnhoveredEvent, HoveredEvent};
+
 #[derive(Component)]
 pub struct SelectionGroup {
     pub is_focused: bool,
@@ -12,18 +14,6 @@ pub struct SelectionGroup {
 #[derive(Component)]
 pub struct SelectionElement {
     pub index: usize,
-}
-
-#[derive(Event)]
-pub struct UnhoverEvent {
-    pub parent: Entity,
-    pub unhovered: Entity,
-}
-
-#[derive(Event)]
-pub struct HoverEvent {
-    pub parent: Entity,
-    pub hovered: Entity,
 }
 
 #[derive(Event)]
@@ -40,8 +30,8 @@ pub fn update_selection_groups(
         Without<SelectionGroup>,
     >,
     q_windows: Query<&Window, With<PrimaryWindow>>,
-    mut hover: EventWriter<HoverEvent>,
-    mut unhover: EventWriter<UnhoverEvent>,
+    mut hover: EventWriter<HoveredEvent>,
+    mut unhover: EventWriter<UnhoveredEvent>,
     mut select: EventWriter<SelectionEvent>,
     mouse_button: Res<Input<MouseButton>>,
     keyboard_input: Res<Input<KeyCode>>,
@@ -61,14 +51,12 @@ pub fn update_selection_groups(
                     && collider.contains_point(transform.translation.truncate(), cursor_point)
                 {
                     if group.hovered_index != element.index {
-                        unhover.send(UnhoverEvent {
-                            parent: parent_entity,
-                            unhovered: *children.get(group.hovered_index).unwrap(),
+                        unhover.send(UnhoveredEvent {
+                            entity: *children.get(group.hovered_index).unwrap(),
                         });
                         group.hovered_index = element.index;
-                        hover.send(HoverEvent {
-                            parent: parent_entity,
-                            hovered: entity,
+                        hover.send(HoveredEvent {
+                            entity,
                         });
                     }
 
@@ -98,24 +86,20 @@ pub fn update_selection_groups(
             let child_count = children.len();
 
             if left_pressed && selection_group.hovered_index > 0 {
-                unhover.send(UnhoverEvent {
-                    parent: entity,
-                    unhovered: *children.get(selection_group.hovered_index).unwrap(),
+                unhover.send(UnhoveredEvent {
+                    entity: *children.get(selection_group.hovered_index).unwrap(),
                 });
                 selection_group.hovered_index -= 1;
-                hover.send(HoverEvent {
-                    parent: entity,
-                    hovered: *children.get(selection_group.hovered_index).unwrap(),
+                hover.send(HoveredEvent {
+                    entity: *children.get(selection_group.hovered_index).unwrap(),
                 });
             } else if right_pressed && selection_group.hovered_index < child_count - 1 {
-                unhover.send(UnhoverEvent {
-                    parent: entity,
-                    unhovered: *children.get(selection_group.hovered_index).unwrap(),
+                unhover.send(UnhoveredEvent {
+                    entity: *children.get(selection_group.hovered_index).unwrap(),
                 });
                 selection_group.hovered_index += 1;
-                hover.send(HoverEvent {
-                    parent: entity,
-                    hovered: *children.get(selection_group.hovered_index).unwrap(),
+                hover.send(HoveredEvent {
+                    entity: *children.get(selection_group.hovered_index).unwrap(),
                 });
             }
         }

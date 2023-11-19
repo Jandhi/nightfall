@@ -28,6 +28,12 @@ pub struct Collision {
     pub entity_b: Entity,
 }
 
+impl Collision {
+    pub fn contains(&self, entity : Entity) -> bool {
+        entity == self.entity_a || entity == self.entity_b
+    }
+}
+
 #[derive(Event)]
 pub struct IsCollidingEvent {
     pub collision: Collision,
@@ -93,6 +99,10 @@ impl Collider {
     }
 
     pub fn contains_point(&self, my_position: Vec2, point: Vec2) -> bool {
+        if point.x.is_nan() || point.y.is_nan() {
+            return false;
+        }
+
         match self.shape {
             ColliderShape::Rect(size) => {
                 point.x >= my_position.x - size.x / 2.
@@ -131,27 +141,31 @@ impl Collider {
     }
 
     fn is_colliding_rect_circle(size: Vec2, rect_pos: Vec2, radius: f32, circle_pos: Vec2) -> bool {
+        let bottom_left = rect_pos - size / 2.;
+        let top_right = rect_pos + size / 2.;
+        let top_left = Vec2{ x: bottom_left.x, y : top_right.y };
+        let bottom_right = Vec2{ x: top_right.x, y : bottom_left.y };
+        let corners = vec![bottom_left, top_right, top_left, bottom_right];
+
         // Trivial case: if the center of the circle is in the rectangle there is a collision
         if is_between(rect_pos + size / 2., circle_pos, rect_pos - size / 2.) {
             true
+        // If it contains corners
+        } else if corners.iter().any(|corner| circle_pos.distance(*corner) <= radius) {
+            true
         // Otherwise, start with case where circle is to the left
-        } else if circle_pos.x < rect_pos.x {
-            (rect_pos.x - size.x / 2.) - circle_pos.x <= radius
+        } else if circle_pos.x < rect_pos.x && circle_pos.y > bottom_left.y && circle_pos.y < top_right.y {
+            bottom_left.x - circle_pos.x <= radius
         // To the right
-        } else if circle_pos.x > rect_pos.x {
-            circle_pos.x - (rect_pos.x + size.x / 2.) <= radius
+        } else if circle_pos.x > rect_pos.x && circle_pos.y > bottom_left.y && circle_pos.y < top_right.y {
+            circle_pos.x - top_right.x <= radius
         // Above
-        } else if circle_pos.y > rect_pos.y {
-            circle_pos.y - (rect_pos.y + size.y / 2.) <= radius
+        } else if circle_pos.y > rect_pos.y && circle_pos.x > bottom_left.x && circle_pos.x < top_right.x {
+            circle_pos.y - top_right.y <= radius
         // Below
-        } else if circle_pos.y < rect_pos.y {
-            (rect_pos.y - size.y / 2.) - circle_pos.y <= radius
+        } else if circle_pos.y < rect_pos.y && circle_pos.x > bottom_left.x && circle_pos.x < top_right.x  {
+            bottom_left.y - circle_pos.y <= radius
         } else {
-            info!(
-                "This should not be possible! Size: {} RectPos: {} Radius: {} CirclePos: {}",
-                size, rect_pos, radius, circle_pos
-            );
-
             false
         }
     }
@@ -175,7 +189,7 @@ pub struct PreviousCollisions {
 }
 
 pub fn collision_tick(
-    mut q_colliders: Query<(Entity, &mut Collider, &Transform)>,
+    mut q_colliders: Query<(Entity, &mut Collider, &GlobalTransform)>,
     mut collision_started_event: EventWriter<CollisionStartEvent>,
     mut collision_event: EventWriter<IsCollidingEvent>,
     mut collision_ended_event: EventWriter<CollisionEndEvent>,
@@ -186,7 +200,7 @@ pub fn collision_tick(
 
     // Update spatial grid
     for (entity, mut collider, transform) in q_colliders.iter_mut() {
-        let spatial_coord = vec3_to_spatial_coord(transform.translation);
+        let spatial_coord = vec3_to_spatial_coord(transform.translation());
 
         spatial_grid
             .entry(spatial_coord)
@@ -196,7 +210,7 @@ pub fn collision_tick(
         spatial_grid.get_mut(&spatial_coord).unwrap().push((
             entity,
             collider.clone(),
-            transform.translation.truncate(),
+            transform.translation().truncate(),
         ));
         collider.spatial_coord = spatial_coord;
     }
@@ -204,9 +218,9 @@ pub fn collision_tick(
     // Find collisions
     for (entity, collider, transform) in q_colliders.iter() {
         let (min_x, min_y) =
-            vec2_to_spatial_coord(collider.min_point(transform.translation.truncate()));
+            vec2_to_spatial_coord(collider.min_point(transform.translation().truncate()));
         let (max_x, max_y) =
-            vec2_to_spatial_coord(collider.max_point(transform.translation.truncate()));
+            vec2_to_spatial_coord(collider.max_point(transform.translation().truncate()));
 
         let mut possible_collisions = vec![];
 
@@ -228,7 +242,7 @@ pub fn collision_tick(
             }
 
             if collider.is_colliding(
-                transform.translation.truncate(),
+                transform.translation().truncate(),
                 other_collider,
                 *other_position,
             ) {

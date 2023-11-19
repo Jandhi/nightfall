@@ -5,7 +5,7 @@ use crate::{animation::AppAnimationSetup, GameState};
 use self::{
     ai::{follow_player, move_and_shoot_ai, ChargeShootEvent, ShootEvent},
     beholder::{beholder_update, BeholderAnimation, BeholderProjectileAnimation},
-    enemy::{death_loop, initial_spawn, spread_enemies, EnemyDeathEvent},
+    enemy::{death_loop, spread_enemies, EnemyDeathEvent},
     imp::ImpAnimation,
     reaper::{reaper_blade_update, reaper_update, ReaperAnimation, ReaperBladeAnimation},
     spawning::{spawn_loop, spawn_spawn_rng, SpawnInfo},
@@ -40,7 +40,7 @@ impl Plugin for EnemiesPlugin {
             )
             .add_systems(
                 OnEnter(GameState::Playing),
-                (initial_spawn, spawn_spawn_rng),
+                (spawn_spawn_rng),
             )
             .add_animation::<ImpAnimation>()
             .add_animation::<BeholderAnimation>()

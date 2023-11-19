@@ -81,6 +81,13 @@ impl AppAnimationSetup for App {
     }
 }
 
+#[derive(Bundle)]
+pub struct AnimationBundle<T: Send + std::marker::Sync + 'static + Clone + Copy + Eq + Hash> {
+    pub sprite_sheet : SpriteSheetBundle,
+    pub timer : AnimationTimer,
+    pub controller : AnimationController<T>,
+}
+
 pub fn make_animation_bundle<T: Send + std::marker::Sync + 'static + Clone + Copy + Eq + Hash>(
     start_state_id: T,
     animations: &Res<AnimationStateStorage<T>>,
@@ -88,9 +95,9 @@ pub fn make_animation_bundle<T: Send + std::marker::Sync + 'static + Clone + Cop
     position: Vec3,
     scaling: f32,
 ) -> impl Bundle {
-    let start_state = animations.get(start_state_id).unwrap();
-    (
-        SpriteSheetBundle {
+    let start_state = animations.get(start_state_id).expect("Start state should be stored in here");
+    AnimationBundle{
+        sprite_sheet: SpriteSheetBundle {
             texture_atlas: texture_atlas_handle,
             sprite: TextureAtlasSprite::new(start_state.start_index),
             transform: Transform {
@@ -100,10 +107,10 @@ pub fn make_animation_bundle<T: Send + std::marker::Sync + 'static + Clone + Cop
             },
             ..Default::default()
         },
-        AnimationTimer(Timer::from_seconds(
+        timer: AnimationTimer(Timer::from_seconds(
             start_state.frame_duration.as_secs_f32(),
             TimerMode::Repeating,
         )),
-        AnimationController::new(start_state),
-    )
+        controller: AnimationController::new(start_state),
+    }
 }

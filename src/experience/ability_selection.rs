@@ -17,8 +17,8 @@ use crate::{
     ui::{
         grid::{Grid, GridElement},
         selection_group::{
-            HoverEvent, SelectionElement, SelectionEvent, SelectionGroup, UnhoverEvent,
-        },
+            SelectionElement, SelectionEvent, SelectionGroup,
+        }, hoverable::{HoveredEvent, UnhoveredEvent},
     },
     util::rng::{GlobalSeed, RNG},
 };
@@ -53,11 +53,11 @@ impl Animation<AbilityFrameAnimation> for AbilityFrameAnimation {
 pub fn ability_frame_update(
     q_frames: Query<(Entity, &AnimationController<AbilityFrameAnimation>)>,
     mut animation_update: EventWriter<AnimationStateChangeEvent<AbilityFrameAnimation>>,
-    mut hover_events: EventReader<HoverEvent>,
-    mut unhover_events: EventReader<UnhoverEvent>,
+    mut hover_events: EventReader<HoveredEvent>,
+    mut unhover_events: EventReader<UnhoveredEvent>,
 ) {
     for hover_ev in hover_events.iter() {
-        if let Ok((entity, _)) = q_frames.get(hover_ev.hovered) {
+        if let Ok((entity, _)) = q_frames.get(hover_ev.entity) {
             animation_update.send(AnimationStateChangeEvent {
                 id: entity,
                 state_id: AbilityFrameAnimation::Hovered,
@@ -66,7 +66,7 @@ pub fn ability_frame_update(
     }
 
     for unhover_ev in unhover_events.iter() {
-        if let Ok((entity, _)) = q_frames.get(unhover_ev.unhovered) {
+        if let Ok((entity, _)) = q_frames.get(unhover_ev.entity) {
             animation_update.send(AnimationStateChangeEvent {
                 id: entity,
                 state_id: AbilityFrameAnimation::NonHovered,

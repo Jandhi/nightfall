@@ -228,7 +228,7 @@ pub fn spawn_beholder(
             },
             velocity: Velocity::ZERO,
             health: Health::new(25),
-            collider: Collider::new_circle(12., position.truncate()),
+            collider: Collider::new_circle(20., position.truncate()),
             team: TeamMember { team: Team::Enemy },
         })
         .insert(MoveAndShootAI::new(20., 3., 200., 6. / 8., 2.))
@@ -296,7 +296,7 @@ pub fn spawn_beholder_prince(
             },
             velocity: Velocity::ZERO,
             health: Health::new(200),
-            collider: Collider::new_circle(12., position.truncate()),
+            collider: Collider::new_circle(20., position.truncate()),
             team: TeamMember { team: Team::Enemy },
         })
         .insert(BeholderPrince)

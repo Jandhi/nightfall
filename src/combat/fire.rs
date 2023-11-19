@@ -114,7 +114,12 @@ pub fn fire_update(
                 })
                 .add(|id, world: &mut World| {
                     if let Some(fire) = world.entity(id).get::<Fire>() {
-                        world.entity_mut(fire.parent).add_child(id);
+                        match world.get_entity_mut(fire.parent) {
+                            Some(mut entity) => {
+                                entity.add_child(id);
+                            },
+                            None => (),
+                        }
                     }
                 });
         }

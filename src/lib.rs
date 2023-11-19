@@ -49,6 +49,8 @@ enum GameState {
     Playing,
     // Here the menu is drawn and waiting for player interaction
     Menu,
+    // special scene for debugging collision system
+    DebugCollision,
 }
 
 pub struct GamePlugin;

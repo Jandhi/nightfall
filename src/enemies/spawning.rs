@@ -1,3 +1,5 @@
+use std::time::Duration;
+
 use bevy::{prelude::*, time::Stopwatch, window::PrimaryWindow};
 use rand::{seq::IteratorRandom, Rng};
 
@@ -26,7 +28,14 @@ pub struct SpawnInfo {
 #[derive(Resource)]
 pub struct SpawningRNG(pub RNG);
 
-pub fn spawn_spawn_rng(seed: Res<GlobalSeed>, mut commands: Commands) {
+pub fn spawn_spawn_rng(
+    seed: Res<GlobalSeed>, 
+    mut spawn_info : ResMut<SpawnInfo>,
+    mut commands: Commands,
+) {
+    // Make enemies spawn fast 
+    spawn_info.timer.set_elapsed(Duration::from_secs_f32(5.0));
+
     commands.insert_resource(SpawningRNG(RNG::new(&seed.0, "spawning")))
 }
 

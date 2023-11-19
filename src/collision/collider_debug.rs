@@ -2,7 +2,7 @@ use bevy::{prelude::*, ecs::system::Command};
 
 use crate::{loading::DebugTextureAssets, constants::SortingLayers};
 
-use super::collider::{Collider, ColliderShape};
+use super::collider::{Collider, ColliderShape, IsCollidingEvent, Collision};
 
 // This example game uses States to separate logic
 // See https://bevy-cheatbook.github.io/programming/states.html
@@ -23,41 +23,10 @@ pub struct HasColliderDebugSprite;
 
 pub fn spawn_colliders_sprites(
     q_colliders : Query<(Entity, &Collider)>,
-    textures : Res<DebugTextureAssets>,
     mut commands : Commands
 ) {
     for (entity, collider) in q_colliders.iter() {
-        commands.entity(entity).with_children(|parent| {
-            parent.spawn(SpriteBundle{
-                texture: match collider.shape() {
-                    ColliderShape::Rect(_) => textures.rect.clone(),
-                    ColliderShape::Circle(_) => textures.circle.clone(),
-                },
-                transform: Transform{
-                    translation: Vec3 { x: 0., y: 0., z: SortingLayers::DebugFront.into() },
-                    rotation: default(),
-                    scale: match collider.shape() {
-                        ColliderShape::Rect(size) => {
-                            Vec3 {
-                                x: size.x / 128.,
-                                y: size.y / 128.,
-                                z: 1.,
-                            }
-                        },
-                        ColliderShape::Circle(radius) => {
-                            Vec3 {
-                                x: 2. * radius / 128.,
-                                y: 2. * radius / 128.,
-                                z: 1.,
-                            }
-                        },
-                    },
-                },
-                ..default()
-            }).insert(ColliderDebugSprite);
-        });
-
-        commands.entity(entity).insert(HasColliderDebugSprite);
+        commands.add(AddDebugCollider{ parent: entity, collider: collider.clone() });
     }
 }
 
@@ -76,31 +45,43 @@ pub fn despawn_colliders_sprites(
 }
 
 pub fn update_collider_sprites(
-    mut q_sprites : Query<(&mut Transform, &Parent), With<ColliderDebugSprite>>,
+    mut q_sprites : Query<(&mut Transform, &Parent, &mut Sprite), With<ColliderDebugSprite>>,
     mut q_errant_sprites : Query<Entity, (With<ColliderDebugSprite>, Without<Parent>)>,
-    q_colliders : Query<&Collider, (With<HasColliderDebugSprite>, Without<ColliderDebugSprite>)>,
+    q_colliders : Query<(&Collider, &GlobalTransform), (With<HasColliderDebugSprite>, Without<ColliderDebugSprite>)>,
     q_spriteless_colliders : Query<(Entity, &Collider), (Without<HasColliderDebugSprite>, Without<ColliderDebugSprite>)>,
+    mut ev_is_colliding : EventReader<IsCollidingEvent>,
     textures : Res<DebugTextureAssets>,
     mut commands : Commands
 ) {
-    for (mut transform, parent) in q_sprites.iter_mut() {
-        if let Ok(collider) = q_colliders.get(parent.get()) {
+    let current_collisions  = ev_is_colliding.iter().map(|ev| ev.collision.clone()).collect::<Vec<Collision>>();
+
+    for (mut transform, parent, mut sprite) in q_sprites.iter_mut() {
+        if let Ok((collider, global_transform)) = q_colliders.get(parent.get()) {
+            let scale = global_transform.to_scale_rotation_translation().0;
             transform.scale = match collider.shape() {
                 ColliderShape::Rect(size) => {
                     Vec3 {
-                        x: size.x / 128.,
-                        y: size.y / 128.,
+                        x: size.x / 128. / scale.x,
+                        y: size.y / 128. / scale.y,
                         z: 1.,
                     }
                 },
                 ColliderShape::Circle(radius) => {
                     Vec3 {
-                        x: 2. * radius / 128.,
-                        y: 2. * radius / 128.,
+                        x: 2. * radius / 128. / scale.x,
+                        y: 2. * radius / 128. / scale.y,
                         z: 1.,
                     }
                 },
             };
+        }
+
+        let is_colliding = current_collisions.iter().any(|c| c.contains(parent.get()));
+        
+        if is_colliding {
+            sprite.color = Color::RED;
+        } else {
+            sprite.color = Color::WHITE;
         }
     }
 
@@ -125,6 +106,8 @@ impl Command for AddDebugCollider {
 
         match world.get_entity_mut(self.parent) {
             Some(mut entity) => {
+                let scale = entity.get::<GlobalTransform>().expect("Parent should have transform").clone().to_scale_rotation_translation().0;
+
                 entity.with_children(|parent| {
                     parent.spawn(SpriteBundle{
                         texture: match self.collider.shape() {
@@ -137,15 +120,15 @@ impl Command for AddDebugCollider {
                             scale: match self.collider.shape() {
                                 ColliderShape::Rect(size) => {
                                     Vec3 {
-                                        x: size.x / 128.,
-                                        y: size.y / 128.,
+                                        x: size.x / 128. / scale.x,
+                                        y: size.y / 128. / scale.y,
                                         z: 1.,
                                     }
                                 },
                                 ColliderShape::Circle(radius) => {
                                     Vec3 {
-                                        x: 2. * radius / 128.,
-                                        y: 2. * radius / 128.,
+                                        x: radius / 128. / scale.x,
+                                        y: radius / 128. / scale.y,
                                         z: 1.,
                                     }
                                 },
@@ -154,6 +137,8 @@ impl Command for AddDebugCollider {
                         ..default()
                     }).insert(ColliderDebugSprite);
                 });
+
+                entity.insert(HasColliderDebugSprite);                
             },
             None => (),
         };

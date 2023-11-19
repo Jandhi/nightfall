@@ -9,7 +9,7 @@ use self::{
         click_unpause, pause_keypress, update_pause_menu, ActionPauseState, PauseMenuState,
         TogglePauseMenu,
     },
-    velocity::velocity_update,
+    velocity::velocity_update, follow_mouse::follow_mouse_update,
 };
 use crate::GameState;
 
@@ -19,12 +19,15 @@ pub mod friction;
 pub mod magnetic;
 pub mod pause;
 pub mod velocity;
+pub mod follow_mouse;
 
 pub struct MovementPlugin;
 
 impl Plugin for MovementPlugin {
     fn build(&self, app: &mut bevy::prelude::App) {
-        app.add_systems(
+        app
+            .add_systems(Update, follow_mouse_update)
+            .add_systems(
             Update,
             (
                 velocity_update,

@@ -132,30 +132,3 @@ pub fn spread_enemies(
         }
     }
 }
-
-pub fn initial_spawn(
-    animations: Res<AnimationStateStorage<ImpAnimation>>,
-    mut texture_atlases: ResMut<Assets<TextureAtlas>>,
-    mut commands: Commands,
-    textures: Res<TextureAssets>,
-) {
-    for i in 0..4 {
-        spawn_imp(
-            Vec3 {
-                x: match i {
-                    1 | 2 => 100.,
-                    _ => -100.,
-                },
-                y: match i {
-                    1 | 3 => 100.,
-                    _ => -100.,
-                },
-                z: SortingLayers::Action.into(),
-            },
-            &animations,
-            &textures,
-            &mut texture_atlases,
-            &mut commands,
-        );
-    }
-}
