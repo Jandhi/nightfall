@@ -104,7 +104,7 @@ fn update_buttons(
         }
     }
 
-    for (mut button, mut atlas) in q_buttons.iter_mut() {
+    for (button, mut atlas) in q_buttons.iter_mut() {
         atlas.index = match button.state {
             ButtonState::Normal => 0,
             ButtonState::Hovered => 1,

@@ -49,11 +49,11 @@ pub fn update_volume_bars(
     mut bar_update: EventReader<BarUpdatedEvent>,
 ) {
     for ev in bar_update.iter() {
-        if let Ok(_) = q_music_bar.get(ev.entity) {
+        if q_music_bar.get(ev.entity).is_ok() {
             music_volume.set_volume(ev.new_val as f32 / 10., &mut music_channel);
         }
 
-        if let Ok(_) = q_fx_bar.get(ev.entity) {
+        if q_fx_bar.get(ev.entity).is_ok() {
             fx_volume.set_volume(ev.new_val as f32 / 10., &mut fx_channel);
         }
     }

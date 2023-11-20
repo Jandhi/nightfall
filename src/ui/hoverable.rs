@@ -67,11 +67,9 @@ fn update_hoverables(
                 hoverable.is_hovered = true;
                 hover.send(HoveredEvent { entity });
             }
-        } else {
-            if hoverable.is_hovered {
-                hoverable.is_hovered = false;
-                unhover.send(UnhoveredEvent { entity });
-            }
+        } else if hoverable.is_hovered {
+            hoverable.is_hovered = false;
+            unhover.send(UnhoveredEvent { entity });
         }
     }
 }

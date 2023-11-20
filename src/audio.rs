@@ -41,9 +41,9 @@ impl<T: Send + Sync + 'static> Volume<T> {
     }
 }
 
-impl<T: Send + Sync + 'static> Into<KiraVolume> for &mut Volume<T> {
-    fn into(self) -> KiraVolume {
-        KiraVolume::Amplitude(self.volume.into())
+impl<T: Send + Sync + 'static> From<&mut Volume<T>> for KiraVolume {
+    fn from(val: &mut Volume<T>) -> Self {
+        KiraVolume::Amplitude(val.volume.into())
     }
 }
 

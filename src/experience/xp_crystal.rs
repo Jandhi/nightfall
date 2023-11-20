@@ -99,7 +99,7 @@ pub fn drop_crystals(
 }
 
 pub fn xp_crystal_update(
-    q_crystals: Query<(Entity, &Transform, &XPCrystal), (Without<Player>)>,
+    q_crystals: Query<(Entity, &Transform, &XPCrystal), Without<Player>>,
     mut q_player: Query<(&Transform, &mut Experience), (With<Player>, Without<XPCrystal>)>,
     fx_channel: Res<FXChannel>,
     audio: Res<AudioAssets>,

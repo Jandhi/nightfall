@@ -3,20 +3,20 @@ use bevy::prelude::*;
 use bevy_kira_audio::AudioControl;
 use rand::Rng;
 
-use crate::animation::AnimationStateStorage;
+
 use crate::audio::FXChannel;
 use crate::collision::collider::{Collider, IsCollidingEvent};
 
 use crate::combat::health::{DeathEvent, Health};
 use crate::combat::teams::TeamMember;
 use crate::combat::z_sort::ZSort;
-use crate::constants::SortingLayers;
-use crate::loading::{AudioAssets, TextureAssets};
+
+use crate::loading::{AudioAssets};
 
 use crate::movement::velocity::Velocity;
 use crate::util::pitch_rng::PitchRNG;
 
-use super::imp::{spawn_imp, ImpAnimation};
+
 
 #[derive(Copy, Clone)]
 pub enum EnemyType {

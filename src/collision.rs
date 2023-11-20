@@ -1,4 +1,4 @@
-use bevy::{ecs::schedule::ScheduleLabel, prelude::*, utils::HashSet};
+use bevy::{prelude::*, utils::HashSet};
 
 pub mod collider;
 pub mod collider_debug;

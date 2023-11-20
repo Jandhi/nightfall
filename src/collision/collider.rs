@@ -1,5 +1,5 @@
 use bevy::{prelude::*, utils::HashSet};
-use bevy_debug_text_overlay::screen_print;
+
 use std::collections::HashMap;
 
 type SpatialCoord = (i32, i32);
@@ -154,7 +154,7 @@ impl Collider {
             x: top_right.x,
             y: bottom_left.y,
         };
-        let corners = vec![bottom_left, top_right, top_left, bottom_right];
+        let corners = [bottom_left, top_right, top_left, bottom_right];
 
         // Trivial case: if the center of the circle is in the rectangle there is a collision
         if is_between(rect_pos + size / 2., circle_pos, rect_pos - size / 2.) {

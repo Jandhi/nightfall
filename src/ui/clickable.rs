@@ -63,11 +63,9 @@ fn update_clickables(
                     clickable.is_clicked = true;
                     clicked.send(ClickedEvent { entity });
                 }
-            } else if mouse_button.just_released(MouseButton::Left) {
-                if clickable.is_clicked {
-                    clickable.is_clicked = false;
-                    unclicked.send(UnclickedEvent { entity });
-                }
+            } else if mouse_button.just_released(MouseButton::Left) && clickable.is_clicked {
+                clickable.is_clicked = false;
+                unclicked.send(UnclickedEvent { entity });
             }
         } else if clickable.is_clicked {
             clickable.is_clicked = false;

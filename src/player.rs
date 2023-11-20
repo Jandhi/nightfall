@@ -285,18 +285,18 @@ pub fn enemy_collision(
         return;
     }
 
-    let (player, player_stats, mut health) = q_player.single_mut();
+    let (player, _player_stats, mut health) = q_player.single_mut();
     let mut is_hit = false;
 
     for ev in collisions.iter() {
-        if let Ok((entity, mut enemy_health)) = q_enemies.get_mut(ev.collision.entity_a) {
+        if let Ok((_entity, _enemy_health)) = q_enemies.get_mut(ev.collision.entity_a) {
             if player == ev.collision.entity_b {
                 is_hit = true;
 
                 break;
             }
         }
-        if let Ok((entity, mut enemy_health)) = q_enemies.get_mut(ev.collision.entity_a) {
+        if let Ok((_entity, _enemy_health)) = q_enemies.get_mut(ev.collision.entity_a) {
             if player == ev.collision.entity_a {
                 is_hit = true;
 

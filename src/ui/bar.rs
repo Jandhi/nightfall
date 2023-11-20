@@ -46,7 +46,7 @@ impl Bar {
     pub fn new(initial_val: u32, max_val: u32) -> Bar {
         Bar {
             val: initial_val,
-            max_val: max_val,
+            max_val,
         }
     }
 
@@ -104,8 +104,8 @@ struct BarNextButton;
 
 fn update_bars(
     mut q_bars: Query<(&mut Bar, &mut TextureAtlasSprite)>,
-    mut q_prev_buttons: Query<&Parent, (With<BarPreviousButton>, Without<Bar>)>,
-    mut q_next_buttons: Query<&Parent, (With<BarNextButton>, Without<Bar>)>,
+    q_prev_buttons: Query<&Parent, (With<BarPreviousButton>, Without<Bar>)>,
+    q_next_buttons: Query<&Parent, (With<BarNextButton>, Without<Bar>)>,
     mut click_ev: EventReader<ClickedEvent>,
     mut bar_update: EventWriter<BarUpdatedEvent>,
 ) {

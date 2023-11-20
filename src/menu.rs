@@ -95,7 +95,7 @@ fn setup_menu(mut commands: Commands, font_assets: Res<FontAssets>, palette: Res
 fn click_play_button(
     palette: Res<Palette>,
     mut state: ResMut<NextState<GameState>>,
-    mut cd_state: ResMut<NextState<ColliderDebugSpriteState>>,
+    _cd_state: ResMut<NextState<ColliderDebugSpriteState>>,
     mut interaction_query: Query<
         (&Interaction, &mut BackgroundColor),
         (

@@ -8,14 +8,14 @@ use crate::{
         info::{AnimationInfoBuilder, AnimationStateInfo},
         make_animation_bundle, Animation, AnimationStateChangeEvent, AnimationStateStorage,
     },
-    collision::collider::{Collider, IsCollidingEvent},
+    collision::collider::{Collider},
     combat::{
         health::TookDamageEvent,
         projectile::{DamageTarget, PiercingMode, Projectile},
         teams::Team,
     },
-    constants::{SortingLayers, SCALING_VEC3},
-    enemies::{self, enemy::Enemy},
+    constants::{SortingLayers},
+    enemies::{enemy::Enemy},
     loading::TextureAssets,
     movement::pause::ActionPauseState,
 };
@@ -68,7 +68,7 @@ pub fn thorns_update(
         (Without<Player>, Without<Enemy>),
     >,
     mut animation_ev: EventWriter<AnimationStateChangeEvent<ThornsAnimation>>,
-    mut hit_ev: EventReader<TookDamageEvent>,
+    _hit_ev: EventReader<TookDamageEvent>,
     mut timer: ResMut<ThornsTimer>,
     animations: Res<AnimationStateStorage<ThornsAnimation>>,
     textures: Res<TextureAssets>,
@@ -77,7 +77,7 @@ pub fn thorns_update(
     time: Res<Time>,
     mut commands: Commands,
 ) {
-    let (player_entity, player, player_pos) = q_player.single();
+    let (_player_entity, player, player_pos) = q_player.single();
 
     if !player.abilities.contains(&super::ability::Ability::Thorns) {
         return;

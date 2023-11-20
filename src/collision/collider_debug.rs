@@ -45,7 +45,7 @@ pub fn despawn_colliders_sprites(
 
 pub fn update_collider_sprites(
     mut q_sprites: Query<(&mut Transform, &Parent, &mut Sprite), With<ColliderDebugSprite>>,
-    mut q_errant_sprites: Query<Entity, (With<ColliderDebugSprite>, Without<Parent>)>,
+    q_errant_sprites: Query<Entity, (With<ColliderDebugSprite>, Without<Parent>)>,
     q_colliders: Query<
         (&Collider, &GlobalTransform),
         (With<HasColliderDebugSprite>, Without<ColliderDebugSprite>),
@@ -58,12 +58,12 @@ pub fn update_collider_sprites(
         ),
     >,
     mut ev_is_colliding: EventReader<IsCollidingEvent>,
-    textures: Res<DebugTextureAssets>,
+    _textures: Res<DebugTextureAssets>,
     mut commands: Commands,
 ) {
     let current_collisions = ev_is_colliding
         .iter()
-        .map(|ev| ev.collision.clone())
+        .map(|ev| ev.collision)
         .collect::<Vec<Collision>>();
 
     for (mut transform, parent, mut sprite) in q_sprites.iter_mut() {
