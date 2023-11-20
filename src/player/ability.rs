@@ -143,8 +143,10 @@ impl Ability {
                 !player_abilities.contains(&Ability::BiggestBullets)
                     && player_abilities.contains(&Ability::BigBullets)
             }
-            Ability::Crossbow => !player_abilities.contains(&Ability::Crossbow)
-                && player_abilities.contains(&Ability::Piercing),
+            Ability::Crossbow => {
+                !player_abilities.contains(&Ability::Crossbow)
+                    && player_abilities.contains(&Ability::Piercing)
+            }
             Ability::DoubleBarrel => !player_abilities.contains(&Ability::DoubleBarrel),
             Ability::TripleBarrel => {
                 !player_abilities.contains(&Ability::TripleBarrel)

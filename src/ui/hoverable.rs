@@ -6,8 +6,7 @@ pub struct HoverPlugin;
 
 impl Plugin for HoverPlugin {
     fn build(&self, app: &mut App) {
-        app
-            .add_event::<HoveredEvent>()
+        app.add_event::<HoveredEvent>()
             .add_event::<UnhoveredEvent>()
             .add_systems(Update, update_hoverables);
     }
@@ -15,7 +14,7 @@ impl Plugin for HoverPlugin {
 
 #[derive(Component)]
 pub struct Hoverable {
-    is_hovered : bool
+    is_hovered: bool,
 }
 
 impl Hoverable {
@@ -40,12 +39,12 @@ pub struct HoveredEvent {
 
 #[derive(Bundle)]
 pub struct HoverBundle {
-    pub collider : Collider,
-    pub hoverable : Hoverable
+    pub collider: Collider,
+    pub hoverable: Hoverable,
 }
 
 fn update_hoverables(
-    mut q_hoverables : Query<(Entity, &mut Hoverable, &Collider, &GlobalTransform), Without<Window>>,
+    mut q_hoverables: Query<(Entity, &mut Hoverable, &Collider, &GlobalTransform), Without<Window>>,
     q_windows: Query<&Window, With<PrimaryWindow>>,
     mut hover: EventWriter<HoveredEvent>,
     mut unhover: EventWriter<UnhoveredEvent>,
@@ -55,7 +54,7 @@ fn update_hoverables(
         Some(position) => position,
         None => {
             return;
-        },
+        }
     };
     let cursor_point = Vec2::new(
         cursor_position.x - window.width() / 2.,
@@ -63,8 +62,7 @@ fn update_hoverables(
     );
 
     for (entity, mut hoverable, collider, transform) in q_hoverables.iter_mut() {
-        if collider.contains_point(transform.translation().truncate(), cursor_point)
-        {
+        if collider.contains_point(transform.translation().truncate(), cursor_point) {
             if !hoverable.is_hovered {
                 hoverable.is_hovered = true;
                 hover.send(HoveredEvent { entity });

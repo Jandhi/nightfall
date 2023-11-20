@@ -29,11 +29,11 @@ pub struct SpawnInfo {
 pub struct SpawningRNG(pub RNG);
 
 pub fn spawn_spawn_rng(
-    seed: Res<GlobalSeed>, 
-    mut spawn_info : ResMut<SpawnInfo>,
+    seed: Res<GlobalSeed>,
+    mut spawn_info: ResMut<SpawnInfo>,
     mut commands: Commands,
 ) {
-    // Make enemies spawn fast 
+    // Make enemies spawn fast
     spawn_info.timer.set_elapsed(Duration::from_secs_f32(5.0));
 
     commands.insert_resource(SpawningRNG(RNG::new(&seed.0, "spawning")))

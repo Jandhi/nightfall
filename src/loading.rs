@@ -199,7 +199,7 @@ pub struct AbilityTextures {
 
     #[asset(path = "textures/abilities/potion.png")]
     pub potion: Handle<Image>,
-    
+
     #[asset(path = "textures/abilities/piercing.png")]
     pub piercing: Handle<Image>,
 
@@ -248,7 +248,6 @@ pub struct AbilityTextures {
 
 #[derive(AssetCollection, Resource, Debug)]
 pub struct DebugTextureAssets {
-
     #[asset(path = "textures/debug/circle_128.png")]
     pub circle: Handle<Image>,
 

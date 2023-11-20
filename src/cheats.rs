@@ -1,10 +1,11 @@
 use bevy::prelude::*;
 
 use crate::{
+    collision::collider_debug::ColliderDebugSpriteState,
     combat::health::DeathEvent,
     experience::experience::{Experience, LevelUpEvent},
     player::Player,
-    GameState, collision::collider_debug::ColliderDebugSpriteState,
+    GameState,
 };
 
 pub struct CheatsPlugin;
@@ -20,7 +21,7 @@ fn cheats(
     keyboard_input: Res<Input<KeyCode>>,
     mut levelup: EventWriter<LevelUpEvent>,
     mut death_ev: EventWriter<DeathEvent>,
-    state : Res<State<ColliderDebugSpriteState>>,
+    state: Res<State<ColliderDebugSpriteState>>,
     mut next_state: ResMut<NextState<ColliderDebugSpriteState>>,
 ) {
     let (player_entity, _player, xp) = q_player.single();

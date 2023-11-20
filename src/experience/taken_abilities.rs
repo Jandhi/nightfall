@@ -37,9 +37,7 @@ pub fn spawn_taken(
             ..Default::default()
         })
         .insert(TakenAbility { index, ability })
-        .insert(Collider::new_rect(
-            Vec2 { x: 30., y: 30. },
-        ));
+        .insert(Collider::new_rect(Vec2 { x: 30., y: 30. }));
 }
 
 #[derive(Component)]

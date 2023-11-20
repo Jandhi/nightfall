@@ -16,9 +16,8 @@ use crate::{
     player::{ability::Ability, Player},
     ui::{
         grid::{Grid, GridElement},
-        selection_group::{
-            SelectionElement, SelectionEvent, SelectionGroup,
-        }, hoverable::{HoveredEvent, UnhoveredEvent},
+        hoverable::{HoveredEvent, UnhoveredEvent},
+        selection_group::{SelectionElement, SelectionEvent, SelectionGroup},
     },
     util::rng::{GlobalSeed, RNG},
 };

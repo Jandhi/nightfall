@@ -32,7 +32,7 @@ use self::health_ui::{manage_health_ui_sprites, HealthUIAnimationState, HealthUI
 use self::hit::{spawn_hit_sprite, update_hit_sprite};
 use self::reload_ui::{spawn_reload_ui, update_reload_ui, ReloadTimer};
 use self::shooting::{shoot, ShootingCooldown};
-use self::thorns::{ThornsAnimation, ThornsTimer, thorns_update};
+use self::thorns::{thorns_update, ThornsAnimation, ThornsTimer};
 
 pub mod ability;
 mod animations;

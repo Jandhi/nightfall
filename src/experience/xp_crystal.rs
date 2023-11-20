@@ -25,15 +25,13 @@ use super::experience::Experience;
 pub struct CrystalRNG(pub RNG);
 
 #[derive(Component)]
-pub struct XPCrystal{
-    contained_xp : u32
+pub struct XPCrystal {
+    contained_xp: u32,
 }
 
 pub fn create_xp_crystal_rng(seed: Res<GlobalSeed>, mut commands: Commands) {
     commands.insert_resource(CrystalRNG(RNG::new(seed.0.as_str(), "crystal_rng")))
 }
-
-
 
 #[derive(Bundle)]
 pub struct XPCrystalBundle {
@@ -44,7 +42,7 @@ pub struct XPCrystalBundle {
     pub magnetic: FakeMagnetic,
 }
 
-pub const BIG_XP_AMT : u32 = 40;
+pub const BIG_XP_AMT: u32 = 40;
 pub fn drop_crystals(
     mut enemy_death_event: EventReader<EnemyDeathEvent>,
     mut crystal_rng: ResMut<CrystalRNG>,
@@ -80,10 +78,12 @@ pub fn drop_crystals(
                         },
                         ..Default::default()
                     },
-                    crystal: XPCrystal { contained_xp: match is_big {
-                        true => BIG_XP_AMT,
-                        false => 1,
-                    }},
+                    crystal: XPCrystal {
+                        contained_xp: match is_big {
+                            true => BIG_XP_AMT,
+                            false => 1,
+                        },
+                    },
                     velocity: (direction.unit_vector() * velocity).into(),
                     friction: Friction { force: 50.0 },
                     magnetic: FakeMagnetic { force: 1_000_000.0 },

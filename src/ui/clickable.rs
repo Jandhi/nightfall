@@ -6,8 +6,7 @@ pub struct ClickablePlugin;
 
 impl Plugin for ClickablePlugin {
     fn build(&self, app: &mut App) {
-        app
-            .add_event::<ClickedEvent>()
+        app.add_event::<ClickedEvent>()
             .add_event::<UnclickedEvent>()
             .add_systems(Update, update_clickables);
     }
@@ -15,7 +14,7 @@ impl Plugin for ClickablePlugin {
 
 #[derive(Component)]
 pub struct Clickable {
-    is_clicked : bool,
+    is_clicked: bool,
 }
 
 impl Clickable {
@@ -30,16 +29,16 @@ impl Clickable {
 
 #[derive(Event)]
 pub struct ClickedEvent {
-    pub entity : Entity
+    pub entity: Entity,
 }
 
 #[derive(Event)]
 pub struct UnclickedEvent {
-    pub entity : Entity
+    pub entity: Entity,
 }
 
 fn update_clickables(
-    mut q_clickables : Query<(Entity, &mut Clickable, &Collider, &GlobalTransform), Without<Window>>,
+    mut q_clickables: Query<(Entity, &mut Clickable, &Collider, &GlobalTransform), Without<Window>>,
     q_windows: Query<&Window, With<PrimaryWindow>>,
     mut clicked: EventWriter<ClickedEvent>,
     mut unclicked: EventWriter<UnclickedEvent>,
@@ -50,7 +49,7 @@ fn update_clickables(
         Some(position) => position,
         None => {
             return;
-        },
+        }
     };
     let cursor_point = Vec2::new(
         cursor_position.x - window.width() / 2.,
@@ -63,7 +62,7 @@ fn update_clickables(
                 if !clickable.is_clicked {
                     clickable.is_clicked = true;
                     clicked.send(ClickedEvent { entity });
-                }   
+                }
             } else if mouse_button.just_released(MouseButton::Left) {
                 if clickable.is_clicked {
                     clickable.is_clicked = false;

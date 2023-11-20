@@ -117,7 +117,7 @@ pub fn fire_update(
                         match world.get_entity_mut(fire.parent) {
                             Some(mut entity) => {
                                 entity.add_child(id);
-                            },
+                            }
                             None => (),
                         }
                     }

@@ -2,7 +2,7 @@ use bevy::{prelude::*, window::PrimaryWindow};
 
 use crate::collision::collider::Collider;
 
-use super::hoverable::{UnhoveredEvent, HoveredEvent};
+use super::hoverable::{HoveredEvent, UnhoveredEvent};
 
 #[derive(Component)]
 pub struct SelectionGroup {
@@ -55,9 +55,7 @@ pub fn update_selection_groups(
                             entity: *children.get(group.hovered_index).unwrap(),
                         });
                         group.hovered_index = element.index;
-                        hover.send(HoveredEvent {
-                            entity,
-                        });
+                        hover.send(HoveredEvent { entity });
                     }
 
                     if mouse_button.just_pressed(MouseButton::Left) {

@@ -4,9 +4,7 @@ use crate::movement::follow_mouse::FollowMouse;
 
 use super::collider::Collider;
 
-pub fn enter_debug_scene(
-    mut commands : Commands
-) {
+pub fn enter_debug_scene(mut commands: Commands) {
     commands
         .spawn(Transform::default())
         .insert(GlobalTransform::default())
@@ -16,14 +14,22 @@ pub fn enter_debug_scene(
         .insert(FollowMouse);
 
     commands
-        .spawn(Transform::from_translation(Vec3 { x: 100., y: 0., z: 0. }))
+        .spawn(Transform::from_translation(Vec3 {
+            x: 100.,
+            y: 0.,
+            z: 0.,
+        }))
         .insert(GlobalTransform::default())
         .insert(Visibility::Visible)
         .insert(ComputedVisibility::default())
         .insert(Collider::new_circle(50.));
 
-        commands
-        .spawn(Transform::from_translation(Vec3 { x: -100., y: 0., z: 0. }))
+    commands
+        .spawn(Transform::from_translation(Vec3 {
+            x: -100.,
+            y: 0.,
+            z: 0.,
+        }))
         .insert(GlobalTransform::default())
         .insert(Visibility::Visible)
         .insert(ComputedVisibility::default())

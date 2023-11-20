@@ -38,10 +38,7 @@ impl Plugin for EnemiesPlugin {
                 )
                     .run_if(in_state(GameState::Playing)),
             )
-            .add_systems(
-                OnEnter(GameState::Playing),
-                (spawn_spawn_rng),
-            )
+            .add_systems(OnEnter(GameState::Playing), (spawn_spawn_rng))
             .add_animation::<ImpAnimation>()
             .add_animation::<BeholderAnimation>()
             .add_animation::<BeholderProjectileAnimation>()

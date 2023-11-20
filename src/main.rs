@@ -14,7 +14,6 @@ use winit::window::Icon;
 mod palette;
 use palette::DARK_HEX;
 
-
 fn main() {
     App::new()
         .insert_resource(Msaa::Off)
@@ -46,7 +45,6 @@ fn main() {
         .add_systems(Startup, set_window_icon)
         .run();
 }
-
 
 // Sets the icon on windows and X11
 fn set_window_icon(

@@ -30,7 +30,7 @@ pub struct Collision {
 }
 
 impl Collision {
-    pub fn contains(&self, entity : Entity) -> bool {
+    pub fn contains(&self, entity: Entity) -> bool {
         entity == self.entity_a || entity == self.entity_b
     }
 }
@@ -146,27 +146,48 @@ impl Collider {
     fn is_colliding_rect_circle(size: Vec2, rect_pos: Vec2, radius: f32, circle_pos: Vec2) -> bool {
         let bottom_left = rect_pos - size / 2.;
         let top_right = rect_pos + size / 2.;
-        let top_left = Vec2{ x: bottom_left.x, y : top_right.y };
-        let bottom_right = Vec2{ x: top_right.x, y : bottom_left.y };
+        let top_left = Vec2 {
+            x: bottom_left.x,
+            y: top_right.y,
+        };
+        let bottom_right = Vec2 {
+            x: top_right.x,
+            y: bottom_left.y,
+        };
         let corners = vec![bottom_left, top_right, top_left, bottom_right];
 
         // Trivial case: if the center of the circle is in the rectangle there is a collision
         if is_between(rect_pos + size / 2., circle_pos, rect_pos - size / 2.) {
             true
         // If it contains corners
-        } else if corners.iter().any(|corner| circle_pos.distance(*corner) <= radius) {
+        } else if corners
+            .iter()
+            .any(|corner| circle_pos.distance(*corner) <= radius)
+        {
             true
         // Otherwise, start with case where circle is to the left
-        } else if circle_pos.x < rect_pos.x && circle_pos.y > bottom_left.y && circle_pos.y < top_right.y {
+        } else if circle_pos.x < rect_pos.x
+            && circle_pos.y > bottom_left.y
+            && circle_pos.y < top_right.y
+        {
             bottom_left.x - circle_pos.x <= radius
         // To the right
-        } else if circle_pos.x > rect_pos.x && circle_pos.y > bottom_left.y && circle_pos.y < top_right.y {
+        } else if circle_pos.x > rect_pos.x
+            && circle_pos.y > bottom_left.y
+            && circle_pos.y < top_right.y
+        {
             circle_pos.x - top_right.x <= radius
         // Above
-        } else if circle_pos.y > rect_pos.y && circle_pos.x > bottom_left.x && circle_pos.x < top_right.x {
+        } else if circle_pos.y > rect_pos.y
+            && circle_pos.x > bottom_left.x
+            && circle_pos.x < top_right.x
+        {
             circle_pos.y - top_right.y <= radius
         // Below
-        } else if circle_pos.y < rect_pos.y && circle_pos.x > bottom_left.x && circle_pos.x < top_right.x  {
+        } else if circle_pos.y < rect_pos.y
+            && circle_pos.x > bottom_left.x
+            && circle_pos.x < top_right.x
+        {
             bottom_left.y - circle_pos.y <= radius
         } else {
             false
@@ -274,8 +295,6 @@ pub fn collision_tick(
             }
         }
     }
-
-    
 
     // Collision Ending
     for collision in &prev_collisions.collisions {
