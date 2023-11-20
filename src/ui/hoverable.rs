@@ -19,6 +19,10 @@ pub struct Hoverable {
 }
 
 impl Hoverable {
+    pub fn new() -> Hoverable {
+        Hoverable { is_hovered: false }
+    }
+
     pub fn is_hovered(&self) -> bool {
         self.is_hovered
     }
@@ -32,12 +36,6 @@ pub struct UnhoveredEvent {
 #[derive(Event)]
 pub struct HoveredEvent {
     pub entity: Entity,
-}
-
-impl Hoverable {
-    pub fn new() -> Hoverable {
-        Hoverable { is_hovered: false }
-    }
 }
 
 #[derive(Bundle)]

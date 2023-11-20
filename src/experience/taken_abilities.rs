@@ -39,10 +39,6 @@ pub fn spawn_taken(
         .insert(TakenAbility { index, ability })
         .insert(Collider::new_rect(
             Vec2 { x: 30., y: 30. },
-            Vec2 {
-                x: window.width() / -2. + 24. + 32. * index as f32,
-                y: window.height() / -2. + 24.,
-            },
         ));
 }
 

@@ -294,6 +294,6 @@ fn spawn_bullet(
         .insert(Velocity {
             vec: direction_vec * velocity,
         })
-        .insert(Collider::new_circle(5., translation.truncate()))
+        .insert(Collider::new_circle(5.))
         .insert(Knockback { force: knockback });
 }

@@ -7,7 +7,7 @@ use self::{
     magnetic::magnet_update,
     pause::{
         click_unpause, pause_keypress, update_pause_menu, ActionPauseState, PauseMenuState,
-        TogglePauseMenu,
+        TogglePauseMenu, update_volume_bars,
     },
     velocity::velocity_update, follow_mouse::follow_mouse_update,
 };
@@ -38,6 +38,7 @@ impl Plugin for MovementPlugin {
                 pause_keypress,
                 update_pause_menu,
                 click_unpause,
+                update_volume_bars,
             )
                 .run_if(in_state(GameState::Playing)),
         )

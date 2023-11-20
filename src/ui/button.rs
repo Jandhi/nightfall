@@ -40,11 +40,11 @@ impl Default for Button {
 
 #[derive(Bundle)]
 pub struct ButtonBundle {
-    button : Button,
-    sprite : SpriteSheetBundle,
-    clickable : Clickable,
-    hoverable : Hoverable,
-    collider : Collider,
+    pub button : Button,
+    pub sprite : SpriteSheetBundle,
+    pub clickable : Clickable,
+    pub hoverable : Hoverable,
+    pub collider : Collider,
 }
 
 fn update_buttons (

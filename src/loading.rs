@@ -108,7 +108,7 @@ pub struct TextureAssets {
     pub bar: Handle<Image>,
 
     #[asset(path = "textures/ui/next_button.png")]
-    pub next_burron: Handle<Image>,
+    pub next_button: Handle<Image>,
 
     #[asset(path = "textures/Flame.png")]
     pub flame: Handle<Image>,

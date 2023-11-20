@@ -77,7 +77,7 @@ pub fn spawn_imp(
             },
             velocity: Velocity::ZERO,
             health: Health::new(15),
-            collider: Collider::new_rect(Vec2 { x: 50., y: 20. }, position.truncate()),
+            collider: Collider::new_rect(Vec2 { x: 50., y: 20. }),
             team: TeamMember { team: Team::Enemy },
         })
         .insert(FollowPlayerAI {
@@ -151,7 +151,7 @@ pub fn spawn_imp_queen(
             },
             velocity: Velocity::ZERO,
             health: Health::new(150),
-            collider: Collider::new_rect(Vec2 { x: 50., y: 20. }, position.truncate()),
+            collider: Collider::new_rect(Vec2 { x: 50., y: 20. }),
             team: TeamMember { team: Team::Enemy },
         })
         .insert(ImpQueen)

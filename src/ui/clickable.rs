@@ -19,6 +19,10 @@ pub struct Clickable {
 }
 
 impl Clickable {
+    pub fn new() -> Clickable {
+        Clickable { is_clicked: false }
+    }
+
     pub fn is_clicked(&self) -> bool {
         self.is_clicked
     }

@@ -143,7 +143,7 @@ pub fn beholder_update(
                 .insert(Velocity {
                     vec: direction_vec * 40.,
                 })
-                .insert(Collider::new_circle(15., transform.translation.truncate()));
+                .insert(Collider::new_circle(15.));
 
             if q_beholder_prince.get(entity).is_ok() {
                 commands
@@ -164,7 +164,7 @@ pub fn beholder_update(
                     .insert(Velocity {
                         vec: (angle_to_target + Radian::from_degrees(10.)).unit_vector() * 40.,
                     })
-                    .insert(Collider::new_circle(15., transform.translation.truncate()));
+                    .insert(Collider::new_circle(15.));
 
                 commands
                     .spawn(make_animation_bundle(
@@ -184,7 +184,7 @@ pub fn beholder_update(
                     .insert(Velocity {
                         vec: (angle_to_target - Radian::from_degrees(10.)).unit_vector() * 40.,
                     })
-                    .insert(Collider::new_circle(15., transform.translation.truncate()));
+                    .insert(Collider::new_circle(15.));
             }
         }
     }
@@ -228,7 +228,7 @@ pub fn spawn_beholder(
             },
             velocity: Velocity::ZERO,
             health: Health::new(25),
-            collider: Collider::new_circle(20., position.truncate()),
+            collider: Collider::new_circle(20.),
             team: TeamMember { team: Team::Enemy },
         })
         .insert(MoveAndShootAI::new(20., 3., 200., 6. / 8., 2.))
@@ -296,7 +296,7 @@ pub fn spawn_beholder_prince(
             },
             velocity: Velocity::ZERO,
             health: Health::new(200),
-            collider: Collider::new_circle(20., position.truncate()),
+            collider: Collider::new_circle(20.),
             team: TeamMember { team: Team::Enemy },
         })
         .insert(BeholderPrince)

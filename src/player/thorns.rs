@@ -79,7 +79,7 @@ pub fn thorns_update(
                     Vec3 { x: 0., y: 0., z: SortingLayers::Front.into() }, 
                     1.,
                 ))
-                .insert(Collider::new_circle(55., player_pos.translation.truncate()))
+                .insert(Collider::new_circle(55.))
                 .insert(Projectile{ 
                     damage_target: DamageTarget::Team(Team::Enemy), 
                     dmg: 50, 
@@ -116,7 +116,7 @@ pub fn thorns_update(
             },
             ThornsAnimation::Despawning => {
                 if timer.0.just_finished() {
-                    commands.entity(thorns_entity).despawn();
+                    commands.entity(thorns_entity).despawn_recursive();
 
                     timer.0.set_duration(Duration::from_secs_f32(THORNS_COOLDOWN));
                     timer.0.reset();

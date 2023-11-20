@@ -8,6 +8,7 @@ type SpatialCoord = (i32, i32);
 pub struct Collider {
     shape: ColliderShape,
     spatial_coord: SpatialCoord,
+    initialized: bool,
 }
 
 impl Collider {
@@ -58,17 +59,19 @@ fn is_between(a: Vec2, b: Vec2, c: Vec2) -> bool {
 }
 
 impl Collider {
-    pub fn new_rect(size: Vec2, position: Vec2) -> Collider {
+    pub fn new_rect(size: Vec2) -> Collider {
         Collider {
             shape: ColliderShape::Rect(size),
-            spatial_coord: vec2_to_spatial_coord(position),
+            spatial_coord: default(),
+            initialized: false,
         }
     }
 
-    pub fn new_circle(radius: f32, position: Vec2) -> Collider {
+    pub fn new_circle(radius: f32) -> Collider {
         Collider {
             shape: ColliderShape::Circle(radius),
-            spatial_coord: vec2_to_spatial_coord(position),
+            spatial_coord: default(),
+            initialized: false,
         }
     }
 
@@ -213,6 +216,7 @@ pub fn collision_tick(
             transform.translation().truncate(),
         ));
         collider.spatial_coord = spatial_coord;
+        collider.initialized = true;
     }
 
     // Find collisions

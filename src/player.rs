@@ -146,7 +146,7 @@ pub fn spawn_player(
             is_reloading: false,
             abilities: vec![],
         })
-        .insert(Collider::new_circle(10., Vec2 { x: 0., y: 0. }))
+        .insert(Collider::new_rect(Vec2 { x: 15., y: 30. }))
         .insert(make_animation_bundle(
             PlayerAnimationState::Idle,
             &player_animations,
@@ -524,7 +524,7 @@ fn click_play_again_button(
                     commands.entity(taken).despawn_recursive();
                 }
 
-                commands.entity(button_entity).despawn();
+                commands.entity(button_entity).despawn_recursive();
                 spawning.count = 0;
                 spawning.timer.reset();
                 spawning.game.reset();

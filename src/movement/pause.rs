@@ -1,6 +1,7 @@
-use bevy::{math::bool, prelude::*};
+use bevy::{math::bool, prelude::*, sprite::Anchor};
+use bevy_kira_audio::AudioControl;
 
-use crate::{loading::FontAssets, palette::Palette};
+use crate::{loading::{FontAssets, TextureAssets}, palette::Palette, ui::bar::{Bar, BarButtonInfo, BarUpdatedEvent}, constants::SortingLayers, collision::collider::Collider, audio::{MusicChannel, Music, Volume, FX, FXChannel}};
 
 #[derive(Resource)]
 pub struct ActionPauseState {
@@ -31,13 +32,43 @@ pub fn pause_keypress(
     }
 }
 
+pub fn update_volume_bars(
+    q_music_bar : Query<Entity, With<MusicBar>>,
+    q_fx_bar : Query<Entity, With<FXBar>>,
+    mut music_volume : ResMut<Volume<Music>>,
+    mut fx_volume : ResMut<Volume<FX>>,
+    mut music_channel : ResMut<MusicChannel>,
+    mut fx_channel : ResMut<FXChannel>,
+    mut bar_update : EventReader<BarUpdatedEvent>,
+) {
+    for ev in bar_update.iter() {
+        if let Ok(_) = q_music_bar.get(ev.entity) {
+            music_volume.set_volume(ev.new_val as f32 / 10., &mut music_channel);
+        }
+
+        if let Ok(_) = q_fx_bar.get(ev.entity) {
+            fx_volume.set_volume(ev.new_val as f32 / 10., &mut fx_channel);
+        }
+    }
+}
+
+#[derive(Component)] 
+pub struct FXBar;
+
+#[derive(Component)] 
+pub struct MusicBar;
+
 pub fn update_pause_menu(
     menu_items: Query<Entity, With<PauseMenuComponent>>,
     mut enter_ev: EventReader<TogglePauseMenu>,
     mut pause_menu_state: ResMut<PauseMenuState>,
     mut pause: ResMut<ActionPauseState>,
+    textures: Res<TextureAssets>,
+    mut texture_atlases: ResMut<Assets<TextureAtlas>>,
     font_assets: Res<FontAssets>,
     palette: Res<Palette>,
+    music_volume : Res<Volume<Music>>,
+    fx_volume : Res<Volume<FX>>,
     mut commands: Commands,
 ) {
     if enter_ev.iter().len() == 0 {
@@ -63,31 +94,149 @@ pub fn update_pause_menu(
     pause_menu_state.0 = true;
 
     commands
-        .spawn(ButtonBundle {
-            style: Style {
-                width: Val::Px(250.0),
-                height: Val::Px(50.0),
-                margin: UiRect::all(Val::Auto),
-                justify_content: JustifyContent::Center,
-                align_items: AlignItems::Center,
+    .spawn(ButtonBundle {
+        style: Style {
+            width: Val::Px(250.0),
+            height: Val::Px(50.0),
+            margin: UiRect::all(Val::Auto),
+            justify_content: JustifyContent::Center,
+            align_items: AlignItems::Center,
+            ..Default::default()
+        },
+        background_color: palette.dark.into(),
+        ..Default::default()
+    })
+    .insert(PauseMenuComponent)
+    .with_children(|parent| {
+        parent
+            .spawn(TextBundle::from_section(
+                "Unpause",
+                TextStyle {
+                    font: font_assets.gothic.clone(),
+                    font_size: 40.0,
+                    color: palette.white,
+                },
+            ))
+            .insert(PauseMenuComponent);
+    });
+
+    let bar_atlas_handle = texture_atlases.add(TextureAtlas::from_grid(
+        textures.bar.clone(),
+        Vec2 { x: 64., y: 64. },
+        11,
+        1,
+        None,
+        None
+    ));
+
+    let button_atlas_handle = texture_atlases.add(TextureAtlas::from_grid(
+        textures.next_button.clone(),
+        Vec2 { x: 64., y: 64. },
+        3,
+        1,
+        None,
+        None
+    ));
+
+    commands.spawn(Text2dBundle{
+        text: Text::from_section("Music Volume", TextStyle { 
+            font: font_assets.gothic_pxl.clone(), 
+            font_size: 30., 
+            color: palette.orange, 
+        }),
+        text_anchor: Anchor::Center,
+        transform: Transform::from_translation(Vec3 { x: 0., y: 180., z: SortingLayers::UI.into() }),
+        ..Default::default()
+    }).insert(PauseMenuComponent);
+
+    commands.spawn(Text2dBundle{
+        text: Text::from_section("FX Volume", TextStyle { 
+            font: font_assets.gothic_pxl.clone(), 
+            font_size: 30., 
+            color: palette.orange, 
+        }),
+        text_anchor: Anchor::Center,
+        transform: Transform::from_translation(Vec3 { x: 0., y: 110., z: SortingLayers::UI.into() }),
+        ..Default::default()
+    }).insert(PauseMenuComponent);
+
+    Bar::spawn(
+        (music_volume.volume() * 10.) as u32,
+        10, 
+         SpriteSheetBundle{
+            texture_atlas: bar_atlas_handle.clone(),
+            transform: Transform{
+                translation: Vec3 { x: 0., y: 150., z: SortingLayers::UI.into() },
+                rotation: default(),
+                scale: Vec3 { x: 3., y: 3., z: 1. },
+            },
+            ..Default::default()
+        }, 
+        Some(BarButtonInfo{
+            sprite: SpriteSheetBundle{
+                texture_atlas: button_atlas_handle.clone(),
+                transform: Transform{
+                    translation: Vec3 { x: -40., y: 0., z: SortingLayers::UI.into() },
+                    rotation: default(),
+                    scale: Vec3 { x: -1., y: 1., z: 1.},
+                },
                 ..Default::default()
             },
-            background_color: palette.dark.into(),
+            has_pressed_state: true,
+            collider: Collider::new_rect(Vec2 { x: 20., y: 30. }),
+        }), 
+        Some(BarButtonInfo{
+            sprite: SpriteSheetBundle 
+            {
+                texture_atlas: button_atlas_handle.clone(), 
+                transform: Transform::from_translation(Vec3 { x: 40., y: 0., z: SortingLayers::UI.into() }),
+                ..Default::default()
+            },
+            has_pressed_state: true,
+            collider: Collider::new_rect(Vec2 { x: 20., y: 30. }),
+        }), 
+        Some((PauseMenuComponent, MusicBar)), 
+        &mut commands
+    );    
+
+    Bar::spawn(
+        (fx_volume.volume() * 10.) as u32,
+        10, 
+            SpriteSheetBundle{
+            texture_atlas: bar_atlas_handle.clone(),
+            transform: Transform{
+                translation: Vec3 { x: 0., y: 80., z: SortingLayers::UI.into() },
+                rotation: default(),
+                scale: Vec3 { x: 3., y: 3., z: 1. },
+            },
             ..Default::default()
-        })
-        .insert(PauseMenuComponent)
-        .with_children(|parent| {
-            parent
-                .spawn(TextBundle::from_section(
-                    "Unpause",
-                    TextStyle {
-                        font: font_assets.gothic.clone(),
-                        font_size: 40.0,
-                        color: palette.white,
-                    },
-                ))
-                .insert(PauseMenuComponent);
-        });
+        }, 
+        Some(BarButtonInfo{
+            sprite: SpriteSheetBundle{
+                texture_atlas: button_atlas_handle.clone(),
+                transform: Transform{
+                    translation: Vec3 { x: -40., y: 0., z: SortingLayers::UI.into() },
+                    rotation: default(),
+                    scale: Vec3 { x: -1., y: 1., z: 1.},
+                },
+                ..Default::default()
+            },
+            has_pressed_state: true,
+            collider: Collider::new_rect(Vec2 { x: 20., y: 30. }),
+        }), 
+        Some(BarButtonInfo{
+            sprite: SpriteSheetBundle 
+            {
+                texture_atlas: button_atlas_handle.clone(), 
+                transform: Transform::from_translation(Vec3 { x: 40., y: 0., z: SortingLayers::UI.into() }),
+                ..Default::default()
+            },
+            has_pressed_state: true,
+            collider: Collider::new_rect(Vec2 { x: 20., y: 30. }),
+        }), 
+        Some((PauseMenuComponent, FXBar)), 
+        &mut commands
+    );
 }
 
 pub fn click_unpause(

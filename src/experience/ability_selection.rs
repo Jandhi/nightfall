@@ -287,7 +287,7 @@ pub fn start_ability_selection(
                         });
                     })
                     .insert(SelectionElement { index: i as usize })
-                    .insert(Collider::new_rect(Vec2 { x: 64., y: 64. }, Vec2::ZERO));
+                    .insert(Collider::new_rect(Vec2 { x: 64., y: 64. }));
             }
         });
 }

@@ -10,7 +10,7 @@ pub fn enter_debug_scene(
     commands
         .spawn(Transform::default())
         .insert(GlobalTransform::default())
-        .insert(Collider::new_circle(20.0, default()))
+        .insert(Collider::new_circle(20.0))
         .insert(Visibility::Visible)
         .insert(ComputedVisibility::default())
         .insert(FollowMouse);
@@ -20,12 +20,12 @@ pub fn enter_debug_scene(
         .insert(GlobalTransform::default())
         .insert(Visibility::Visible)
         .insert(ComputedVisibility::default())
-        .insert(Collider::new_circle(50., Vec2 { x: 100., y: 0. }));
+        .insert(Collider::new_circle(50.));
 
         commands
         .spawn(Transform::from_translation(Vec3 { x: -100., y: 0., z: 0. }))
         .insert(GlobalTransform::default())
         .insert(Visibility::Visible)
         .insert(ComputedVisibility::default())
-        .insert(Collider::new_rect(Vec2 { x: 50., y: 50. }, Vec2 { x: -100., y: 0. }));
+        .insert(Collider::new_rect(Vec2 { x: 50., y: 50. }));
 }

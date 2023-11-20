@@ -164,7 +164,7 @@ pub fn reaper_update(
                     entities_hit: vec![],
                     is_alive: true,
                 })
-                .insert(Collider::new_circle(50., transform.translation.truncate()));
+                .insert(Collider::new_circle(50.));
         }
     }
 }
@@ -207,7 +207,7 @@ pub fn spawn_reaper(
             },
             velocity: Velocity::ZERO,
             health: Health::new(300),
-            collider: Collider::new_circle(20., position.truncate()),
+            collider: Collider::new_circle(20.),
             team: TeamMember { team: Team::Enemy },
         })
         .insert(MoveAndShootAI::new(40., 10., 50., 1. / 2., 2.))
