@@ -15,9 +15,9 @@ use crate::{
     palette::Palette,
     player::{ability::Ability, Player},
     ui::{
-        grid::{Grid, GridElement},
+        grid::{Grid, GridBundle},
         hoverable::{HoveredEvent, UnhoveredEvent},
-        selection_group::{SelectionElement, SelectionEvent, SelectionGroup},
+        selection_group::{SelectionElement, SelectionEvent, SelectionGroup}, element::Sized, alignment::AlignedBundle,
     },
     util::rng::{GlobalSeed, RNG},
 };
@@ -174,12 +174,9 @@ pub fn start_ability_selection(
         .choose_multiple(&mut rng.0 .0, 3);
 
     commands
-        .spawn(Grid {
-            size: Vec2 {
-                x: window.width(),
-                y: 0.,
-            },
-            grid_size: IVec2 { x: 3, y: 1 },
+        .spawn(GridBundle {
+            grid: Grid{ grid_size: IVec2 { x: 3, y: 1 } },
+            ..Default::default()
         })
         .insert(AbilitySelection {
             abilities: chosen_abilities.iter().map(|a| **a).collect(),
@@ -210,9 +207,6 @@ pub fn start_ability_selection(
                         Vec3::ZERO,
                         1.,
                     ))
-                    .insert(GridElement {
-                        index: IVec2 { x: i, y: 0 },
-                    })
                     .with_children(|parent| {
                         let ability = chosen_abilities[i as usize];
 
@@ -286,7 +280,8 @@ pub fn start_ability_selection(
                         });
                     })
                     .insert(SelectionElement { index: i as usize })
-                    .insert(Collider::new_rect(Vec2 { x: 64., y: 64. }));
+                    .insert(Collider::new_rect(Vec2 { x: 64., y: 64. }))
+                    .insert(AlignedBundle::default());
             }
         });
 }

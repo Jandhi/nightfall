@@ -7,9 +7,8 @@ use self::{
     button::ButtonPlugin,
     clickable::ClickablePlugin,
     game_timer::{spawn_game_timer, update_game_timer},
-    grid::update_grid_elements,
     hoverable::HoverPlugin,
-    selection_group::{update_selection_groups, SelectionEvent},
+    selection_group::{update_selection_groups, SelectionEvent}, element::UIElementPlugin, alignment::AlignmentPlugin, grid::GridPlugin,
 };
 
 pub mod bar;
@@ -20,6 +19,7 @@ pub mod game_timer;
 pub mod grid;
 pub mod hoverable;
 pub mod selection_group;
+pub mod alignment;
 
 pub struct UIPlugin;
 
@@ -28,7 +28,6 @@ impl Plugin for UIPlugin {
         app.add_systems(
             Update,
             (
-                update_grid_elements,
                 update_selection_groups,
                 update_game_timer,
             )
@@ -36,6 +35,7 @@ impl Plugin for UIPlugin {
         )
         .add_systems(OnEnter(GameState::Playing), spawn_game_timer)
         .add_event::<SelectionEvent>()
-        .add_plugins((HoverPlugin, ClickablePlugin, ButtonPlugin, BarPlugin));
+        .add_plugins((HoverPlugin, ClickablePlugin, ButtonPlugin, BarPlugin, UIElementPlugin, AlignmentPlugin, GridPlugin));
     }
 }
+
