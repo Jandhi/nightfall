@@ -113,8 +113,6 @@ fn alignment_layout(
                 y: y + layout.offset.y,
                 z: transform.translation.z,
             };
-
-            info!("Alignment layout to {:?} so my pos is now {}", layout, transform.translation);
         }
     }
 }

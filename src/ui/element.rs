@@ -126,8 +126,6 @@ fn resize_new_root_elements(
 
     for (entity, mut elem) in q_ui_elements.iter_mut() {
         if elem.is_new {
-            info!("Resizing new root!");
-
             to_be_resized.elements.push(ParentResizedEvent { 
                 entity: entity, 
                 size: Vec2 { x: window.width(), y: window.height()}, 
@@ -149,7 +147,6 @@ fn resize_new_parent(
 ) {
     for (mut elem, parent) in q_ui_elements.iter_mut() {
         if elem.is_new {
-            info!("Resizing new parent!");
 
             recalculate_ev.send(RecalculateSizeEvent { entity: parent.get() });
 
@@ -285,8 +282,6 @@ pub fn calculate_dynamic_size(
     for resized in resized_ev.iter() {
         if let Ok((mut sized, constraints)) = q_sized.get_mut(resized.entity) {
             sized.size = constraints.calculate(resized.size);
-
-            info!("Grid size is {}", sized.size);
         }
     }
 }

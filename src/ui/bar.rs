@@ -110,9 +110,7 @@ fn update_bars(
     mut bar_update: EventWriter<BarUpdatedEvent>,
 ) {
     for ev in click_ev.iter() {
-        info!("click");
         if let Ok(parent) = q_prev_buttons.get(ev.entity) {
-            info!("prev");
             if let Ok((mut bar, _)) = q_bars.get_mut(parent.get()) {
                 if bar.val > 0 {
                     bar.val -= 1;
