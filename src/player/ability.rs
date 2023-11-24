@@ -8,6 +8,7 @@ pub enum Ability {
     BiggestBullets,
     BulletsGalore,
     Crossbow,
+    Deathrattle,
     DoubleBarrel,
     Faster,
     FlamingBullets,
@@ -34,6 +35,7 @@ impl Ability {
             Self::BiggestBullets,
             Self::BulletsGalore,
             Self::Crossbow,
+            Self::Deathrattle,
             Self::DoubleBarrel,
             Self::Faster,
             Self::FlamingBullets,
@@ -59,6 +61,7 @@ impl Ability {
             Ability::BigBullets => textures.big_bullets.clone(),
             Ability::BiggestBullets => textures.biggest_bullets.clone(),
             Ability::Crossbow => textures.crossbow.clone(),
+            Ability::Deathrattle => textures.deathrattle.clone(),
             Ability::DoubleBarrel => textures.double_barrel.clone(),
             Ability::TripleBarrel => textures.triple_barrel.clone(),
             Ability::FlamingBullets => textures.flaming_bullets.clone(),
@@ -86,6 +89,7 @@ impl Ability {
             Ability::BiggestBullets => "Biggest Bullets",
             Ability::BulletsGalore => "Bullets Galore",
             Ability::Crossbow => "Crossbow",
+            Ability::Deathrattle => "Deathrattle",
             Ability::DoubleBarrel => "Double Barrel",
             Ability::Faster => "Faster",
             Ability::FlamingBullets => "Flaming Bullets",
@@ -113,6 +117,7 @@ impl Ability {
             Ability::BiggestBullets => "x2 Damage\n +50% Knockback\n -20% Shoot Speed\n -20% Reload Speed\n -20% Bullet Speed",
             Ability::BulletsGalore => "+3 Max Ammo",
             Ability::Crossbow => "Bullets pierce all enemies",
+            Ability::Deathrattle => "Enemies explode on death",
             Ability::DoubleBarrel => "2 Bullets\n-30% Shoot Speed",
             Ability::Faster => "+50 Move Speed",
             Ability::FlamingBullets => "2 damage every 2 seconds",
@@ -147,14 +152,15 @@ impl Ability {
                 !player_abilities.contains(&Ability::Crossbow)
                     && player_abilities.contains(&Ability::Piercing)
             }
-            Ability::DoubleBarrel => !player_abilities.contains(&Ability::DoubleBarrel),
+            Ability::Deathrattle => !player_abilities.contains(&self),
+            Ability::DoubleBarrel => !player_abilities.contains(&self),
             Ability::TripleBarrel => {
                 !player_abilities.contains(&Ability::TripleBarrel)
                     && player_abilities.contains(&Ability::DoubleBarrel)
             }
-            Ability::FlamingBullets => !player_abilities.contains(&Ability::FlamingBullets),
-            Ability::Shells => !player_abilities.contains(&Ability::Shells),
-            Ability::Sniper => !player_abilities.contains(&Ability::Sniper),
+            Ability::FlamingBullets => !player_abilities.contains(&self),
+            Ability::Shells => !player_abilities.contains(&self),
+            Ability::Sniper => !player_abilities.contains(&self),
             Ability::Shotgun => {
                 !player_abilities.contains(&Ability::Shotgun)
                     && player_abilities.contains(&Ability::TripleBarrel)
@@ -165,15 +171,15 @@ impl Ability {
             }
             Ability::BulletsGalore => true,
             Ability::Faster => true,
-            Ability::HotterFire => player_abilities.contains(&Ability::FlamingBullets),
-            Ability::MediumBullets => !player_abilities.contains(&Ability::MediumBullets),
+            Ability::HotterFire => player_abilities.contains(&self),
+            Ability::MediumBullets => !player_abilities.contains(&self),
             Ability::Reload => true,
             Ability::ShootingSpeed => true,
-            Ability::Sixfold => !player_abilities.contains(&Ability::Sixfold),
-            Ability::Thorns => !player_abilities.contains(&Ability::Thorns),
+            Ability::Sixfold => !player_abilities.contains(&self),
+            Ability::Thorns => !player_abilities.contains(&self),
             Ability::MaxHp => true,
             Ability::Potion => true,
-            Ability::Piercing => !player_abilities.contains(&Ability::Piercing),
+            Ability::Piercing => !player_abilities.contains(&self),
         }
     }
 

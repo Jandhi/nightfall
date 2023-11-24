@@ -8,7 +8,7 @@ use self::{
     healthbar::update_healthbars,
     knockback::knockback_update,
     projectile::{projectile_collision_check, ProjectileHitEvent},
-    z_sort::update_z_sort,
+    z_sort::update_z_sort, deathrattle::DeathrattlePlugin,
 };
 
 pub mod fire;
@@ -18,6 +18,7 @@ pub mod knockback;
 pub mod projectile;
 pub mod teams;
 pub mod z_sort;
+mod deathrattle;
 
 pub struct CombatPlugin;
 
@@ -39,6 +40,7 @@ impl Plugin for CombatPlugin {
         .add_animation::<FireAnimation>()
         .add_event::<DeathEvent>()
         .add_event::<TookDamageEvent>()
-        .add_event::<ProjectileHitEvent>();
+        .add_event::<ProjectileHitEvent>()
+        .add_plugins(DeathrattlePlugin);
     }
 }
