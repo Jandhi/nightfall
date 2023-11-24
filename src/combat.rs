@@ -3,7 +3,7 @@ use bevy::prelude::*;
 use crate::{animation::AppAnimationSetup, GameState};
 
 use self::{
-    fire::{fire_update, FireAnimation},
+    fire::{fire_update, FireAnimation, extinguish_errant_fire},
     health::{check_death, DeathEvent, TookDamageEvent},
     healthbar::update_healthbars,
     knockback::knockback_update,
@@ -30,6 +30,7 @@ impl Plugin for CombatPlugin {
                 update_healthbars,
                 check_death,
                 fire_update,
+                extinguish_errant_fire,
                 update_z_sort,
                 knockback_update.after(projectile_collision_check),
             )

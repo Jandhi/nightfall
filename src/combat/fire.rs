@@ -36,6 +36,15 @@ impl Animation<FireAnimation> for FireAnimation {
     }
 }
 
+pub fn extinguish_errant_fire(
+    q_fire : Query<Entity, (With<Fire>, Without<Parent>)>,
+    mut commands : Commands,
+) {
+    for entity in q_fire.iter() {
+        commands.entity(entity).despawn_recursive();
+    }
+}
+
 pub fn fire_update(
     mut q_fire: Query<(&mut Fire, &Parent), Without<Health>>,
     mut q_health: Query<(Entity, &mut Health), With<Enemy>>,

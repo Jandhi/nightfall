@@ -25,6 +25,12 @@ pub struct SpawnInfo {
     pub count: u32,
 }
 
+#[derive(Event)]
+pub struct EnemySpawnEvent {
+    pub enemy_type : EnemyType,
+    pub position : Vec2,
+}
+
 #[derive(Resource)]
 pub struct SpawningRNG(pub RNG);
 
@@ -44,13 +50,8 @@ pub fn spawn_loop(
     mut spawn_info: ResMut<SpawnInfo>,
     time: Res<Time>,
     pause: Res<ActionPauseState>,
-    imp_animations: Res<AnimationStateStorage<ImpAnimation>>,
-    beholder_animations: Res<AnimationStateStorage<BeholderAnimation>>,
-    reaper_animations: Res<AnimationStateStorage<ReaperAnimation>>,
-    textures: Res<TextureAssets>,
-    mut texture_atlases: ResMut<Assets<TextureAtlas>>,
     mut rng: ResMut<SpawningRNG>,
-    mut commands: Commands,
+    mut spawn_ev : EventWriter<EnemySpawnEvent>,
 ) {
     if pause.is_paused {
         return;
@@ -115,44 +116,8 @@ pub fn spawn_loop(
             match available.choose(&mut rng.0 .0) {
                 Some(enemy) => {
                     curr_difficulty += enemy.difficulty();
-
-                    match enemy {
-                        EnemyType::Imp => spawn_imp(
-                            position,
-                            &imp_animations,
-                            &textures,
-                            &mut texture_atlases,
-                            &mut commands,
-                        ),
-                        EnemyType::ImpQueen => spawn_imp_queen(
-                            position,
-                            &imp_animations,
-                            &textures,
-                            &mut texture_atlases,
-                            &mut commands,
-                        ),
-                        EnemyType::Beholder => spawn_beholder(
-                            position,
-                            &beholder_animations,
-                            &textures,
-                            &mut texture_atlases,
-                            &mut commands,
-                        ),
-                        EnemyType::BeholderPrince => spawn_beholder_prince(
-                            position,
-                            &beholder_animations,
-                            &textures,
-                            &mut texture_atlases,
-                            &mut commands,
-                        ),
-                        EnemyType::Reaper => spawn_reaper(
-                            position,
-                            &reaper_animations,
-                            &textures,
-                            &mut texture_atlases,
-                            &mut commands,
-                        ),
-                    }
+                    info!("Spawning {:?}, difficult {}/{}", enemy, curr_difficulty, needed_difficulty);
+                    spawn_ev.send(EnemySpawnEvent { enemy_type: *enemy, position: position.truncate() });
                 }
                 None => return,
             }

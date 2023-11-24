@@ -11,14 +11,14 @@ use crate::combat::health::{DeathEvent, Health};
 use crate::combat::teams::TeamMember;
 use crate::combat::z_sort::ZSort;
 
-use crate::loading::{AudioAssets};
+use crate::loading::{AudioAssets, TextureAssets};
 
 use crate::movement::velocity::Velocity;
 use crate::util::pitch_rng::PitchRNG;
 
 
 
-#[derive(Copy, Clone)]
+#[derive(Copy, Clone, PartialEq, Eq, Debug)]
 pub enum EnemyType {
     Imp,
     ImpQueen,
@@ -40,12 +40,39 @@ impl EnemyType {
 
     pub fn difficulty(&self) -> f32 {
         match self {
-            EnemyType::Imp => 5.,
-            EnemyType::ImpQueen => 50.,
-            EnemyType::Beholder => 10.,
-            EnemyType::BeholderPrince => 100.,
-            EnemyType::Reaper => 120.,
+            EnemyType::Imp => 5.0,
+            EnemyType::ImpQueen => 50.0,
+            EnemyType::Beholder => 10.0,
+            EnemyType::BeholderPrince => 100.0,
+            EnemyType::Reaper => 120.0,
         }
+    }
+
+    pub fn sprite_size(&self) -> Vec2 {
+        match self {
+            EnemyType::Reaper => Vec2 { x: 64.0, y: 64.0 },
+            _ => Vec2 { x: 32.0, y: 32.0 },
+        }
+    }
+
+    pub fn get_texture(&self, textures : &Res<TextureAssets>) -> Handle<Image> {
+        match self {
+            EnemyType::Imp => textures.imp.clone(),
+            EnemyType::ImpQueen => textures.imp_queen.clone(),
+            EnemyType::Beholder => textures.beholder.clone(),
+            EnemyType::BeholderPrince => textures.beholder_prince.clone(),
+            EnemyType::Reaper => textures.reaper.clone(),
+        }
+    }
+
+    pub fn name(&self) -> String {
+        match self {
+            EnemyType::Imp => "Imp",
+            EnemyType::ImpQueen => "Imp Queen",
+            EnemyType::Beholder => "Beholder",
+            EnemyType::BeholderPrince => "BeholderPrince",
+            EnemyType::Reaper => "Reaper",
+        }.to_string()
     }
 }
 

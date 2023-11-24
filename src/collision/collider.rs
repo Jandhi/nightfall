@@ -11,6 +11,16 @@ pub struct Collider {
     initialized: bool,
 }
 
+impl Default for Collider {
+    fn default() -> Self {
+        Self { 
+            shape: ColliderShape::Rect(Vec2 { x: 0.0, y: 0.0 }), 
+            spatial_coord: Default::default(), 
+            initialized: Default::default() 
+        }
+    }
+}
+
 impl Collider {
     pub fn shape(&self) -> ColliderShape {
         self.shape

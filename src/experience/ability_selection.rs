@@ -186,14 +186,6 @@ pub fn start_ability_selection(
             hovered_index: 0,
             is_horizontal: true,
         })
-        .insert(SpriteBundle {
-            transform: Transform::from_translation(Vec3 {
-                x: 0.,
-                y: 0.,
-                z: SortingLayers::UI.into(),
-            }),
-            ..Default::default()
-        })
         .with_children(|parent| {
             for i in 0..3 {
                 parent

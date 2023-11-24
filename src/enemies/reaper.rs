@@ -21,12 +21,12 @@ use crate::{
     constants::SortingLayers,
     loading::{AudioAssets, TextureAssets},
     movement::velocity::Velocity,
-    player::Player,
+    player::Player, util::with_z::WithZ,
 };
 
 use super::{
     ai::{ChargeShootEvent, MoveAndShootAI, ShootEvent},
-    enemy::{Enemy, EnemyBundle, EnemyType},
+    enemy::{Enemy, EnemyBundle, EnemyType}, spawning::EnemySpawnEvent,
 };
 
 #[derive(PartialEq, Eq, Hash, Clone, Copy)]
@@ -164,75 +164,83 @@ pub fn reaper_update(
                     entities_hit: vec![],
                     is_alive: true,
                 })
-                .insert(Collider::new_circle(50.));
+                .insert(Collider::new_circle(60.));
         }
     }
 }
 
 pub fn spawn_reaper(
-    position: Vec3,
-    animations: &Res<AnimationStateStorage<ReaperAnimation>>,
-    textures: &Res<TextureAssets>,
-    texture_atlases: &mut ResMut<Assets<TextureAtlas>>,
-    commands: &mut Commands,
+    mut spawn_events : EventReader<EnemySpawnEvent>,
+    animations: Res<AnimationStateStorage<ReaperAnimation>>,
+    textures: Res<TextureAssets>,
+    mut texture_atlases: ResMut<Assets<TextureAtlas>>,
+    mut commands: Commands,
 ) {
-    let texture_atlas = TextureAtlas::from_grid(
-        textures.reaper.clone(),
-        Vec2 { x: 64., y: 64. },
-        9,
-        1,
-        None,
-        None,
-    );
-    let texture_atlas_handle = texture_atlases.add(texture_atlas);
+    for spawn_ev in spawn_events.iter() {
+        if spawn_ev.enemy_type != EnemyType::Reaper {
+            continue;
+        }
+        info!("Spawning a {:?}!!!", spawn_ev.enemy_type);
 
-    let health_atlas = TextureAtlas::from_grid(
-        textures.healthbar.clone(),
-        Vec2 { x: 32., y: 32. },
-        HEALTH_BAR_SEGMENTS,
-        1,
-        None,
-        None,
-    );
-    let health_atlas_handle = texture_atlases.add(health_atlas);
 
-    commands
-        .spawn(EnemyBundle {
-            enemy: Enemy {
-                xp: 150,
-                enemy_type: EnemyType::Reaper,
-            },
-            z_sort: ZSort {
-                layer: SortingLayers::Action.into(),
-            },
-            velocity: Velocity::ZERO,
-            health: Health::new(300),
-            collider: Collider::new_circle(20.),
-            team: TeamMember { team: Team::Enemy },
-        })
-        .insert(MoveAndShootAI::new(40., 10., 50., 1. / 2., 2.))
-        .insert(make_animation_bundle(
-            ReaperAnimation::Flying,
-            animations,
-            texture_atlas_handle.clone(),
-            position,
-            1.,
-        ))
-        .with_children(|parent| {
-            parent
-                .spawn(SpriteSheetBundle {
-                    texture_atlas: health_atlas_handle,
-                    sprite: TextureAtlasSprite::new(0),
-                    transform: Transform::from_translation(Vec3 {
-                        x: 0.,
-                        y: 0.,
-                        z: 0.01,
-                    }),
-                    ..Default::default()
-                })
-                .insert(ZSort {
+        let texture_atlas = TextureAtlas::from_grid(
+            textures.reaper.clone(),
+            Vec2 { x: 64., y: 64. },
+            9,
+            1,
+            None,
+            None,
+        );
+        let texture_atlas_handle = texture_atlases.add(texture_atlas);
+
+        let health_atlas = TextureAtlas::from_grid(
+            textures.healthbar.clone(),
+            Vec2 { x: 32., y: 32. },
+            HEALTH_BAR_SEGMENTS,
+            1,
+            None,
+            None,
+        );
+        let health_atlas_handle = texture_atlases.add(health_atlas);
+
+        commands
+            .spawn(EnemyBundle {
+                enemy: Enemy {
+                    xp: 150,
+                    enemy_type: EnemyType::Reaper,
+                },
+                z_sort: ZSort {
                     layer: SortingLayers::Action.into(),
-                })
-                .insert(HealthBar);
-        });
+                },
+                velocity: Velocity::ZERO,
+                health: Health::new(300),
+                collider: Collider::new_circle(30.),
+                team: TeamMember { team: Team::Enemy },
+            })
+            .insert(MoveAndShootAI::new(40., 10., 60., 1. / 2., 2.))
+            .insert(make_animation_bundle(
+                ReaperAnimation::Flying,
+                &animations,
+                texture_atlas_handle.clone(),
+                spawn_ev.position.with_z(SortingLayers::Action.into()),
+                1.,
+            ))
+            .with_children(|parent| {
+                parent
+                    .spawn(SpriteSheetBundle {
+                        texture_atlas: health_atlas_handle,
+                        sprite: TextureAtlasSprite::new(0),
+                        transform: Transform::from_translation(Vec3 {
+                            x: 0.,
+                            y: 0.,
+                            z: 0.01,
+                        }),
+                        ..Default::default()
+                    })
+                    .insert(ZSort {
+                        layer: SortingLayers::Action.into(),
+                    })
+                    .insert(HealthBar);
+            });
+    }
 }

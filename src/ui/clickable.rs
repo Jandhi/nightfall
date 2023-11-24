@@ -27,6 +27,12 @@ impl Clickable {
     }
 }
 
+impl Default for Clickable {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 #[derive(Event)]
 pub struct ClickedEvent {
     pub entity: Entity,

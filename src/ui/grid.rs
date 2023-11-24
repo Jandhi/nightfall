@@ -27,11 +27,15 @@ pub struct GridBundle {
     pub ui_element : UIElement,
     pub grid : Grid,
     pub size : SizeBundle,
+    pub transform : Transform,
+    pub global_transform : GlobalTransform,
+    pub visibility : Visibility,
+    pub computed_visibility : ComputedVisibility,
 }
 
 impl Default for GridBundle {
     fn default() -> Self {
-        Self { ui_element: Default::default(), grid: Default::default(), size: Default::default() }
+        Self { ui_element: default(), grid: default(), size: default(), visibility: Visibility::Inherited, computed_visibility: default(), transform: default(), global_transform: default() }
     }
 }
 

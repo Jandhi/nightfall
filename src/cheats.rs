@@ -5,7 +5,7 @@ use crate::{
     combat::health::DeathEvent,
     experience::experience::{Experience, LevelUpEvent},
     player::Player,
-    GameState,
+    GameState, enemies::spawn_menu::SpawnMenuState,
 };
 
 pub struct CheatsPlugin;
@@ -23,6 +23,8 @@ fn cheats(
     mut death_ev: EventWriter<DeathEvent>,
     state: Res<State<ColliderDebugSpriteState>>,
     mut next_state: ResMut<NextState<ColliderDebugSpriteState>>,
+    spawn_menu_state : Res<State<SpawnMenuState>>,
+    mut next_spawn_menu_state : ResMut<NextState<SpawnMenuState>>,
 ) {
     let (player_entity, _player, xp) = q_player.single();
 
@@ -36,6 +38,13 @@ fn cheats(
         death_ev.send(DeathEvent {
             entity: player_entity,
         });
+    }
+
+    if keyboard_input.just_pressed(KeyCode::M) {
+        next_spawn_menu_state.set(match spawn_menu_state.get() {
+            SpawnMenuState::Off => SpawnMenuState::On,
+            SpawnMenuState::On => SpawnMenuState::Off,
+        })
     }
 
     if keyboard_input.just_pressed(KeyCode::J) {

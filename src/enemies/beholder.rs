@@ -22,12 +22,12 @@ use crate::{
     loading::{AudioAssets, TextureAssets},
     movement::velocity::Velocity,
     player::Player,
-    util::radians::Radian,
+    util::{radians::Radian, with_z::WithZ},
 };
 
 use super::{
     ai::{ChargeShootEvent, MoveAndShootAI, ShootEvent},
-    enemy::{Enemy, EnemyBundle, EnemyType},
+    enemy::{Enemy, EnemyBundle, EnemyType}, spawning::EnemySpawnEvent,
 };
 
 #[derive(PartialEq, Eq, Hash, Clone, Copy)]
@@ -191,138 +191,155 @@ pub fn beholder_update(
 }
 
 pub fn spawn_beholder(
-    position: Vec3,
-    animations: &Res<AnimationStateStorage<BeholderAnimation>>,
-    textures: &Res<TextureAssets>,
-    texture_atlases: &mut ResMut<Assets<TextureAtlas>>,
-    commands: &mut Commands,
+    mut spawn_ev : EventReader<EnemySpawnEvent>,
+    animations: Res<AnimationStateStorage<BeholderAnimation>>,
+    textures: Res<TextureAssets>,
+    mut texture_atlases: ResMut<Assets<TextureAtlas>>,
+    mut commands: Commands,
 ) {
-    let texture_atlas = TextureAtlas::from_grid(
-        textures.beholder.clone(),
-        Vec2 { x: 32., y: 32. },
-        22,
-        1,
-        None,
-        None,
-    );
-    let texture_atlas_handle = texture_atlases.add(texture_atlas);
+    for spawn_event in spawn_ev.iter() {
+        if spawn_event.enemy_type != EnemyType::Beholder {
+            continue;
+        }
+        info!("Spawning a {:?}!!!", spawn_event.enemy_type);
 
-    let health_atlas = TextureAtlas::from_grid(
-        textures.healthbar.clone(),
-        Vec2 { x: 32., y: 32. },
-        HEALTH_BAR_SEGMENTS,
-        1,
-        None,
-        None,
-    );
-    let health_atlas_handle = texture_atlases.add(health_atlas);
-
-    commands
-        .spawn(EnemyBundle {
-            enemy: Enemy {
-                xp: 10,
-                enemy_type: EnemyType::Beholder,
-            },
-            z_sort: ZSort {
-                layer: SortingLayers::Action.into(),
-            },
-            velocity: Velocity::ZERO,
-            health: Health::new(25),
-            collider: Collider::new_circle(20.),
-            team: TeamMember { team: Team::Enemy },
-        })
-        .insert(MoveAndShootAI::new(20., 3., 200., 6. / 8., 2.))
-        .insert(make_animation_bundle(
-            BeholderAnimation::Flying,
-            animations,
-            texture_atlas_handle.clone(),
-            position,
-            1.,
-        ))
-        .with_children(|parent| {
-            parent
-                .spawn(SpriteSheetBundle {
-                    texture_atlas: health_atlas_handle,
-                    sprite: TextureAtlasSprite::new(0),
-                    transform: Transform::from_translation(Vec3 {
-                        x: 0.,
-                        y: 0.,
-                        z: 0.01,
-                    }),
-                    ..Default::default()
-                })
-                .insert(ZSort {
+        let texture_atlas = TextureAtlas::from_grid(
+            textures.beholder.clone(),
+            Vec2 { x: 32., y: 32. },
+            22,
+            1,
+            None,
+            None,
+        );
+        let texture_atlas_handle = texture_atlases.add(texture_atlas);
+    
+        let health_atlas = TextureAtlas::from_grid(
+            textures.healthbar.clone(),
+            Vec2 { x: 32., y: 32. },
+            HEALTH_BAR_SEGMENTS,
+            1,
+            None,
+            None,
+        );
+        let health_atlas_handle = texture_atlases.add(health_atlas);
+    
+        commands
+            .spawn(EnemyBundle {
+                enemy: Enemy {
+                    xp: 10,
+                    enemy_type: EnemyType::Beholder,
+                },
+                z_sort: ZSort {
                     layer: SortingLayers::Action.into(),
-                })
-                .insert(HealthBar);
-        });
+                },
+                velocity: Velocity::ZERO,
+                health: Health::new(25),
+                collider: Collider::new_circle(20.),
+                team: TeamMember { team: Team::Enemy },
+            })
+            .insert(MoveAndShootAI::new(20., 3., 200., 6. / 8., 2.))
+            .insert(make_animation_bundle(
+                BeholderAnimation::Flying,
+                &animations,
+                texture_atlas_handle.clone(),
+                spawn_event.position.with_z(SortingLayers::UI.into()),
+                1.,
+            ))
+            .with_children(|parent| {
+                parent
+                    .spawn(SpriteSheetBundle {
+                        texture_atlas: health_atlas_handle,
+                        sprite: TextureAtlasSprite::new(0),
+                        transform: Transform::from_translation(Vec3 {
+                            x: 0.,
+                            y: 0.,
+                            z: 0.01,
+                        }),
+                        ..Default::default()
+                    })
+                    .insert(ZSort {
+                        layer: SortingLayers::Action.into(),
+                    })
+                    .insert(HealthBar);
+            });
+    }
+
+    
 }
 
 pub fn spawn_beholder_prince(
-    position: Vec3,
-    animations: &Res<AnimationStateStorage<BeholderAnimation>>,
-    textures: &Res<TextureAssets>,
-    texture_atlases: &mut ResMut<Assets<TextureAtlas>>,
-    commands: &mut Commands,
+    mut spawn_ev : EventReader<EnemySpawnEvent>,
+    animations: Res<AnimationStateStorage<BeholderAnimation>>,
+    textures: Res<TextureAssets>,
+    mut texture_atlases: ResMut<Assets<TextureAtlas>>,
+    mut commands: Commands,
 ) {
-    let texture_atlas = TextureAtlas::from_grid(
-        textures.beholder_prince.clone(),
-        Vec2 { x: 32., y: 32. },
-        22,
-        1,
-        None,
-        None,
-    );
-    let texture_atlas_handle = texture_atlases.add(texture_atlas);
 
-    let health_atlas = TextureAtlas::from_grid(
-        textures.healthbar.clone(),
-        Vec2 { x: 32., y: 32. },
-        HEALTH_BAR_SEGMENTS,
-        1,
-        None,
-        None,
-    );
-    let health_handle = texture_atlases.add(health_atlas);
+    for spawn_event in spawn_ev.iter() {
+        if spawn_event.enemy_type != EnemyType::BeholderPrince {
+            continue;
+        }
+        info!("Spawning a {:?}!!!", spawn_event.enemy_type);
 
-    commands
-        .spawn(EnemyBundle {
-            enemy: Enemy {
-                xp: 100,
-                enemy_type: EnemyType::BeholderPrince,
-            },
-            z_sort: ZSort {
-                layer: SortingLayers::Action.into(),
-            },
-            velocity: Velocity::ZERO,
-            health: Health::new(200),
-            collider: Collider::new_circle(20.),
-            team: TeamMember { team: Team::Enemy },
-        })
-        .insert(BeholderPrince)
-        .insert(MoveAndShootAI::new(20., 5., 300., 6. / 8., 3.))
-        .insert(make_animation_bundle(
-            BeholderAnimation::Flying,
-            animations,
-            texture_atlas_handle.clone(),
-            position,
-            1.,
-        ))
-        .with_children(|parent| {
-            parent
-                .spawn(SpriteSheetBundle {
-                    texture_atlas: health_handle,
-                    sprite: TextureAtlasSprite::new(0),
-                    transform: Transform::from_translation(Vec3 {
-                        x: 0.,
-                        y: 0.,
-                        z: 0.01,
-                    }),
-                    ..Default::default()
-                })
-                .insert(ZSort {
+        let texture_atlas = TextureAtlas::from_grid(
+            textures.beholder_prince.clone(),
+            Vec2 { x: 32., y: 32. },
+            22,
+            1,
+            None,
+            None,
+        );
+        let texture_atlas_handle = texture_atlases.add(texture_atlas);
+
+        let health_atlas = TextureAtlas::from_grid(
+            textures.healthbar.clone(),
+            Vec2 { x: 32., y: 32. },
+            HEALTH_BAR_SEGMENTS,
+            1,
+            None,
+            None,
+        );
+        let health_handle = texture_atlases.add(health_atlas);
+
+        commands
+            .spawn(EnemyBundle {
+                enemy: Enemy {
+                    xp: 100,
+                    enemy_type: EnemyType::BeholderPrince,
+                },
+                z_sort: ZSort {
                     layer: SortingLayers::Action.into(),
-                })
-                .insert(HealthBar);
-        });
+                },
+                velocity: Velocity::ZERO,
+                health: Health::new(200),
+                collider: Collider::new_circle(20.),
+                team: TeamMember { team: Team::Enemy },
+            })
+            .insert(BeholderPrince)
+            .insert(MoveAndShootAI::new(20., 5., 300., 6. / 8., 3.))
+            .insert(make_animation_bundle(
+                BeholderAnimation::Flying,
+                &animations,
+                texture_atlas_handle.clone(),
+                spawn_event.position.with_z(SortingLayers::Action.into()),
+                1.,
+            ))
+            .with_children(|parent| {
+                parent
+                    .spawn(SpriteSheetBundle {
+                        texture_atlas: health_handle,
+                        sprite: TextureAtlasSprite::new(0),
+                        transform: Transform::from_translation(Vec3 {
+                            x: 0.,
+                            y: 0.,
+                            z: 0.01,
+                        }),
+                        ..Default::default()
+                    })
+                    .insert(ZSort {
+                        layer: SortingLayers::Action.into(),
+                    })
+                    .insert(HealthBar);
+            });
+    }
 }

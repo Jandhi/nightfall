@@ -55,6 +55,18 @@ pub struct ButtonBundle {
     pub collider: Collider,
 }
 
+impl Default for ButtonBundle {
+    fn default() -> Self {
+        Self { 
+            button: Default::default(), 
+            sprite: Default::default(), 
+            clickable: Default::default(), 
+            hoverable: Default::default(), 
+            collider: Default::default() 
+        }
+    }
+}
+
 fn update_buttons(
     mut q_buttons: Query<(&mut Button, &mut TextureAtlasSprite)>,
     mut clicked: EventReader<ClickedEvent>,

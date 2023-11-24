@@ -86,7 +86,7 @@ fn dispatch_resizes(
 #[derive(Component)]
 pub struct UIElement {
     is_new : bool,
-    last_resize : Option<ParentResizedEvent>,
+    last_resize : Option<ParentResizedEvent>
 }
 
 impl Default for UIElement {

@@ -27,6 +27,12 @@ impl Hoverable {
     }
 }
 
+impl Default for Hoverable {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 #[derive(Event)]
 pub struct UnhoveredEvent {
     pub entity: Entity,
