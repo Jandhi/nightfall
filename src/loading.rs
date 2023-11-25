@@ -83,6 +83,9 @@ pub struct AudioAssets {
     #[asset(path = "audio/fireball.ogg")]
     pub fireball: Handle<AudioSource>,
 
+    #[asset(path = "audio/explosion.ogg")]
+    pub explosion: Handle<AudioSource>,
+
     #[asset(path = "audio/imp_death.ogg")]
     pub imp_death: Handle<AudioSource>,
 

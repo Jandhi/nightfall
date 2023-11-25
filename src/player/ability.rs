@@ -117,7 +117,7 @@ impl Ability {
             Ability::BiggestBullets => "x2 Damage\n +50% Knockback\n -20% Shoot Speed\n -20% Reload Speed\n -20% Bullet Speed",
             Ability::BulletsGalore => "+3 Max Ammo",
             Ability::Crossbow => "Bullets pierce all enemies",
-            Ability::Deathrattle => "Enemies explode on death",
+            Ability::Deathrattle => "20% chance of explosion on kill\nExplosion deals x3 damage",
             Ability::DoubleBarrel => "2 Bullets\n-30% Shoot Speed",
             Ability::Faster => "+50 Move Speed",
             Ability::FlamingBullets => "2 damage every 2 seconds",

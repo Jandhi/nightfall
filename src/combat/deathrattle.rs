@@ -1,8 +1,10 @@
 use std::time::Duration;
 
 use bevy::prelude::*;
+use bevy_kira_audio::AudioControl;
+use rand::Rng;
 
-use crate::{enemies::enemy::EnemyDeathEvent, animation::{Animation, info::{AnimationStateInfo, AnimationInfoBuilder}, AppAnimationSetup, make_animation_bundle, AnimationStateStorage}, player::{Player, ability::Ability}, loading::TextureAssets, movement::pause::ActionPauseState, GameState, collision::collider::Collider};
+use crate::{enemies::enemy::EnemyDeathEvent, animation::{Animation, info::{AnimationStateInfo, AnimationInfoBuilder}, AppAnimationSetup, make_animation_bundle, AnimationStateStorage}, player::{Player, ability::Ability}, loading::{TextureAssets, AudioAssets}, movement::pause::ActionPauseState, GameState, collision::collider::Collider, util::rng::{RNG, GlobalSeed}, audio::FXChannel};
 
 use super::{projectile::{Projectile, DamageTarget, PiercingMode}, teams::Team};
 
@@ -12,8 +14,16 @@ impl Plugin for DeathrattlePlugin {
     fn build(&self, app: &mut App) {
         app
             .add_animation::<ExplosionAnimation>()
-            .add_systems(Update, deathrattle_update.run_if(in_state(GameState::Playing)));
+            .add_systems(Update, deathrattle_update.run_if(in_state(GameState::Playing)))
+            .add_systems(OnEnter(GameState::Playing), init_rng);
     }
+}
+
+fn init_rng (
+    seed : Res<GlobalSeed>,
+    mut commands : Commands,
+) {
+    commands.insert_resource(DeathrattleRNG(RNG::new(&seed.0, "deathrattle")));
 }
 
 #[derive(Clone, Copy, Hash, Eq, PartialEq)]
@@ -27,6 +37,11 @@ impl Animation<ExplosionAnimation> for ExplosionAnimation {
     }
 }
 
+pub const CHANCE_OF_EXPLOSION : f32 = 0.20;
+
+#[derive(Resource)]
+struct DeathrattleRNG(RNG);
+
 #[derive(Component)]
 struct Explosion(pub Timer);
 
@@ -39,6 +54,9 @@ fn deathrattle_update(
     mut texture_atlases: ResMut<Assets<TextureAtlas>>,
     pause : Res<ActionPauseState>,
     time : Res<Time>,
+    audio : Res<AudioAssets>,
+    fx : Res<FXChannel>,
+    mut rng : ResMut<DeathrattleRNG>,
     mut commands : Commands,
 ) {
     let player = q_player.single();
@@ -62,9 +80,14 @@ fn deathrattle_update(
     let texture_atlas_handle = texture_atlases.add(texture_atlas);
 
     for death in death_ev.iter() {
+        if rng.0.0.gen_range(0. .. 1.) > CHANCE_OF_EXPLOSION {
+            continue;
+        }
+
+        fx.play(audio.explosion.clone());
         commands.spawn(Projectile{
             damage_target: DamageTarget::Team(Team::Enemy),
-            dmg: player.damage(),
+            dmg: player.damage() * 3,
             piercing_mode: PiercingMode::All,
             entities_hit: vec![],
             is_alive: true,
