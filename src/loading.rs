@@ -167,6 +167,9 @@ pub struct TextureAssets {
     #[asset(path = "textures/ui/bullet_ui.png")]
     pub bullet_ui: Handle<Image>,
 
+    #[asset(path = "textures/ui/vial.png")]
+    pub vial: Handle<Image>,
+
     #[asset(path = "textures/ui/xp_bar.png")]
     pub xp_bar: Handle<Image>,
 
@@ -250,6 +253,9 @@ pub struct AbilityTextures {
 
     #[asset(path = "textures/abilities/shotgun.png")]
     pub shotgun: Handle<Image>,
+
+    #[asset(path = "textures/abilities/bloodthirsty_vial.png")]
+    pub bloodthirsty_vial: Handle<Image>,
 
     #[asset(path = "textures/abilities/mega_shotgun.png")]
     pub mega_shotgun: Handle<Image>,

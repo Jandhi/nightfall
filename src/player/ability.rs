@@ -6,6 +6,7 @@ use crate::loading::AbilityTextures;
 pub enum Ability {
     BigBullets,
     BiggestBullets,
+    BloodthirstyVial,
     BulletsGalore,
     Crossbow,
     Deathrattle,
@@ -34,6 +35,7 @@ impl Ability {
             Self::BigBullets,
             Self::BiggestBullets,
             Self::BulletsGalore,
+            Self::BloodthirstyVial,
             Self::Crossbow,
             Self::Deathrattle,
             Self::DoubleBarrel,
@@ -60,6 +62,7 @@ impl Ability {
         match self {
             Ability::BigBullets => textures.big_bullets.clone(),
             Ability::BiggestBullets => textures.biggest_bullets.clone(),
+            Ability::BloodthirstyVial => textures.bloodthirsty_vial.clone(),
             Ability::Crossbow => textures.crossbow.clone(),
             Ability::Deathrattle => textures.deathrattle.clone(),
             Ability::DoubleBarrel => textures.double_barrel.clone(),
@@ -87,6 +90,7 @@ impl Ability {
         match self {
             Ability::BigBullets => "Bigger Bullets",
             Ability::BiggestBullets => "Biggest Bullets",
+            Ability::BloodthirstyVial => "Bloodthirsty Vial",
             Ability::BulletsGalore => "Bullets Galore",
             Ability::Crossbow => "Crossbow",
             Ability::Deathrattle => "Deathrattle",
@@ -115,6 +119,7 @@ impl Ability {
         match self {
             Ability::BigBullets => "x2 Damage\n +50% Knockback\n -20% Shoot Speed\n -20% Reload Speed\n -20% Bullet Speed",
             Ability::BiggestBullets => "x2 Damage\n +50% Knockback\n -20% Shoot Speed\n -20% Reload Speed\n -20% Bullet Speed",
+            Ability::BloodthirstyVial => "Heals every 100 kills",
             Ability::BulletsGalore => "+3 Max Ammo",
             Ability::Crossbow => "Bullets pierce all enemies",
             Ability::Deathrattle => "20% chance of explosion on kill\nExplosion deals x3 damage",
@@ -144,6 +149,7 @@ impl Ability {
                 !player_abilities.contains(&Ability::BigBullets)
                     && player_abilities.contains(&Ability::MediumBullets)
             }
+            Ability::BloodthirstyVial => !player_abilities.contains(&self),
             Ability::BiggestBullets => {
                 !player_abilities.contains(&Ability::BiggestBullets)
                     && player_abilities.contains(&Ability::BigBullets)
