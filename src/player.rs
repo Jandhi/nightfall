@@ -121,8 +121,8 @@ impl Plugin for PlayerPlugin {
         .add_animation::<PlayerAnimationState>()
         .add_animation::<BulletUIAnimation>()
         .add_animation::<HealthUIAnimationState>()
-        .add_animation::<ThornsAnimation>();
-        //.add_plugins(VialPlugin);
+        .add_animation::<ThornsAnimation>()
+        .add_plugins(VialPlugin);
     }
 }
 

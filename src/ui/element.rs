@@ -230,7 +230,7 @@ pub struct Sized {
 
 impl Default for Sized {
     fn default() -> Self {
-        Self { size: Default::default() }
+        Self { size: default() }
     }
 }
 
@@ -241,7 +241,7 @@ pub struct DynamicSize {
 
 impl Default for DynamicSize {
     fn default() -> Self {
-        default()
+        Self { constraints: default() }
     }
 }
 
