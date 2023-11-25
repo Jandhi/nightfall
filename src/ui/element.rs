@@ -38,15 +38,15 @@ pub struct PostUILayout;
 
 fn run_ui_schedule(world : &mut World)
 {
+    
     let mut do_layouts = true;
 
     while do_layouts {
-        
         world.run_schedule(PreUILayout);
         world.run_schedule(Sizing);
         world.run_schedule(UILayout);
         world.run_schedule(PostUILayout);
-        
+
         let to_be_resized = world.remove_resource::<ToBeResized>().expect("This resource should be present");
         do_layouts = to_be_resized.elements.len() > 0;
         world.insert_resource(to_be_resized);
@@ -218,8 +218,8 @@ impl Default for SizeBundle {
 }
 
 impl SizeBundle {
-    pub fn from_constraints(x : SizeConstraint, y : SizeConstraint) -> SizeBundle {
-        Self { sized: default(), dynamic_size: DynamicSize { x, y } }
+    pub fn from_constraints(constraints : SizeVec2) -> SizeBundle {
+        Self { sized: default(), dynamic_size: DynamicSize { constraints } }
     }
 }
 
@@ -236,21 +236,20 @@ impl Default for Sized {
 
 #[derive(Component)]
 pub struct DynamicSize {
-    pub x : SizeConstraint,
-    pub y : SizeConstraint,
+    pub constraints : SizeVec2
 }
 
 impl Default for DynamicSize {
     fn default() -> Self {
-        Self { x: SizeConstraint::MatchParent, y: SizeConstraint::MatchParent }
+        default()
     }
 }
 
 impl DynamicSize {
     pub fn calculate(&self, parent_size : Vec2) -> Vec2 {
         Vec2 { 
-            x: self.x.calculate(parent_size.x), 
-            y: self.y.calculate(parent_size.y) 
+            x: self.constraints.x.calculate(parent_size.x), 
+            y: self.constraints.y.calculate(parent_size.y) 
         }
     }
 }
@@ -261,6 +260,23 @@ pub enum SizeConstraint {
     Min(f32, Box<SizeConstraint>),
     Max(f32, Box<SizeConstraint>),
     MatchParent,
+}
+
+pub struct SizeVec2 {
+    pub x: SizeConstraint,
+    pub y: SizeConstraint,
+}
+
+impl SizeVec2 {
+    pub fn calculate(&self, parent_size : Vec2) -> Vec2 {
+        Vec2 { x: self.x.calculate(parent_size.x), y: self.y.calculate(parent_size.y) }
+    }
+}
+
+impl Default for SizeVec2 {
+    fn default() -> Self {
+        Self { x: SizeConstraint::MatchParent, y: SizeConstraint::MatchParent }
+    }
 }
 
 impl SizeConstraint {

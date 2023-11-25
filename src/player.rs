@@ -33,6 +33,7 @@ use self::hit::{spawn_hit_sprite, update_hit_sprite};
 use self::reload_ui::{spawn_reload_ui, update_reload_ui, ReloadTimer};
 use self::shooting::{shoot, ShootingCooldown};
 use self::thorns::{thorns_update, ThornsAnimation, ThornsTimer};
+use self::vial::VialPlugin;
 
 pub mod ability;
 mod animations;
@@ -42,6 +43,7 @@ mod hit;
 mod reload_ui;
 mod shooting;
 mod thorns;
+mod vial;
 
 pub struct PlayerPlugin;
 
@@ -120,6 +122,7 @@ impl Plugin for PlayerPlugin {
         .add_animation::<BulletUIAnimation>()
         .add_animation::<HealthUIAnimationState>()
         .add_animation::<ThornsAnimation>();
+        //.add_plugins(VialPlugin);
     }
 }
 

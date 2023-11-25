@@ -116,3 +116,20 @@ fn alignment_layout(
         }
     }
 }
+
+#[derive(Bundle)]
+pub struct AnchorBundle {
+    alignment : AlignedBundle,
+    transform : TransformBundle,
+    visibility : VisibilityBundle,
+}
+
+impl AnchorBundle {
+    pub fn new(alignment : Alignment) -> AnchorBundle {
+        AnchorBundle {
+            alignment: AlignedBundle::new(alignment, default()),
+            transform: default(),
+            visibility: VisibilityBundle { visibility: Visibility::Inherited, computed: default() },
+        }
+    }
+}
