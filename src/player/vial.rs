@@ -57,11 +57,7 @@ fn vial_update(
             },
         }).insert(SpriteSheetBundle{
             texture_atlas: texture_atlas_handle.clone(),
-            transform: Transform {
-                translation: Vec3 { x: 1000., y: 1000., z: SortingLayers::UI.into() },
-                rotation: default(),
-                scale: default(),
-            },
+            transform: Transform::from_translation(Vec3 { x: 1000., y: 1000., z: SortingLayers::UI.into() }),
             ..Default::default()
         }).insert(Vial{
             count: 0,
