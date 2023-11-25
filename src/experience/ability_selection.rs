@@ -118,7 +118,7 @@ pub fn on_select_ability(
             }
 
             if ability == Ability::Potion {
-                health.value += 2;
+                health.value = health.max.min(health.value + 2);
             }
 
             commands.entity(entity).despawn_recursive();

@@ -2,7 +2,7 @@ use std::f32::consts::PI;
 
 use bevy::prelude::*;
 
-use crate::{player::Player, util::radians::Radian};
+use crate::{player::{Player, ability::Ability}, util::radians::Radian};
 
 use super::pause::ActionPauseState;
 
@@ -17,7 +17,7 @@ pub struct FakeMagnetic {
 
 const MINIMUM_FORCE_THRESHOLD: f32 = 0.8;
 pub fn fake_magnet_update(
-    q_player: Query<&Transform, (With<Player>, Without<FakeMagnetic>)>,
+    q_player: Query<(&Transform, &Player), Without<FakeMagnetic>>,
     mut q_magnetics: Query<(&FakeMagnetic, &mut Transform)>,
     time: Res<Time>,
     pause_state: Res<ActionPauseState>,
@@ -26,12 +26,16 @@ pub fn fake_magnet_update(
         return;
     }
 
-    let player_transform = q_player.single();
+    let (player_transform, player) = q_player.single();
     for (magnet, mut transform) in q_magnetics.iter_mut() {
-        let force = magnet.force * time.delta_seconds()
+        let mut force = magnet.force * time.delta_seconds()
             / player_transform
                 .translation
                 .distance_squared(transform.translation);
+
+        if player.abilities.contains(&Ability::Magnet) {
+            force *= 2.;
+        }
 
         if force >= player_transform.translation.distance(transform.translation) {
             transform.translation.x = player_transform.translation.x;

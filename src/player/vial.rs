@@ -1,8 +1,9 @@
 use std::time::Duration;
 
 use bevy::prelude::*;
+use bevy_kira_audio::AudioControl;
 
-use crate::{enemies::enemy::EnemyDeathEvent, ui::{alignment::{AnchorBundle, Alignment, AlignedBundle}, element::{UIElement, SizeVec2, SizeConstraint}, offset::Offset}, loading::TextureAssets, GameState, combat::health::Health, constants::SortingLayers};
+use crate::{enemies::enemy::EnemyDeathEvent, ui::{alignment::{AnchorBundle, Alignment, AlignedBundle}, element::{UIElement, SizeVec2, SizeConstraint}, offset::Offset}, loading::{TextureAssets, AudioAssets}, GameState, combat::health::Health, constants::SortingLayers, audio::FXChannel};
 
 use super::{Player, ability::Ability};
 
@@ -15,8 +16,9 @@ impl Plugin for VialPlugin {
 }
 
 #[derive(Component)]
-struct Vial{
+pub struct Vial{
     pub count : i32,
+    limit : i32,
     animation_timer : Timer,
     animation_count : i32,
 }
@@ -28,6 +30,8 @@ fn vial_update(
     textures: Res<TextureAssets>,
     mut texture_atlases: ResMut<Assets<TextureAtlas>>,
     time : Res<Time>,
+    audio : Res<AudioAssets>,
+    fx : Res<FXChannel>,
     mut commands : Commands,
 ) {
     let (player, mut health) = q_player.single_mut();
@@ -61,6 +65,7 @@ fn vial_update(
             ..Default::default()
         }).insert(Vial{
             count: 0,
+            limit: 100,
             animation_count: 0,
             animation_timer: Timer::from_seconds(1. / 8., TimerMode::Repeating)
         });
@@ -72,15 +77,17 @@ fn vial_update(
 
     let mut is_healing = false;
 
-    for death in death_ev.iter() {
+    for _ in death_ev.iter() {
         vial.count += 1;
-        if vial.count >= 100 {
+        if vial.count >= vial.limit {
             vial.count = 0;
+            vial.limit *= 2;
             is_healing = true;
         }
     }
 
     if is_healing {
+        fx.play(audio.vial.clone());
         if health.value < health.max {
             health.value += 1;
         }
@@ -118,7 +125,7 @@ fn vial_update(
             if vial.count == 0 {
                 atlas.index = 0;
             } else {
-                atlas.index = (vial.count as f32 / 100. * 22. + 1.) as usize;
+                atlas.index = (vial.count as f32 / vial.limit as f32 * 22. + 1.) as usize;
             }
         }
     }

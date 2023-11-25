@@ -52,6 +52,9 @@ pub struct AudioAssets {
 
     #[asset(path = "audio/coin.ogg")]
     pub coin: Handle<AudioSource>,
+    
+    #[asset(path = "audio/vial.ogg")]
+    pub vial: Handle<AudioSource>,
 
     #[asset(path = "audio/gunshot.ogg")]
     pub gunshot: Handle<AudioSource>,
@@ -229,6 +232,9 @@ pub struct AbilityTextures {
 
     #[asset(path = "textures/abilities/hotter_fire.png")]
     pub hotter_fire: Handle<Image>,
+    
+    #[asset(path = "textures/abilities/magnet.png")]
+    pub magnet: Handle<Image>,
 
     #[asset(path = "textures/abilities/medium_bullets.png")]
     pub medium_bullets: Handle<Image>,

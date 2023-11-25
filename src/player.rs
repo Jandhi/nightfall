@@ -33,7 +33,7 @@ use self::hit::{spawn_hit_sprite, update_hit_sprite};
 use self::reload_ui::{spawn_reload_ui, update_reload_ui, ReloadTimer};
 use self::shooting::{shoot, ShootingCooldown};
 use self::thorns::{thorns_update, ThornsAnimation, ThornsTimer};
-use self::vial::VialPlugin;
+use self::vial::{VialPlugin, Vial};
 
 pub mod ability;
 mod animations;
@@ -487,6 +487,21 @@ fn click_play_again_button(
             Without<Enemy>,
         ),
     >,
+    q_vial: Query<
+        Entity,
+        (
+            With<Vial>,
+            Without<TakenAbility>,
+            Without<Node>,
+            Without<GameTimer>,
+            Without<XPCrystal>,
+            Without<Fire>,
+            Without<Projectile>,
+            Without<Button>,
+            Without<Player>,
+            Without<Enemy>,
+        ),
+    >,
     mut pause: ResMut<ActionPauseState>,
     mut spawning: ResMut<SpawnInfo>,
     mut commands: Commands,
@@ -525,6 +540,10 @@ fn click_play_again_button(
 
                 for taken in q_taken.iter() {
                     commands.entity(taken).despawn_recursive();
+                }
+
+                for vial in q_vial.iter() {
+                    commands.entity(vial).despawn_recursive();
                 }
 
                 commands.entity(button_entity).despawn_recursive();
